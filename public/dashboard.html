@@ -18,7 +18,7 @@
         .btn-logout { background: #c62828; color: white; }
         
         .services { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
-        .service-card { background: white; padding: 20px; text-align: center; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
+        .service-card { background: white; padding: 20px; text-align: center; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s; }
         .service-card:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .service-card .icon { font-size: 30px; }
         .service-card .label { font-weight: bold; margin-top: 5px; }
@@ -41,8 +41,11 @@
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
         .modal-content { background: white; margin: 10% auto; padding: 30px; border-radius: 10px; max-width: 400px; }
         .modal-close { float: right; font-size: 28px; cursor: pointer; }
-        .modal input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
-        .modal button { width: 100%; padding: 12px; background: #4caf50; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .modal .form-group { margin-bottom: 15px; }
+        .modal .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .modal .form-group input, .modal .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .modal .submit-btn { width: 100%; padding: 12px; background: #1976d2; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .modal .submit-btn:hover { background: #1565c0; }
         
         .toast { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 5px; color: white; font-weight: bold; z-index: 9999; animation: slideIn 0.3s; }
         .toast.success { background: #2e7d32; }
@@ -71,27 +74,27 @@
 
         <!-- Services -->
         <div class="services">
-            <div class="service-card" onclick="serviceAlert('Airtime')">
+            <div class="service-card" onclick="openServiceModal('airtime')">
                 <div class="icon">📱</div>
                 <div class="label">Airtime</div>
                 <div class="badge">Live</div>
             </div>
-            <div class="service-card" onclick="serviceAlert('TV Subscription')">
+            <div class="service-card" onclick="openServiceModal('tv')">
                 <div class="icon">📺</div>
                 <div class="label">TV Subscription</div>
                 <div class="badge">Live</div>
             </div>
-            <div class="service-card" onclick="serviceAlert('Electricity')">
+            <div class="service-card" onclick="openServiceModal('electricity')">
                 <div class="icon">💡</div>
                 <div class="label">Electricity</div>
                 <div class="badge">Live</div>
             </div>
-            <div class="service-card" onclick="serviceAlert('Education')">
+            <div class="service-card" onclick="openServiceModal('education')">
                 <div class="icon">🎓</div>
                 <div class="label">Education</div>
                 <div class="badge">New</div>
             </div>
-            <div class="service-card" onclick="serviceAlert('Betting')">
+            <div class="service-card" onclick="openServiceModal('betting')">
                 <div class="icon">🎰</div>
                 <div class="label">Betting</div>
                 <div class="badge">Popular</div>
@@ -121,6 +124,15 @@
         </div>
     </div>
 
+    <!-- Service Modal -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeServiceModal()">&times;</span>
+            <h2 id="serviceModalTitle">Service</h2>
+            <div id="serviceModalBody"></div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div id="toastContainer"></div>
 
@@ -128,6 +140,7 @@
         let allPlans = [];
         let currentNetwork = 'ALL';
         let isAdmin = false;
+        let walletBalance = 0;
 
         // ============ USER ============
         const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -149,11 +162,6 @@
             setTimeout(() => { if (toast.parentNode) toast.remove(); }, 5000);
         }
 
-        // ============ SERVICES ============
-        function serviceAlert(name) {
-            showToast('🚧 ' + name + ' service coming soon!', 'info');
-        }
-
         // ============ WALLET ============
         function openFundModal() {
             document.getElementById('fundModal').style.display = 'block';
@@ -170,9 +178,13 @@
                 return;
             }
             try {
+                const token = localStorage.getItem('token');
                 const response = await fetch('/api/wallet/fund', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
                     body: JSON.stringify({ amount: parseFloat(amount) })
                 });
                 const result = await response.json();
@@ -190,9 +202,13 @@
 
         async function loadBalance() {
             try {
-                const response = await fetch('/api/wallet/balance');
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/wallet/balance', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
                 const result = await response.json();
                 if (result.success) {
+                    walletBalance = result.balance;
                     document.getElementById('balanceDisplay').textContent = '₦' + (result.balance || 0);
                 }
             } catch (error) {
@@ -218,9 +234,13 @@
             }
             try {
                 showToast('⏳ Initializing payment...', 'info');
+                const token = localStorage.getItem('token');
                 const response = await fetch('/api/paystack/initialize', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
                     body: JSON.stringify({ email, amount: parseFloat(amount) })
                 });
                 const result = await response.json();
@@ -239,17 +259,17 @@
         async function loadPlans() {
             const container = document.getElementById('plansContainer');
             container.innerHTML = 'Loading plans...';
-            
             try {
-                const response = await fetch('/api/vtu/data-plans');
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/vtu/data-plans', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
                 const result = await response.json();
-                
                 if (!result.success) {
                     container.innerHTML = 'Error loading plans';
                     showToast('❌ Error loading plans', 'error');
                     return;
                 }
-                
                 allPlans = [];
                 const plans = result.data || {};
                 Object.keys(plans).forEach(network => {
@@ -257,10 +277,8 @@
                         allPlans.push({ ...plan, network });
                     });
                 });
-                
                 renderPlans();
                 loadBalance();
-                
             } catch (error) {
                 container.innerHTML = 'Error: ' + error.message;
                 showToast('❌ Error: ' + error.message, 'error');
@@ -270,16 +288,13 @@
         function renderPlans() {
             const container = document.getElementById('plansContainer');
             let filtered = allPlans;
-            
             if (currentNetwork !== 'ALL') {
                 filtered = allPlans.filter(p => p.network === currentNetwork);
             }
-            
             if (filtered.length === 0) {
                 container.innerHTML = '<p>No plans available for this network.</p>';
                 return;
             }
-            
             let html = '<div class="plans-grid">';
             filtered.forEach(plan => {
                 const badgeClass = plan.provider.toLowerCase();
@@ -309,29 +324,23 @@
         async function buyPlan(serviceID, price) {
             const phone = prompt('📱 Enter phone number:');
             if (!phone) return;
-            
-            // Check balance
-            try {
-                const balanceResponse = await fetch('/api/wallet/balance');
-                const balanceResult = await balanceResponse.json();
-                if (balanceResult.balance < price) {
-                    showToast('❌ Insufficient balance! Need ₦' + price + ', have ₦' + balanceResult.balance, 'error');
-                    return;
-                }
-            } catch (error) {
-                showToast('❌ Error checking balance', 'error');
+            if (walletBalance < price) {
+                showToast('❌ Insufficient balance! Need ₦' + price + ', have ₦' + walletBalance, 'error');
                 return;
             }
-            
             try {
+                const token = localStorage.getItem('token');
                 const response = await fetch('/api/vtu/buy-data', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
                     body: JSON.stringify({ serviceID, phoneNumber: phone })
                 });
                 const result = await response.json();
                 if (result.success) {
-                    showToast('✅ Data bundle purchased successfully!', 'success');
+                    showToast('✅ ' + result.message, 'success');
                     loadBalance();
                 } else {
                     showToast('❌ Purchase failed: ' + result.message, 'error');
@@ -341,10 +350,147 @@
             }
         }
 
-        // ============ CLOSE MODAL ============
+        // ============ SERVICE MODALS ============
+        function openServiceModal(type) {
+            const modal = document.getElementById('serviceModal');
+            const title = document.getElementById('serviceModalTitle');
+            const body = document.getElementById('serviceModalBody');
+            
+            const services = {
+                airtime: {
+                    title: '📱 Buy Airtime',
+                    fields: 
+                        <div class="form-group"><label>Phone Number</label><input type="text" id="airtimePhone" placeholder="08012345678"></div>
+                        <div class="form-group"><label>Network</label><select id="airtimeNetwork"><option value="MTN">MTN</option><option value="GLO">GLO</option><option value="AIRTEL">AIRTEL</option><option value="9MOBILE">9MOBILE</option></select></div>
+                        <div class="form-group"><label>Amount (₦)</label><input type="number" id="airtimeAmount" placeholder="Enter amount"></div>
+                        <button class="submit-btn" onclick="buyService('airtime')">Buy Airtime</button>
+                    
+                },
+                tv: {
+                    title: '📺 TV Subscription',
+                    fields: 
+                        <div class="form-group"><label>Provider</label><select id="tvProvider"><option value="dstv">DStv</option><option value="gotv">GOtv</option><option value="startimes">StarTimes</option></select></div>
+                        <div class="form-group"><label>Smart Card Number</label><input type="text" id="tvSmartCard" placeholder="Enter smart card number"></div>
+                        <div class="form-group"><label>Package</label><select id="tvPackage"><option value="Premium">Premium</option><option value="Compact Plus">Compact Plus</option><option value="Compact">Compact</option></select></div>
+                        <div class="form-group"><label>Amount (₦)</label><input type="number" id="tvAmount" placeholder="Enter amount"></div>
+                        <button class="submit-btn" onclick="buyService('tv')">Subscribe</button>
+                    
+                },
+                electricity: {
+                    title: '💡 Pay Electricity',
+                    fields: 
+                        <div class="form-group"><label>Provider</label><select id="elecProvider"><option value="ikeja">Ikeja Electric</option><option value="eko">Eko Electric</option><option value="ibadan">Ibadan Electric</option></select></div>
+                        <div class="form-group"><label>Meter Number</label><input type="text" id="elecMeter" placeholder="Enter meter number"></div>
+                        <div class="form-group"><label>Amount (₦)</label><input type="number" id="elecAmount" placeholder="Enter amount"></div>
+                        <button class="submit-btn" onclick="buyService('electricity')">Pay Bill</button>
+                    
+                },
+                education: {
+                    title: '🎓 Buy Education PIN',
+                    fields: 
+                        <div class="form-group"><label>Exam Type</label><select id="eduExam"><option value="waec">WAEC</option><option value="neco">NECO</option><option value="jamb">JAMB</option></select></div>
+                        <div class="form-group"><label>Quantity</label><input type="number" id="eduQuantity" placeholder="Number of pins" value="1"></div>
+                        <div class="form-group"><label>Amount (₦)</label><input type="number" id="eduAmount" placeholder="Enter amount"></div>
+                        <button class="submit-btn" onclick="buyService('education')">Buy PIN</button>
+                    
+                },
+                betting: {
+                    title: '🎰 Fund Betting Wallet',
+                    fields: 
+                        <div class="form-group"><label>Provider</label><select id="betProvider"><option value="bet9ja">Bet9ja</option><option value="sportybet">SportyBet</option><option value="1xbet">1xBet</option></select></div>
+                        <div class="form-group"><label>Username</label><input type="text" id="betUsername" placeholder="Enter username"></div>
+                        <div class="form-group"><label>Amount (₦)</label><input type="number" id="betAmount" placeholder="Enter amount"></div>
+                        <button class="submit-btn" onclick="buyService('betting')">Fund Wallet</button>
+                    
+                }
+            };
+            
+            const service = services[type];
+            title.textContent = service.title;
+            body.innerHTML = service.fields;
+            modal.style.display = 'block';
+        }
+
+        function closeServiceModal() {
+            document.getElementById('serviceModal').style.display = 'none';
+        }
+
+        async function buyService(type) {
+            let endpoint, data;
+            
+            switch(type) {
+                case 'airtime':
+                    endpoint = '/api/services/airtime/buy';
+                    data = {
+                        phone: document.getElementById('airtimePhone').value,
+                        network: document.getElementById('airtimeNetwork').value,
+                        amount: parseFloat(document.getElementById('airtimeAmount').value)
+                    };
+                    break;
+                case 'tv':
+                    endpoint = '/api/services/tv/subscribe';
+                    data = {
+                        provider: document.getElementById('tvProvider').value,
+                        smartCardNumber: document.getElementById('tvSmartCard').value,
+                        package: document.getElementById('tvPackage').value,
+                        amount: parseFloat(document.getElementById('tvAmount').value)
+                    };
+                    break;
+                case 'electricity':
+                    endpoint = '/api/services/electricity/pay';
+                    data = {
+                        provider: document.getElementById('elecProvider').value,
+                        meterNumber: document.getElementById('elecMeter').value,
+                        amount: parseFloat(document.getElementById('elecAmount').value)
+                    };
+                    break;
+                case 'education':
+                    endpoint = '/api/services/education/buy-pin';
+                    data = {
+                        exam: document.getElementById('eduExam').value,
+                        quantity: parseInt(document.getElementById('eduQuantity').value),
+                        amount: parseFloat(document.getElementById('eduAmount').value)
+                    };
+                    break;
+                case 'betting':
+                    endpoint = '/api/services/betting/fund';
+                    data = {
+                        provider: document.getElementById('betProvider').value,
+                        username: document.getElementById('betUsername').value,
+                        amount: parseFloat(document.getElementById('betAmount').value)
+                    };
+                    break;
+            }
+            
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('✅ ' + result.message, 'success');
+                    closeServiceModal();
+                    loadBalance();
+                } else {
+                    showToast('❌ ' + result.message, 'error');
+                }
+            } catch (error) {
+                showToast('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        // ============ CLOSE MODALS ============
         window.onclick = function(event) {
-            const modal = document.getElementById('fundModal');
-            if (event.target === modal) closeFundModal();
+            const fundModal = document.getElementById('fundModal');
+            const serviceModal = document.getElementById('serviceModal');
+            if (event.target === fundModal) closeFundModal();
+            if (event.target === serviceModal) closeServiceModal();
         }
 
         // ============ INIT ============
