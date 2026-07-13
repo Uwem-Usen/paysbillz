@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paysbillz - Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            color: #1a1a2e;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+        .logo { font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .logo span { font-size: 24px; }
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .user-info .name { font-weight: 500; font-size: 14px; }
+        .logout-btn {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.3s;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.25); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 16px; }
+        .welcome-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 24px 28px;
+            color: white;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .welcome-banner::after {
+            content: '💰';
+            position: absolute;
+            right: -10px;
+            bottom: -20px;
+            font-size: 120px;
+            opacity: 0.1;
+        }
+        .welcome-banner h2 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+        .welcome-banner p { font-size: 14px; opacity: 0.85; margin-bottom: 12px; }
+        .welcome-banner .balance { font-size: 36px; font-weight: 800; }
+        .welcome-banner .balance-label { font-size: 13px; opacity: 0.7; font-weight: 400; }
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .quick-action {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .quick-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+        }
+        .quick-action .icon { font-size: 28px; margin-bottom: 6px; }
+        .quick-action .label { font-size: 12px; font-weight: 500; color: #333; }
+        .quick-action .sub-label { font-size: 10px; color: #999; }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .section-header h3 { font-size: 18px; color: #1a1a2e; }
+        .section-header a { font-size: 13px; color: #667eea; text-decoration: none; font-weight: 500; cursor: pointer; }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .service-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid #f0f4f8;
+        }
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.12);
+            border-color: #667eea;
+        }
+        .service-card .icon { font-size: 32px; margin-bottom: 6px; }
+        .service-card .name { font-size: 13px; font-weight: 600; color: #1a1a2e; }
+        .badge {
+            font-size: 9px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+        .badge.live { background: #e8f5e9; color: #2e7d32; }
+        .badge.new { background: #fff3e0; color: #e65100; }
+        .badge.popular { background: #fce4ec; color: #c62828; }
+        .data-plans-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            margin-bottom: 24px;
+        }
+        .data-plans-section h3 { margin-bottom: 16px; font-size: 18px; color: #1a1a2e; }
+        .network-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .network-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .network-tab:hover { border-color: #667eea; }
+        .network-tab.active { border-color: #667eea; background: #667eea; color: white; }
+        .plan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        .plan-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid #e8e8e8;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .plan-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+        .plan-card .plan-name { font-size: 16px; font-weight: 600; color: #1a1a2e; }
+        .plan-card .plan-price { font-size: 18px; font-weight: 700; color: #667eea; margin: 6px 0; }
+        .plan-card .plan-validity { font-size: 12px; color: #888; }
+        .plan-card .plan-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+            background: #e8f5e9;
+            color: #2e7d32;
+            margin-top: 4px;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .text-center { text-align: center; }
+        .text-muted { color: #999; }
+        .mt-10 { margin-top: 10px; }
+        .transactions-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .transactions-section h3 { margin-bottom: 16px; font-size: 18px; color: #1a1a2e; }
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .transaction-item:last-child { border-bottom: none; }
+        .transaction-item .left { display: flex; align-items: center; gap: 12px; }
+        .transaction-item .icon-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .icon-circle.credit { background: #e8f5e9; }
+        .icon-circle.debit { background: #fbe9e7; }
+        .icon-circle.airtime { background: #e3f2fd; }
+        .icon-circle.data { background: #f3e5f5; }
+        .icon-circle.electricity { background: #fff3e0; }
+        .icon-circle.betting { background: #fce4ec; }
+        .transaction-item .info .title { font-size: 14px; font-weight: 500; color: #1a1a2e; }
+        .transaction-item .info .sub { font-size: 12px; color: #999; }
+        .transaction-item .amount { font-size: 14px; font-weight: 600; }
+        .amount.positive { color: #2e7d32; }
+        .amount.negative { color: #c62828; }
+        .empty-state { text-align: center; padding: 30px; color: #999; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-content .close-modal {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        }
+        .modal-content .close-modal:hover { color: #333; }
+        .modal-content h3 { font-size: 20px; color: #1a1a2e; margin-bottom: 20px; }
+        .modal-content .form-group { margin-bottom: 16px; }
+        .modal-content label { display: block; font-size: 13px; font-weight: 500; color: #555; margin-bottom: 4px; }
+        .modal-content input,
+        .modal-content select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            background: #fafafa;
+        }
+        .modal-content input:focus,
+        .modal-content select:focus { outline: none; border-color: #667eea; background: white; }
+        .modal-content .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .modal-content .btn-primary:hover { transform: translateY(-2px); }
+        .modal-content .btn-secondary {
+            width: 100%;
+            padding: 14px;
+            background: #f5f5f5;
+            color: #555;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.3s;
+        }
+        .modal-content .btn-secondary:hover { background: #eee; }
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+            font-size: 14px;
+        }
+        .alert-success { background: #e8f5e9; color: #2e7d32; display: block; }
+        .alert-error { background: #fbe9e7; color: #c62828; display: block; }
+        @media (max-width: 768px) {
+            .quick-actions { grid-template-columns: repeat(2, 1fr); }
+            .plan-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+            .welcome-banner .balance { font-size: 28px; }
+            .navbar { padding: 12px 16px; }
+            .logo { font-size: 18px; }
+            .user-info .name { font-size: 12px; }
+        }
+        @media (max-width: 480px) {
+            .plan-grid { grid-template-columns: repeat(2, 1fr); }
+            .quick-actions { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <div class="logo"><span>💰</span> Paysbillz</div>
+        <div class="user-info">
+            <span class="name" id="userName">👤 User</span>
+            <div class="logout-btn" onclick="logout()">Logout</div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="welcome-banner">
+            <h2>Welcome back, <span id="userFullName">User</span>! 👋</h2>
+            <p>Your Trusted Business Partner</p>
+            <div>
+                <div class="balance-label">Available Balance</div>
+                <div class="balance">₦<span id="balance">0.00</span></div>
+            </div>
+            <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button onclick="showFundModal()" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); color:white; padding:8px 20px; border-radius:8px; cursor:pointer; font-weight:500; font-size:14px;">💳 Fund Wallet</button>
+                <button onclick="showTransferModal()" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); color:white; padding:8px 20px; border-radius:8px; cursor:pointer; font-weight:500; font-size:14px;">🏦 Transfer</button>
+                <button onclick="refreshPlans()" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); color:white; padding:8px 20px; border-radius:8px; cursor:pointer; font-weight:500; font-size:14px;">🔄 Refresh Plans</button>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <div class="quick-action" onclick="showAirtimeModal()">
+                <div class="icon">📱</div>
+                <div class="label">Airtime</div>
+                <div class="sub-label">Buy now</div>
+            </div>
+            <div class="quick-action" onclick="showDataModal()">
+                <div class="icon">📶</div>
+                <div class="label">Data</div>
+                <div class="sub-label">Bundles</div>
+            </div>
+            <div class="quick-action" onclick="showElectricityModal()">
+                <div class="icon">💡</div>
+                <div class="label">Electricity</div>
+                <div class="sub-label">Pay bills</div>
+            </div>
+            <div class="quick-action" onclick="showBettingModal()">
+                <div class="icon">🎰</div>
+                <div class="label">Betting</div>
+                <div class="sub-label">Fund wallet</div>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <h3>Our Services</h3>
+        </div>
+        <div class="services-grid">
+            <div class="service-card" onclick="showAirtimeModal()">
+                <div class="icon">📱</div>
+                <div class="name">Airtime</div>
+                <span class="badge live">Live</span>
+            </div>
+            <div class="service-card" onclick="showDataModal()">
+                <div class="icon">📶</div>
+                <div class="name">Data</div>
+                <span class="badge live">Live</span>
+            </div>
+            <div class="service-card" onclick="showElectricityModal()">
+                <div class="icon">💡</div>
+                <div class="name">Electricity</div>
+                <span class="badge live">Live</span>
+            </div>
+            <div class="service-card" onclick="showTVModal()">
+                <div class="icon">📺</div>
+                <div class="name">TV</div>
+                <span class="badge live">Live</span>
+            </div>
+            <div class="service-card" onclick="showWaecModal()">
+                <div class="icon">📝</div>
+                <div class="name">WAEC</div>
+                <span class="badge new">New</span>
+            </div>
+            <div class="service-card" onclick="showJambModal()">
+                <div class="icon">🎓</div>
+                <div class="name">JAMB</div>
+                <span class="badge new">New</span>
+            </div>
+            <div class="service-card" onclick="showBettingModal()">
+                <div class="icon">🎰</div>
+                <div class="name">Betting</div>
+                <span class="badge popular">Popular</span>
+            </div>
+            <div class="service-card" onclick="showTransferModal()">
+                <div class="icon">🏦</div>
+                <div class="name">Transfer</div>
+                <span class="badge new">New</span>
+            </div>
+        </div>
+
+        <div class="data-plans-section">
+            <div class="section-header">
+                <h3>📶 Data Bundles <span style="font-size:12px; color:#999; font-weight:400;">(Live from Inlomax)</span></h3>
+                <a onclick="refreshPlans()">🔄 Refresh</a>
+            </div>
+            <div id="dataPlansContainer">
+                <div class="text-center" style="padding: 20px;">
+                    <div class="loading-spinner"></div>
+                    <p class="text-muted">Loading data plans...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="transactions-section">
+            <div class="section-header">
+                <h3>Recent Transactions</h3>
+                <a onclick="loadTransactions()">Refresh</a>
+            </div>
+            <div id="transactionsList">
+                <div class="empty-state">📭 No transactions yet</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Fund Modal -->
+    <div id="fundModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('fundModal')">&times;</span>
+            <h3>💳 Fund Wallet</h3>
+            <p style="color:#666; font-size:14px; margin-bottom:16px;">Test Mode - No real payment required</p>
+            <div id="fundAlert" class="alert"></div>
+            <div class="form-group">
+                <label>Amount (₦)</label>
+                <input type="number" id="fundAmount" placeholder="Enter amount" min="100">
+            </div>
+            <button class="btn-primary" onclick="fundWallet()">Add Money</button>
+            <button class="btn-secondary" onclick="closeModal('fundModal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Data Modal -->
+    <div id="dataModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('dataModal')">&times;</span>
+            <h3>📶 Buy Data Bundle</h3>
+            <div id="dataModalAlert" class="alert"></div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="dataPhone" placeholder="08012345678">
+            </div>
+            <div class="form-group">
+                <label>Network</label>
+                <select id="dataNetwork">
+                    <option value="">Select network</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Data Plan</label>
+                <select id="dataPlan">
+                    <option value="">Select a plan</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Amount (₦)</label>
+                <input type="number" id="dataAmount" placeholder="Amount will auto-fill">
+            </div>
+            <button class="btn-primary" onclick="buyData()">Purchase</button>
+            <button class="btn-secondary" onclick="closeModal('dataModal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Airtime Modal -->
+    <div id="airtimeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('airtimeModal')">&times;</span>
+            <h3>📱 Buy Airtime</h3>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="airtimePhone" placeholder="08012345678">
+            </div>
+            <div class="form-group">
+                <label>Network</label>
+                <select id="airtimeNetwork">
+                    <option value="MTN">MTN</option>
+                    <option value="GLO">GLO</option>
+                    <option value="AIRTEL">AIRTEL</option>
+                    <option value="9MOBILE">9MOBILE</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Amount (₦)</label>
+                <input type="number" id="airtimeAmount" placeholder="100" min="50">
+            </div>
+            <button class="btn-primary" onclick="buyAirtime()">Purchase</button>
+            <button class="btn-secondary" onclick="closeModal('airtimeModal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Electricity Modal -->
+    <div id="electricityModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('electricityModal')">&times;</span>
+            <h3>💡 Pay Electricity Bill</h3>
+            <div class="form-group">
+                <label>Meter Number</label>
+                <input type="text" id="meterNumber" placeholder="1234567890">
+            </div>
+            <div class="form-group">
+                <label>Disco</label>
+                <select id="disco">
+                    <option value="IKEDC">Ikeja Electric</option>
+                    <option value="EKEDC">Eko Electric</option>
+                    <option value="AEDC">Abuja Electric</option>
+                    <option value="KEDCO">Kano Electric</option>
+                    <option value="PHED">Port Harcourt Electric</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Amount (₦)</label>
+                <input type="number" id="electricityAmount" placeholder="5000">
+            </div>
+            <button class="btn-primary" onclick="payElectricity()">Pay Bill</button>
+            <button class="btn-secondary" onclick="closeModal('electricityModal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- TV Modal -->
+    <div id="tvModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('tvModal')">&times;</span>
+            <h3>📺 TV Subscription</h3>
+            <div class="form-group">
+                <label>Smartcard Number</label>
+                <input type="text" id="smartcardNumber" placeholder="1234567890">
+            </div>
+            <div class="form-group">
+                <label>Provider</label>
+                <select id="tvProvider">
+                    <option value="DSTV">DStv</option>
+                    <option value="GOTV">GOtv</option>
+                    <option value="STARTIMES">Startimes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Package</label>
+                <select id="tvPackage">
+                    <option value="Compact">Compact - ₦7,500</option>
+                    <option value="Padi">Padi - ₦3,000</option>
+                    <option value="Basic">Basic - ₦1,500</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Amount (₦)</label>
+                <input type="number" id="tvAmount" placeholder="Amount">
+            </div>
+            <button class="btn-primary" onclick="payTV()">Subscribe</button>
+            <button class="btn-secondary" onclick="closeModal('tvModal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- WAEC Modal -->
+    <div id="waecModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('waecModal')">&times;</span>
+            <h3>📝 Buy WAEC PIN</h3>
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="number" id="waecQuantity" value="1" min="1" max="10">
+            </div>
+            <p style="color:#666; font-size:14px;">Price: ₦1,500 per PIN</p>
+            <button class="btn-primary" onclick="buyWaec()">Purchase</button>
+            <button class="btn-secondary" onclick="closeModal('waecModal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- JAMB Modal -->
+    <div id="jambModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('jambModal')">&times;</span>
+            <h3>🎓 Buy JAMB PIN</h3>
+            <div class="form-group">
+                <label>Exam Type</label>
+                <select id="jambType">
+                    <option value="UTME">UTME - ₦3,500</option>
+                    <option value="DIRECT_ENTRY">Direct Entry - ₦4,500</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="number" id="jambQuantity" value="1" min="1" max="10">
+            </div>
+            <button class="btn-primary" onclick="buyJamb()">Purchase</button>
+            <button class="btn-secondary" onclick="closeModal('jambModal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Betting Modal -->
+    <div id="bettingModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('bettingModal')">&times;</span>
+            <h3>🎰 Fund Betting Wallet</h3>
+            <div id="bettingAlert" class="alert"></div>
+            <div class="form-group">
+                <label>Provider</label>
+                <select id="bettingProvider">
+                    <option value="bet9ja">Bet9ja</option>
+                    <option value="sportybet">Sportybet</option>
+                    <option value="betking">BetKing</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Betting Account ID</label>
+                <input type="text" id="bettingCustomerId" placeholder="Enter your betting account ID">
+            </div>
+            <div class="form-group">
+                <label>Amount (₦)</label>
+                <input type="number" id="bettingAmount" placeholder="100" min="100">
+            </div>
+            <button class="btn-primary" onclick="fundBetting()">💳 Fund Account</button>
+            <button class="btn-secondary" onclick="closeModal('bettingModal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Transfer Modal -->
+    <div id="transferModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('transferModal')">&times;</span>
+            <h3>🏦 Transfer to Bank</h3>
+            <div id="transferAlert" class="alert"></div>
+            <div class="form-group">
+                <label>Select Bank</label>
+                <select id="bankSelect">
+                    <option value="">Loading banks...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Account Number</label>
+                <input type="text" id="accountNumber" placeholder="Enter account number" onblur="verifyAccount()">
+            </div>
+            <div id="accountNameDisplay" style="color:#2e7d32; font-weight:500; margin-bottom:12px;"></div>
+            <div class="form-group">
+                <label>Amount (₦)</label>
+                <input type="number" id="transferAmount" placeholder="100" min="100">
+            </div>
+            <div class="form-group">
+                <label>Narration (Optional)</label>
+                <input type="text" id="transferNarration" placeholder="What's this for?">
+            </div>
+            <button class="btn-primary" onclick="transferToBank()">💸 Send Money</button>
+            <button class="btn-secondary" onclick="closeModal('transferModal')">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+    const API_URL = 'http://localhost:3000';
+    let authToken = localStorage.getItem('token');
+
+    if (!authToken) {
+        window.location.href = '/';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadDashboard();
+        loadDataPlans();
+        loadBanks();
+    });
+
+    async function loadDashboard() {
+        await loadUserInfo();
+        await loadBalance();
+        await loadTransactions();
+    }
+
+    async function loadUserInfo() {
+        try {
+            const response = await fetch(`${API_URL}/api/user/profile`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            const data = await response.json();
+            if (data.success && data.user) {
+                document.getElementById('userName').textContent = `👤 ${data.user.fullName || 'User'}`;
+                document.getElementById('userFullName').textContent = data.user.fullName || 'User';
+            }
+        } catch (error) {
+            console.error('Error loading user info:', error);
+        }
+    }
+
+    async function loadBalance() {
+        try {
+            const response = await fetch(`${API_URL}/api/wallet/balance`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            const data = await response.json();
+            if (data.success) {
+                document.getElementById('balance').textContent = data.balance.toFixed(2);
+            }
+        } catch (error) {
+            console.error('Error loading balance:', error);
+        }
+    }
+
+    async function loadTransactions() {
+        try {
+            const response = await fetch(`${API_URL}/api/transactions`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            const data = await response.json();
+            const container = document.getElementById('transactionsList');
+
+            if (data.success && data.transactions && data.transactions.length > 0) {
+                let html = '';
+                data.transactions.slice(0, 10).forEach(t => {
+                    const isCredit = t.type === 'payment' || t.type === 'funding';
+                    const icon = getTransactionIcon(t.service_type);
+                    const amountClass = isCredit ? 'positive' : 'negative';
+                    const sign = isCredit ? '+' : '-';
+                    html += `
+                        <div class="transaction-item">
+                            <div class="left">
+                                <div class="icon-circle ${t.service_type || 'credit'}">${icon}</div>
+                                <div class="info">
+                                    <div class="title">${t.description || t.type}</div>
+                                    <div class="sub">${new Date(t.created_at).toLocaleDateString()}</div>
+                                </div>
+                            </div>
+                            <div class="amount ${amountClass}">${sign}₦${Math.abs(t.amount).toFixed(2)}</div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = '<div class="empty-state">📭 No transactions yet</div>';
+            }
+        } catch (error) {
+            console.error('Error loading transactions:', error);
+            document.getElementById('transactionsList').innerHTML = '<div class="empty-state">⚠️ Error loading transactions</div>';
+        }
+    }
+
+    function getTransactionIcon(serviceType) {
+        const icons = {
+            'airtime': '📱',
+            'data': '📶',
+            'electricity': '💡',
+            'tv': '📺',
+            'waec': '📝',
+            'jamb': '🎓',
+            'betting': '🎰',
+            'transfer': '🏦',
+            'payment': '💰',
+            'funding': '💳'
+        };
+        return icons[serviceType] || '💰';
+    }
+
+    let allPlansData = null;
+    let currentNetwork = null;
+
+    async function loadDataPlans() {
+        const container = document.getElementById('dataPlansContainer');
+        container.innerHTML = `
+            <div class="text-center" style="padding: 20px;">
+                <div class="loading-spinner"></div>
+                <p class="text-muted">Loading data plans from Inlomax...</p>
+            </div>
+        `;
+
+        try {
+            const response = await fetch(`${API_URL}/api/data/plans`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            const result = await response.json();
+
+            if (result.success && result.data) {
+                allPlansData = result.data;
+                const networks = Object.keys(result.data);
+                
+                if (networks.length > 0) {
+                    currentNetwork = networks[0];
+                    renderDataPlans(result.data, currentNetwork);
+                } else {
+                    container.innerHTML = `<div class="empty-state">📭 No data plans available</div>`;
+                }
+            } else {
+                container.innerHTML = `<div class="empty-state">❌ ${result.message || 'Failed to load data plans'}</div>`;
+            }
+        } catch (error) {
+            console.error('Error loading data plans:', error);
+            container.innerHTML = `<div class="empty-state">❌ Error loading data plans. Please try again.</div>`;
+        }
+    }
+
+    function renderDataPlans(data, selectedNetwork) {
+        const container = document.getElementById('dataPlansContainer');
+        const networks = Object.keys(data);
+        
+        if (networks.length === 0) {
+            container.innerHTML = `<div class="empty-state">📭 No data plans available</div>`;
+            return;
+        }
+
+        let html = `
+            <div class="network-tabs">
+                ${networks.map(network => `
+                    <div class="network-tab ${network === selectedNetwork ? 'active' : ''}" 
+                         onclick="switchNetwork('${network}')">
+                        📶 ${network}
+                    </div>
+                `).join('')}
+            </div>
+            <div class="plan-grid">
+        `;
+
+        const plans = data[selectedNetwork] || [];
+        
+        if (plans.length === 0) {
+            html += `<div class="text-muted" style="grid-column: 1/-1; text-align:center; padding:20px;">No plans for ${selectedNetwork}</div>`;
+        } else {
+            plans.forEach(plan => {
+                html += `
+                    <div class="plan-card" onclick="selectPlan('${plan.serviceID}', '${selectedNetwork}', '${plan.name}', ${plan.price})">
+                        <div class="plan-name">${plan.name}</div>
+                        <div class="plan-price">₦${plan.price.toLocaleString()}</div>
+                        <div class="plan-validity">⏱️ ${plan.validity}</div>
+                        <span class="plan-badge">${plan.type || 'SME'}</span>
+                    </div>
+                `;
+            });
+        }
+
+        html += `</div>`;
+        html += `<div class="text-muted mt-10">${plans.length} plans available on ${selectedNetwork}</div>`;
+
+        container.innerHTML = html;
+    }
+
+    function switchNetwork(network) {
+        currentNetwork = network;
+        if (allPlansData) {
+            renderDataPlans(allPlansData, network);
+        }
+    }
+
+    function selectPlan(serviceID, network, name, price) {
+        showDataModalWithPlan(serviceID, network, name, price);
+    }
+
+    async function refreshPlans() {
+        try {
+            await fetch(`${API_URL}/api/data/plans/clear-cache`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+        } catch (e) {}
+        await loadDataPlans();
+    }
+
+    async function showDataModal() {
+        document.getElementById('dataModal').style.display = 'flex';
+        await loadDataPlansForModal();
+    }
+
+    function showDataModalWithPlan(serviceID, network, name, price) {
+        document.getElementById('dataModal').style.display = 'flex';
+        const networkSelect = document.getElementById('dataNetwork');
+        const planSelect = document.getElementById('dataPlan');
+        loadDataPlansForModal().then(() => {
+            networkSelect.value = network;
+            networkSelect.dispatchEvent(new Event('change'));
+            setTimeout(() => {
+                for (let i = 0; i < planSelect.options.length; i++) {
+                    if (planSelect.options[i].value === serviceID) {
+                        planSelect.selectedIndex = i;
+                        planSelect.dispatchEvent(new Event('change'));
+                        break;
+                    }
+                }
+            }, 500);
+        });
+    }
+
+    let modalPlansData = null;
+
+    async function loadDataPlansForModal() {
+        const networkSelect = document.getElementById('dataNetwork');
+        const planSelect = document.getElementById('dataPlan');
+        networkSelect.innerHTML = '<option value="">Loading networks...</option>';
+        planSelect.innerHTML = '<option value="">Loading plans...</option>';
+
+        try {
+            const response = await fetch(`${API_URL}/api/data/plans`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            const result = await response.json();
+
+            if (result.success && result.data) {
+                modalPlansData = result.data;
+                const networks = Object.keys(result.data);
+                networkSelect.innerHTML = '<option value="">Select network</option>';
+                networks.forEach(network => {
+                    const opt = document.createElement('option');
+                    opt.value = network;
+                    opt.textContent = network;
+                    networkSelect.appendChild(opt);
+                });
+
+                networkSelect.onchange = function() {
+                    const selected = this.value;
+                    planSelect.innerHTML = '<option value="">Select a plan</option>';
+                    if (selected && modalPlansData[selected]) {
+                        modalPlansData[selected].forEach(plan => {
+                            const opt = document.createElement('option');
+                            opt.value = plan.serviceID;
+                            opt.textContent = `${plan.name} - ₦${plan.price} (${plan.validity})`;
+                            opt.dataset.price = plan.price;
+                            opt.dataset.name = plan.name;
+                            planSelect.appendChild(opt);
+                        });
+                        planSelect.onchange = function() {
+                            const selected = this.options[this.selectedIndex];
+                            const price = selected?.dataset?.price;
+                            if (price) {
+                                document.getElementById('dataAmount').value = price;
+                            }
+                        };
+                    }
+                };
+
+                if (networks.length > 0) {
+                    networkSelect.value = networks[0];
+                    networkSelect.onchange();
+                }
+            } else {
+                networkSelect.innerHTML = '<option value="">Failed to load plans</option>';
+            }
+        } catch (error) {
+            console.error('Error loading modal plans:', error);
+            networkSelect.innerHTML = '<option value="">Error loading plans</option>';
+        }
+    }
+
+    async function buyData() {
+        const phone = document.getElementById('dataPhone').value;
+        const planSelect = document.getElementById('dataPlan');
+        const serviceID = planSelect.value;
+        const selectedOption = planSelect.options[planSelect.selectedIndex];
+        const amount = parseFloat(document.getElementById('dataAmount').value) || parseFloat(selectedOption?.dataset?.price || 0);
+        const name = selectedOption?.dataset?.name || 'Data';
+
+        if (!phone) {
+            showModalAlert('dataModalAlert', 'Please enter your phone number', 'error');
+            return;
+        }
+        if (!serviceID) {
+            showModalAlert('dataModalAlert', 'Please select a data plan', 'error');
+            return;
+        }
+        if (!amount || amount <= 0) {
+            showModalAlert('dataModalAlert', 'Invalid amount', 'error');
+            return;
+        }
+        if (!confirm(`Purchase ${name} for ₦${amount} to ${phone}?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/api/inlomax/buy-data`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({ serviceID: serviceID, phoneNumber: phone })
+            });
+            const data = await response.json();
+            if (data.success) {
+                showModalAlert('dataModalAlert', `✅ ${data.message || 'Data purchased successfully!'}`, 'success');
+                setTimeout(() => {
+                    closeModal('dataModal');
+                    loadBalance();
+                    loadTransactions();
+                    document.getElementById('dataPhone').value = '';
+                    document.getElementById('dataAmount').value = '';
+                }, 2000);
+            } else {
+                showModalAlert('dataModalAlert', data.message || 'Purchase failed. Please try again.', 'error');
+            }
+        } catch (error) {
+            showModalAlert('dataModalAlert', 'Error purchasing data: ' + error.message, 'error');
+        }
+    }
+
+    function showModalAlert(id, message, type) {
+        const el = document.getElementById(id);
+        el.textContent = message;
+        el.className = `alert alert-${type}`;
+        el.style.display = 'block';
+        setTimeout(() => { el.style.display = 'none'; }, 5000);
+    }
+
+    async function fundWallet() {
+        const amount = parseFloat(document.getElementById('fundAmount').value);
+        if (!amount || amount < 100) {
+            showAlert('fundAlert', 'Minimum amount is ₦100', 'error');
+            return;
+        }
+        try {
+            const response = await fetch(`${API_URL}/api/wallet/direct-fund`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                body: JSON.stringify({ amount })
+            });
+            const data = await response.json();
+            if (data.success) {
+                showAlert('fundAlert', `₦${amount.toLocaleString()} added successfully!`, 'success');
+                setTimeout(() => {
+                    closeModal('fundModal');
+                    loadBalance();
+                    loadTransactions();
+                    document.getElementById('fundAmount').value = '';
+                }, 1500);
+            } else {
+                showAlert('fundAlert', data.message || 'Failed to add money', 'error');
+            }
+        } catch (error) {
+            showAlert('fundAlert', 'Error adding money. Try again.', 'error');
+        }
+    }
+
+    async function buyAirtime() {
+        const phone = document.getElementById('airtimePhone').value;
+        const amount = parseFloat(document.getElementById('airtimeAmount').value);
+        if (!phone || !amount || amount < 50) {
+            alert('Please enter valid phone and amount (min ₦50)');
+            return;
+        }
+        try {
+            const response = await fetch(`${API_URL}/api/airtime/buy`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                body: JSON.stringify({ phoneNumber: phone, amount })
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert(data.message || 'Airtime purchased successfully!');
+                closeModal('airtimeModal');
+                loadBalance();
+                loadTransactions();
+                document.getElementById('airtimePhone').value = '';
+                document.getElementById('airtimeAmount').value = '';
+            } else {
+                alert(data.message || 'Purchase failed');
+            }
+        } catch (error) {
+            alert('Error purchasing airtime.');
+        }
+    }
+
+    async function payElectricity() {
+        const meterNumber = document.getElementById('meterNumber').value;
+        const disco = document.getElementById('disco').value;
+        const amount = parseFloat(document.getElementById('electricityAmount').value);
+        if (!meterNumber || !amount) {
+            alert('Please enter valid details');
+            return;
+        }
+        try {
+            const response = await fetch(`${API_URL}/api/electricity/pay`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                body: JSON.stringify({ meterNumber, amount, disco })
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert(data.message || 'Electricity bill paid successfully!');
+                closeModal('electricityModal');
+                loadBalance();
+                loadTransactions();
+            } else {
+                alert(data.message || 'Payment failed');
+            }
+        } catch (error) {
+            alert('Error paying electricity bill.');
+        }
+    }
+
+    async function payTV() {
+        const smartcardNumber = document.getElementById('smartcardNumber').value;
+        const provider = document.getElementById('tvProvider').value;
+        const packageName = document.getElementById('tvPackage').value;
+        const amount = parseFloat(document.getElementById('tvAmount').value);
+        if (!smartcardNumber || !amount) {
+            alert('Please enter valid details');
+            return;
+        }
+        try {
+            const response = await fetch(`${API_URL}/api/cable/subscribe`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                body: JSON.stringify({ smartCardNumber: smartcardNumber, packageName, amount })
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert(data.message || 'TV subscription activated!');
+                closeModal('tvModal');
+                loadBalance();
+                loadTransactions();
+            } else {
+                alert(data.message || 'Subscription failed');
+            }
+        } catch (error) {
+            alert('Error subscribing to TV.');
+        }
+    }
+
+    async function buyWaec() {
+        const quantity = parseInt(document.getElementById('waecQuantity').value) || 1;
+        const amount = quantity * 1500;
+        if (!confirm(`Purchase ${quantity} WAEC PIN(s) for ₦${amount.toLocaleString()}?`)) return;
+        try {
+            const response = await fetch(`${API_URL}/api/education/waec`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                body: JSON.stringify({ quantity })
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert(data.message || 'WAEC PIN purchased successfully!');
+                closeModal('waecModal');
+                loadBalance();
+                loadTransactions();
+            } else {
+                alert(data.message || 'Purchase failed');
+            }
+        } catch (error) {
+            alert('Error purchasing WAEC PIN.');
+        }
+    }
+
+    async function buyJamb() {
+        const examType = document.getElementById('jambType').value;
+        const quantity = parseInt(document.getElementById('jambQuantity').value) || 1;
+        const price = examType === 'UTME' ? 3500 : 4500;
+        const amount = quantity * price;
+        if (!confirm(`Purchase ${quantity} JAMB ${examType} PIN(s) for ₦${amount.toLocaleString()}?`)) return;
+        try {
+            const response = await fetch(`${API_URL}/api/education/jamb`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                body: JSON.stringify({ exam_type: examType, quantity })
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert(data.message || 'JAMB PIN purchased successfully!');
+                closeModal('jambModal');
+                loadBalance();
+                loadTransactions();
+            } else {
+                alert(data.message || 'Purchase failed');
+            }
+        } catch (error) {
+            alert('Error purchasing JAMB PIN.');
+        }
+    }
+
+    async function fundBetting() {
+        const provider = document.getElementById('bettingProvider').value;
+        const customerId = document.getElementById('bettingCustomerId').value;
+        const amount = parseFloat(document.getElementById('bettingAmount').value);
+        if (!provider || !customerId || !amount || amount < 100) {
+            showAlert('bettingAlert', 'Please fill all fields correctly', 'error');
+            return;
+        }
+        try {
+            const response = await fetch(`${API_URL}/api/betting/deposit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                body: JSON.stringify({ platform: provider, amount })
+            });
+            const data = await response.json();
+            if (data.success) {
+                showAlert('bettingAlert', data.message, 'success');
+                setTimeout(() => {
+                    closeModal('bettingModal');
+                    loadBalance();
+                    loadTransactions();
+                }, 2000);
+            } else {
+                showAlert('bettingAlert', data.message || 'Funding failed', 'error');
+            }
+        } catch (error) {
+            showAlert('bettingAlert', 'Error funding betting account', 'error');
+        }
+    }
+
+    async function loadBanks() {
+        try {
+            const response = await fetch(`${API_URL}/api/banks/strowallet`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            const data = await response.json();
+            if (data.success) {
+                const select = document.getElementById('bankSelect');
+                select.innerHTML = '<option value="">Select a bank</option>';
+                data.banks.forEach(bank => {
+                    const option = document.createElement('option');
+                    option.value = bank.code || bank.id;
+                    option.textContent = bank.name || bank.bank_name;
+                    select.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading banks:', error);
+        }
+    }
+
+    async function verifyAccount() {
+        const bankCode = document.getElementById('bankSelect').value;
+        const accountNumber = document.getElementById('accountNumber').value;
+        const display = document.getElementById('accountNameDisplay');
+        if (!bankCode || !accountNumber || accountNumber.length < 10) {
+            display.textContent = '';
+            return;
+        }
+        try {
+            const response = await fetch(`${API_URL}/api/banks/verify-strowallet`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                body: JSON.stringify({ bankCode, accountNumber })
+            });
+            const data = await response.json();
+            if (data.success && data.data) {
+                display.textContent = `✅ Account holder: ${data.data.account_name}`;
+                display.style.color = '#2e7d32';
+            } else {
+                display.textContent = `❌ ${data.message || 'Account not found'}`;
+                display.style.color = '#c62828';
+            }
+        } catch (error) {
+            display.textContent = '❌ Error verifying account';
+            display.style.color = '#c62828';
+        }
+    }
+
+    async function transferToBank() {
+        const bankCode = document.getElementById('bankSelect').value;
+        const accountNumber = document.getElementById('accountNumber').value;
+        const amount = parseFloat(document.getElementById('transferAmount').value);
+        const narration = document.getElementById('transferNarration').value;
+        if (!bankCode) {
+            showAlert('transferAlert', 'Please select a bank', 'error');
+            return;
+        }
+        if (!accountNumber) {
+            showAlert('transferAlert', 'Please enter account number', 'error');
+            return;
+        }
+        if (!amount || amount < 100) {
+            showAlert('transferAlert', 'Minimum amount is ₦100', 'error');
+            return;
+        }
+        if (!confirm(`Confirm transfer of ₦${amount} to account ${accountNumber}?`)) return;
+        try {
+            const response = await fetch(`${API_URL}/api/transfer/bank`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                body: JSON.stringify({ amount, bankCode, accountNumber, narration })
+            });
+            const data = await response.json();
+            if (data.success) {
+                showAlert('transferAlert', data.message || 'Transfer successful!', 'success');
+                setTimeout(() => {
+                    closeModal('transferModal');
+                    loadBalance();
+                    loadTransactions();
+                }, 2000);
+            } else {
+                showAlert('transferAlert', data.message || 'Transfer failed', 'error');
+            }
+        } catch (error) {
+            showAlert('transferAlert', 'Error processing transfer', 'error');
+        }
+    }
+
+    function showAlert(id, message, type) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = message;
+        el.className = `alert alert-${type}`;
+        el.style.display = 'block';
+        setTimeout(() => { el.style.display = 'none'; }, 5000);
+    }
+
+    function showFundModal() { document.getElementById('fundModal').style.display = 'flex'; }
+    function showDataModal() { document.getElementById('dataModal').style.display = 'flex'; loadDataPlansForModal(); }
+    function showAirtimeModal() { document.getElementById('airtimeModal').style.display = 'flex'; }
+    function showElectricityModal() { document.getElementById('electricityModal').style.display = 'flex'; }
+    function showTVModal() { document.getElementById('tvModal').style.display = 'flex'; }
+    function showWaecModal() { document.getElementById('waecModal').style.display = 'flex'; }
+    function showJambModal() { document.getElementById('jambModal').style.display = 'flex'; }
+    function showBettingModal() { document.getElementById('bettingModal').style.display = 'flex'; }
+    function showTransferModal() { document.getElementById('transferModal').style.display = 'flex'; loadBanks(); }
+
+    function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+
+    function logout() {
+        if (confirm('Are you sure you want to logout?')) {
+            localStorage.removeItem('token');
+            window.location.href = '/';
+        }
+    }
+
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) { modal.style.display = 'none'; }
+        });
+    });
+    </script>
+
+</body>
+</html>

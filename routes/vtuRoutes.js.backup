@@ -1,0 +1,305 @@
+﻿const express = require('express');
+const router = express.Router();
+const { protect, adminOnly } = require('../middleware/auth');
+
+// ============ PROFIT CONFIGURATION ============
+const profitConfig = {
+    'MTN_SME_500MB': { cost: 130, selling: 220, profit: 90 },
+    'MTN_SME_1GB': { cost: 150, selling: 260, profit: 110 },
+    'MTN_SME_2GB': { cost: 380, selling: 590, profit: 210 },
+    'MTN_SME_3GB': { cost: 350, selling: 580, profit: 230 },
+    'MTN_SME_5GB': { cost: 650, selling: 1150, profit: 500 },
+    'MTN_SME_10GB': { cost: 2400, selling: 3500, profit: 1100 },
+    'MTN_CORP_500MB': { cost: 115, selling: 205, profit: 90 },
+    'MTN_CORP_1GB': { cost: 280, selling: 410, profit: 130 },
+    'MTN_CORP_2GB': { cost: 550, selling: 820, profit: 270 },
+    'MTN_CORP_5GB': { cost: 1300, selling: 2050, profit: 750 },
+    'MTN_REG_100MB': { cost: 30, selling: 50, profit: 20 },
+    'MTN_REG_200MB': { cost: 55, selling: 100, profit: 45 },
+    'MTN_REG_350MB': { cost: 85, selling: 150, profit: 65 },
+    'MTN_REG_750MB': { cost: 110, selling: 200, profit: 90 },
+    'GLO_SME_500MB': { cost: 115, selling: 205, profit: 90 },
+    'GLO_SME_1GB': { cost: 260, selling: 410, profit: 150 },
+    'GLO_SME_2GB': { cost: 520, selling: 820, profit: 300 },
+    'GLO_SME_5GB': { cost: 650, selling: 1150, profit: 500 },
+    'GLO_CORP_500MB': { cost: 105, selling: 190, profit: 85 },
+    'GLO_CORP_1GB': { cost: 240, selling: 390, profit: 150 },
+    'GLO_CORP_2GB': { cost: 480, selling: 780, profit: 300 },
+    'GLO_REG_250MB': { cost: 65, selling: 120, profit: 55 },
+    'GLO_REG_500MB': { cost: 100, selling: 180, profit: 80 },
+    'AIRTEL_SME_500MB': { cost: 120, selling: 210, profit: 90 },
+    'AIRTEL_SME_1GB': { cost: 140, selling: 240, profit: 100 },
+    'AIRTEL_SME_2GB': { cost: 350, selling: 580, profit: 230 },
+    'AIRTEL_SME_5GB': { cost: 650, selling: 1150, profit: 500 },
+    'AIRTEL_CORP_500MB': { cost: 110, selling: 200, profit: 90 },
+    'AIRTEL_CORP_1GB': { cost: 250, selling: 400, profit: 150 },
+    'AIRTEL_REG_300MB': { cost: 75, selling: 130, profit: 55 },
+    '9MOBILE_SME_500MB': { cost: 105, selling: 190, profit: 85 },
+    '9MOBILE_SME_1GB': { cost: 140, selling: 230, profit: 90 },
+    '9MOBILE_SME_2GB': { cost: 260, selling: 410, profit: 150 },
+    '9MOBILE_CORP_500MB': { cost: 95, selling: 180, profit: 85 },
+    '9MOBILE_REG_200MB': { cost: 55, selling: 100, profit: 45 }
+};
+
+// ============ TEST ROUTE ============
+router.get('/test', (req, res) => {
+    res.json({
+        success: true,
+        message: '✅ VTU routes are working!',
+        timestamp: new Date().toISOString()
+    });
+});
+
+// ============ PROVIDER STATUS ============
+router.get('/provider-status', protect, (req, res) => {
+    res.json({
+        success: true,
+        data: {
+            inlomax: {
+                available: true,
+                balance: 1500
+            },
+            strongmb: {
+                available: true,
+                balance: 2500
+            }
+        }
+    });
+});
+
+// ============ DATA PLANS ============
+router.get('/data-plans', protect, (req, res) => {
+    try {
+        const network = req.query.network || 'ALL';
+        const isAdmin = req.user.role === 'admin';
+        
+        console.log('📡 Data plans requested for network:', network);
+        console.log('👤 User:', req.user.phone, 'Role:', req.user.role);
+        
+        const allPlans = {
+            MTN: [
+                { serviceID: 'MTN_SME_500MB', name: '500MB SME', size: '500MB', price: 220, validity: '2 Days', type: 'SME', provider: 'Inlomax' },
+                { serviceID: 'MTN_SME_1GB', name: '1GB SME', size: '1GB', price: 260, validity: '30 Days', type: 'SME', provider: 'StrongMB' },
+                { serviceID: 'MTN_SME_2GB', name: '2GB SME', size: '2GB', price: 590, validity: '30 Days', type: 'SME', provider: 'Inlomax' },
+                { serviceID: 'MTN_SME_3GB', name: '3GB SME', size: '3GB', price: 580, validity: '3 Days', type: 'SME', provider: 'StrongMB' },
+                { serviceID: 'MTN_SME_5GB', name: '5GB SME', size: '5GB', price: 1150, validity: '14 Days', type: 'SME', provider: 'Inlomax' },
+                { serviceID: 'MTN_SME_10GB', name: '10GB SME', size: '10GB', price: 3500, validity: '30 Days', type: 'SME', provider: 'StrongMB' },
+                { serviceID: 'MTN_CORP_500MB', name: '500MB Corporate', size: '500MB', price: 205, validity: '30 Days', type: 'Corporate', provider: 'Inlomax' },
+                { serviceID: 'MTN_CORP_1GB', name: '1GB Corporate', size: '1GB', price: 410, validity: '30 Days', type: 'Corporate', provider: 'StrongMB' },
+                { serviceID: 'MTN_CORP_2GB', name: '2GB Corporate', size: '2GB', price: 820, validity: '30 Days', type: 'Corporate', provider: 'Inlomax' },
+                { serviceID: 'MTN_CORP_5GB', name: '5GB Corporate', size: '5GB', price: 2050, validity: '30 Days', type: 'Corporate', provider: 'StrongMB' },
+                { serviceID: 'MTN_REG_100MB', name: '100MB Daily', size: '100MB', price: 50, validity: '1 Day', type: 'Regular', provider: 'Inlomax' },
+                { serviceID: 'MTN_REG_200MB', name: '200MB Daily', size: '200MB', price: 100, validity: '1 Day', type: 'Regular', provider: 'StrongMB' },
+                { serviceID: 'MTN_REG_350MB', name: '350MB Weekly', size: '350MB', price: 150, validity: '7 Days', type: 'Regular', provider: 'Inlomax' },
+                { serviceID: 'MTN_REG_750MB', name: '750MB Weekly', size: '750MB', price: 200, validity: '7 Days', type: 'Regular', provider: 'StrongMB' }
+            ],
+            GLO: [
+                { serviceID: 'GLO_SME_500MB', name: '500MB SME', size: '500MB', price: 205, validity: '30 Days', type: 'SME', provider: 'StrongMB' },
+                { serviceID: 'GLO_SME_1GB', name: '1GB SME', size: '1GB', price: 410, validity: '30 Days', type: 'SME', provider: 'Inlomax' },
+                { serviceID: 'GLO_SME_2GB', name: '2GB SME', size: '2GB', price: 820, validity: '30 Days', type: 'SME', provider: 'StrongMB' },
+                { serviceID: 'GLO_SME_5GB', name: '5GB SME', size: '5GB', price: 1150, validity: '14 Days', type: 'SME', provider: 'Inlomax' },
+                { serviceID: 'GLO_CORP_500MB', name: '500MB Corporate', size: '500MB', price: 190, validity: '30 Days', type: 'Corporate', provider: 'StrongMB' },
+                { serviceID: 'GLO_CORP_1GB', name: '1GB Corporate', size: '1GB', price: 390, validity: '30 Days', type: 'Corporate', provider: 'Inlomax' },
+                { serviceID: 'GLO_CORP_2GB', name: '2GB Corporate', size: '2GB', price: 780, validity: '30 Days', type: 'Corporate', provider: 'StrongMB' },
+                { serviceID: 'GLO_REG_250MB', name: '250MB Weekly', size: '250MB', price: 120, validity: '7 Days', type: 'Regular', provider: 'Inlomax' },
+                { serviceID: 'GLO_REG_500MB', name: '500MB Weekly', size: '500MB', price: 180, validity: '7 Days', type: 'Regular', provider: 'StrongMB' }
+            ],
+            AIRTEL: [
+                { serviceID: 'AIRTEL_SME_500MB', name: '500MB SME', size: '500MB', price: 210, validity: '2 Days', type: 'SME', provider: 'Inlomax' },
+                { serviceID: 'AIRTEL_SME_1GB', name: '1GB SME', size: '1GB', price: 240, validity: '30 Days', type: 'SME', provider: 'StrongMB' },
+                { serviceID: 'AIRTEL_SME_2GB', name: '2GB SME', size: '2GB', price: 580, validity: '30 Days', type: 'SME', provider: 'Inlomax' },
+                { serviceID: 'AIRTEL_SME_5GB', name: '5GB SME', size: '5GB', price: 1150, validity: '14 Days', type: 'SME', provider: 'StrongMB' },
+                { serviceID: 'AIRTEL_CORP_500MB', name: '500MB Corporate', size: '500MB', price: 200, validity: '30 Days', type: 'Corporate', provider: 'Inlomax' },
+                { serviceID: 'AIRTEL_CORP_1GB', name: '1GB Corporate', size: '1GB', price: 400, validity: '30 Days', type: 'Corporate', provider: 'StrongMB' },
+                { serviceID: 'AIRTEL_REG_300MB', name: '300MB Weekly', size: '300MB', price: 130, validity: '7 Days', type: 'Regular', provider: 'Inlomax' }
+            ],
+            '9MOBILE': [
+                { serviceID: '9MOBILE_SME_500MB', name: '500MB SME', size: '500MB', price: 190, validity: '30 Days', type: 'SME', provider: 'Inlomax' },
+                { serviceID: '9MOBILE_SME_1GB', name: '1GB SME', size: '1GB', price: 230, validity: '30 Days', type: 'SME', provider: 'StrongMB' },
+                { serviceID: '9MOBILE_SME_2GB', name: '2GB SME', size: '2GB', price: 410, validity: '30 Days', type: 'SME', provider: 'Inlomax' },
+                { serviceID: '9MOBILE_CORP_500MB', name: '500MB Corporate', size: '500MB', price: 180, validity: '30 Days', type: 'Corporate', provider: 'StrongMB' },
+                { serviceID: '9MOBILE_REG_200MB', name: '200MB Weekly', size: '200MB', price: 100, validity: '7 Days', type: 'Regular', provider: 'Inlomax' }
+            ]
+        };
+        
+        let data = {};
+        if (network === 'ALL' || !network) {
+            data = allPlans;
+        } else if (allPlans[network]) {
+            data[network] = allPlans[network];
+        } else {
+            return res.status(404).json({
+                success: false,
+                message: 'Network not found'
+            });
+        }
+        
+        const processedData = {};
+        let totalProfit = 0;
+        let planCount = 0;
+        let inlomaxCount = 0;
+        let strongmbCount = 0;
+        
+        Object.keys(data).forEach(net => {
+            processedData[net] = data[net].map(plan => {
+                const profit = profitConfig[plan.serviceID];
+                const result = {
+                    ...plan,
+                    price: profit ? profit.selling : plan.price,
+                    yourCost: isAdmin && profit ? profit.cost : undefined,
+                    yourProfit: isAdmin && profit ? profit.profit : undefined
+                };
+                
+                if (profit) {
+                    if (isAdmin) {
+                        totalProfit += profit.profit;
+                        planCount++;
+                    }
+                }
+                
+                if (plan.provider === 'Inlomax') inlomaxCount++;
+                else if (plan.provider === 'StrongMB') strongmbCount++;
+                
+                return result;
+            });
+        });
+        
+        res.json({
+            success: true,
+            data: processedData,
+            providers: {
+                inlomax: { count: inlomaxCount, available: true },
+                strongmb: { count: strongmbCount, available: true }
+            },
+            total: inlomaxCount + strongmbCount,
+            ...(isAdmin && {
+                profitSummary: {
+                    totalProfit: totalProfit,
+                    averageProfit: planCount > 0 ? Math.round(totalProfit / planCount) : 0
+                }
+            })
+        });
+        
+    } catch (error) {
+        console.error('❌ Error in data-plans:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to load data plans: ' + error.message
+        });
+    }
+});
+
+// ============ BUY DATA ============
+router.post('/buy-data', protect, (req, res) => {
+    try {
+        const { serviceID, phoneNumber, provider, network } = req.body;
+        const isAdmin = req.user.role === 'admin';
+        
+        if (!serviceID || !phoneNumber || !provider) {
+            return res.status(400).json({
+                success: false,
+                message: 'Service ID, phone number, and provider are required'
+            });
+        }
+        
+        const profit = profitConfig[serviceID];
+        const reference = 'DATA_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+        
+        res.json({
+            success: true,
+            message: '✅ Data bundle purchased successfully!',
+            reference: reference,
+            plan: {
+                name: 'Data Plan',
+                sellingPrice: profit ? profit.selling : 0,
+                yourCost: isAdmin && profit ? profit.cost : undefined,
+                yourProfit: isAdmin && profit ? profit.profit : undefined,
+                provider: provider,
+                network: network || 'MTN'
+            },
+            phoneNumber: phoneNumber,
+            balance: Math.floor(Math.random() * 5000) + 1000
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Purchase failed: ' + error.message
+        });
+    }
+});
+
+// ============ OTHER ENDPOINTS ============
+router.get('/strongmb/data-plans', protect, (req, res) => {
+    res.json({
+        success: true,
+        provider: 'strongmb',
+        data: {
+            MTN: [
+                { serviceID: 'STRONG_MTN_500MB', name: '500MB', price: 220, validity: '2 Days' },
+                { serviceID: 'STRONG_MTN_1GB', name: '1GB', price: 260, validity: '30 Days' }
+            ],
+            GLO: [
+                { serviceID: 'STRONG_GLO_500MB', name: '500MB', price: 205, validity: '30 Days' }
+            ]
+        }
+    });
+});
+
+router.get('/inlomax/data-plans', protect, (req, res) => {
+    res.json({
+        success: true,
+        provider: 'inlomax',
+        data: {
+            MTN: [
+                { serviceID: 'INLO_MTN_500MB', name: '500MB', price: 220, validity: '2 Days' },
+                { serviceID: 'INLO_MTN_1GB', name: '1GB', price: 260, validity: '30 Days' }
+            ],
+            GLO: [
+                { serviceID: 'INLO_GLO_500MB', name: '500MB', price: 205, validity: '30 Days' }
+            ]
+        }
+    });
+});
+
+router.get('/profit-summary', protect, adminOnly, (req, res) => {
+    res.json({
+        success: true,
+        data: {
+            totalPlans: Object.keys(profitConfig).length,
+            totalProfit: Object.values(profitConfig).reduce((sum, p) => sum + p.profit, 0),
+            averageProfit: Math.round(Object.values(profitConfig).reduce((sum, p) => sum + p.profit, 0) / Object.keys(profitConfig).length),
+            plans: profitConfig
+        }
+    });
+});
+
+router.get('/transactions', protect, (req, res) => {
+    res.json({
+        success: true,
+        transactions: [
+            {
+                id: 1,
+                type: 'data_purchase',
+                description: 'MTN 500MB SME Data Bundle',
+                amount: -220,
+                created_at: new Date(Date.now() - 3600000).toISOString()
+            },
+            {
+                id: 2,
+                type: 'airtime_purchase',
+                description: 'Airtime Purchase - 08012345678',
+                amount: -100,
+                created_at: new Date(Date.now() - 7200000).toISOString()
+            },
+            {
+                id: 3,
+                type: 'wallet_funding',
+                description: 'Wallet Funding',
+                amount: 1000,
+                created_at: new Date(Date.now() - 86400000).toISOString()
+            }
+        ]
+    });
+});
+
+module.exports = router;

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paysbillz - Betting</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: white; border-radius: 20px; padding: 30px; margin-bottom: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        .card h2 { color: #333; margin-bottom: 20px; }
+        .platform-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .platform-card { padding: 20px; border: 2px solid #e0e0e0; border-radius: 12px; cursor: pointer; transition: all 0.3s; text-align: center; }
+        .platform-card:hover { border-color: #667eea; transform: translateY(-3px); box-shadow: 0 5px 20px rgba(102,126,234,0.2); }
+        .platform-card.selected { border-color: #667eea; background: #f0f2ff; }
+        .platform-card h3 { color: #333; margin-bottom: 5px; }
+        .platform-card p { color: #666; font-size: 12px; }
+        .platform-card .commission { color: #28a745; font-weight: 600; font-size: 14px; margin-top: 5px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 5px; }
+        .form-group input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; }
+        .form-group input:focus { outline: none; border-color: #667eea; }
+        .btn { padding: 12px 30px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,0.3); }
+        .btn-success { background: #28a745; color: white; }
+        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(40,167,69,0.3); }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(220,53,69,0.3); }
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+        .stat-box { background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; }
+        .stat-box .number { font-size: 24px; font-weight: 800; color: #333; }
+        .stat-box .label { font-size: 12px; color: #666; }
+        .message { padding: 12px; border-radius: 10px; margin-top: 15px; display: none; }
+        .message.success { display: block; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .message.error { display: block; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .message.info { display: block; background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .hidden { display: none !important; }
+        @media (max-width: 480px) { .container { padding: 10px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h2>🎰 Betting Platforms</h2>
+            <p style="color: #666; margin-bottom: 20px;">Fund your betting account and earn commissions on every deposit!</p>
+
+            <div id="platformsContainer" class="platform-grid"></div>
+
+            <div id="selectedPlatform" class="hidden">
+                <h3>Selected: <span id="selectedPlatformName"></span></h3>
+                <p>Commission: <span id="selectedCommission"></span></p>
+            </div>
+
+            <div class="form-group">
+                <label>Amount (₦)</label>
+                <input type="number" id="amount" placeholder="Enter amount" min="100">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-success" onclick="deposit()">💰 Deposit</button>
+                <button class="btn btn-danger" onclick="withdraw()">💳 Withdraw</button>
+                <button class="btn btn-primary" onclick="refreshStats()">📊 Refresh Stats</button>
+            </div>
+
+            <div id="message" class="message"></div>
+        </div>
+
+        <div class="card">
+            <h2>📊 Your Betting Stats</h2>
+            <div class="stats" id="statsContainer">
+                <div class="stat-box"><div class="number" id="totalDeposited">₦0</div><div class="label">Total Deposited</div></div>
+                <div class="stat-box"><div class="number" id="totalWithdrawn">₦0</div><div class="label">Total Withdrawn</div></div>
+                <div class="stat-box"><div class="number" id="totalCommission">₦0</div><div class="label">Total Commission Earned</div></div>
+                <div class="stat-box"><div class="number" id="totalTransactions">0</div><div class="label">Total Transactions</div></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📋 Recent Betting Transactions</h2>
+            <div id="transactionsList">
+                <p style="color: #999;">No transactions yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+        let token = localStorage.getItem('token') || '';
+        let selectedPlatform = null;
+
+        // Check if logged in
+        if (!token) {
+            window.location.href = 'index.html';
+        }
+
+        // Load platforms
+        async function loadPlatforms() {
+            try {
+                const response = await fetch(API_URL + '/api/betting/platforms', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const container = document.getElementById('platformsContainer');
+                    container.innerHTML = '';
+                    data.data.forEach(platform => {
+                        const card = document.createElement('div');
+                        card.className = 'platform-card';
+                        card.onclick = () => selectPlatform(platform.id);
+                        card.innerHTML = `
+                            <h3>🎯 ${platform.name}</h3>
+                            <p>${platform.description}</p>
+                            <div class="commission">💰 ${(platform.commission * 100)}% commission</div>
+                            <p style="font-size:11px; color:#999; margin-top:5px;">
+                                Min: ₦${platform.minDeposit} | Max: ₦${platform.maxDeposit}
+                            </p>
+                        `;
+                        container.appendChild(card);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading platforms:', error);
+            }
+        }
+
+        function selectPlatform(platformId) {
+            selectedPlatform = platformId;
+            document.querySelectorAll('.platform-card').forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('.platform-card').forEach(c => {
+                if (c.querySelector('h3').textContent.includes(platformId)) {
+                    c.classList.add('selected');
+                }
+            });
+            document.getElementById('selectedPlatform').classList.remove('hidden');
+            document.getElementById('selectedPlatformName').textContent = platformId.toUpperCase();
+            document.getElementById('selectedCommission').textContent = '0.1% - 0.5%';
+        }
+
+        async function deposit() {
+            const amount = document.getElementById('amount').value;
+            const message = document.getElementById('message');
+
+            if (!selectedPlatform) {
+                showMessage(message, 'Please select a betting platform first', 'error');
+                return;
+            }
+
+            if (!amount || amount < 100) {
+                showMessage(message, 'Please enter a valid amount (minimum ₦100)', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL + '/api/betting/deposit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ platform: selectedPlatform, amount: parseFloat(amount) })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage(message, `✅ ${data.message}`, 'success');
+                    refreshStats();
+                    loadTransactions();
+                    document.getElementById('amount').value = '';
+                } else {
+                    showMessage(message, '❌ ' + data.message, 'error');
+                }
+            } catch (error) {
+                showMessage(message, '❌ Network error. Is the server running?', 'error');
+            }
+        }
+
+        async function withdraw() {
+            const amount = document.getElementById('amount').value;
+            const message = document.getElementById('message');
+
+            if (!selectedPlatform) {
+                showMessage(message, 'Please select a betting platform first', 'error');
+                return;
+            }
+
+            if (!amount || amount < 100) {
+                showMessage(message, 'Please enter a valid amount (minimum ₦100)', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL + '/api/betting/withdraw', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ platform: selectedPlatform, amount: parseFloat(amount) })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage(message, `✅ ${data.message}`, 'success');
+                    refreshStats();
+                    loadTransactions();
+                    document.getElementById('amount').value = '';
+                } else {
+                    showMessage(message, '❌ ' + data.message, 'error');
+                }
+            } catch (error) {
+                showMessage(message, '❌ Network error. Is the server running?', 'error');
+            }
+        }
+
+        async function refreshStats() {
+            try {
+                const response = await fetch(API_URL + '/api/betting/stats', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('totalDeposited').textContent = '₦' + data.data.totalDeposited;
+                    document.getElementById('totalWithdrawn').textContent = '₦' + data.data.totalWithdrawn;
+                    document.getElementById('totalCommission').textContent = '₦' + data.data.totalCommission;
+                    document.getElementById('totalTransactions').textContent = data.data.totalTransactions;
+                }
+            } catch (error) {
+                console.error('Error refreshing stats:', error);
+            }
+        }
+
+        async function loadTransactions() {
+            try {
+                const response = await fetch(API_URL + '/api/betting/transactions?limit=10', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await response.json();
+
+                const container = document.getElementById('transactionsList');
+                if (data.success && data.transactions.length > 0) {
+                    container.innerHTML = data.transactions.map(t => `
+                        <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;">
+                            <div>
+                                <strong>${t.type.replace('_', ' ').toUpperCase()}</strong>
+                                <br>
+                                <span style="font-size:12px; color:#999;">${new Date(t.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <div>
+                                <span style="color:${t.type === 'betting_deposit' ? '#28a745' : '#dc3545'}">₦${t.amount}</span>
+                                <br>
+                                <span style="font-size:12px;">${t.status}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<p style="color: #999;">No betting transactions yet.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+            }
+        }
+
+        function showMessage(element, text, type) {
+            element.textContent = text;
+            element.className = 'message ' + type;
+            element.style.display = 'block';
+            setTimeout(() => { element.style.display = 'none'; }, 5000);
+        }
+
+        // Initialize
+        loadPlatforms();
+        refreshStats();
+        loadTransactions();
+
+        // Refresh every 30 seconds
+        setInterval(refreshStats, 30000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Login Test</title>
+</head>
+<body>
+    <h1>Login Test</h1>
+    <input id="phone" value="08012345678" placeholder="Phone">
+    <input id="password" value="password123" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function login() {
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const result = document.getElementById('result');
+            
+            result.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, password })
+                });
+                const data = await response.json();
+                result.textContent = JSON.stringify(data, null, 2);
+                
+                if (data.success) {
+                    alert('✅ Login successful! Welcome ' + data.user.fullName);
+                    localStorage.setItem('token', data.token);
+                } else {
+                    alert('❌ Login failed: ' + data.message);
+                }
+            } catch (error) {
+                result.textContent = 'Error: ' + error.message;
+                alert('❌ Network error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

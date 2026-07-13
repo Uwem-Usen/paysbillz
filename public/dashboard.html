@@ -1,0 +1,354 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f2f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .header { background: #1a237e; color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .header-top .right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .balance { font-size: 24px; font-weight: bold; color: #4caf50; }
+        .btn { padding: 8px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-fund { background: #4caf50; color: white; }
+        .btn-paystack { background: #0a3d62; color: white; }
+        .btn-logout { background: #c62828; color: white; }
+        
+        .services { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
+        .service-card { background: white; padding: 20px; text-align: center; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
+        .service-card:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .service-card .icon { font-size: 30px; }
+        .service-card .label { font-weight: bold; margin-top: 5px; }
+        .service-card .badge { font-size: 11px; background: #e8f5e9; color: #2e7d32; padding: 2px 10px; border-radius: 10px; display: inline-block; margin-top: 5px; }
+        
+        .network-tabs { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
+        .network-tab { padding: 8px 20px; border: 2px solid #ddd; border-radius: 20px; cursor: pointer; background: white; font-weight: bold; }
+        .network-tab.active { background: #1976d2; color: white; border-color: #1976d2; }
+        
+        .plans-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .plan-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; }
+        .plan-card .provider-badge { position: absolute; top: 10px; right: 10px; font-size: 10px; padding: 2px 10px; border-radius: 10px; font-weight: bold; }
+        .plan-card .provider-badge.inlomax { background: #e3f2fd; color: #0d47a1; }
+        .plan-card .provider-badge.strongmb { background: #f3e5f5; color: #4a148c; }
+        .plan-card .price { font-size: 24px; font-weight: bold; color: #2e7d32; }
+        .plan-card .buy-btn { background: #1976d2; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 10px; }
+        .plan-card .buy-btn:hover { background: #1565c0; }
+        .plan-profit { font-size: 12px; color: #e65100; background: #fff3e0; padding: 2px 10px; border-radius: 10px; display: inline-block; margin: 5px 0; }
+        
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; margin: 10% auto; padding: 30px; border-radius: 10px; max-width: 400px; }
+        .modal-close { float: right; font-size: 28px; cursor: pointer; }
+        .modal input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
+        .modal button { width: 100%; padding: 12px; background: #4caf50; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        
+        .toast { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 5px; color: white; font-weight: bold; z-index: 9999; animation: slideIn 0.3s; }
+        .toast.success { background: #2e7d32; }
+        .toast.error { background: #c62828; }
+        .toast.info { background: #1976d2; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <div>
+                    <h2>Dashboard</h2>
+                    <p>Welcome <span id="userName">John Doe</span>!</p>
+                </div>
+                <div class="right">
+                    <span class="balance" id="balanceDisplay">₦0.00</span>
+                    <button class="btn btn-fund" onclick="openFundModal()">💰 Fund Wallet</button>
+                    <button class="btn btn-paystack" onclick="payWithPaystack()">💳 Paystack</button>
+                    <button class="btn btn-logout" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services -->
+        <div class="services">
+            <div class="service-card" onclick="serviceAlert('Airtime')">
+                <div class="icon">📱</div>
+                <div class="label">Airtime</div>
+                <div class="badge">Live</div>
+            </div>
+            <div class="service-card" onclick="serviceAlert('TV Subscription')">
+                <div class="icon">📺</div>
+                <div class="label">TV Subscription</div>
+                <div class="badge">Live</div>
+            </div>
+            <div class="service-card" onclick="serviceAlert('Electricity')">
+                <div class="icon">💡</div>
+                <div class="label">Electricity</div>
+                <div class="badge">Live</div>
+            </div>
+            <div class="service-card" onclick="serviceAlert('Education')">
+                <div class="icon">🎓</div>
+                <div class="label">Education</div>
+                <div class="badge">New</div>
+            </div>
+            <div class="service-card" onclick="serviceAlert('Betting')">
+                <div class="icon">🎰</div>
+                <div class="label">Betting</div>
+                <div class="badge">Popular</div>
+            </div>
+        </div>
+
+        <!-- Network Tabs -->
+        <div class="network-tabs" id="networkTabs">
+            <button class="network-tab active" data-network="ALL" onclick="filterNetwork('ALL')">🌐 All Networks</button>
+            <button class="network-tab" data-network="MTN" onclick="filterNetwork('MTN')">MTN</button>
+            <button class="network-tab" data-network="GLO" onclick="filterNetwork('GLO')">GLO</button>
+            <button class="network-tab" data-network="AIRTEL" onclick="filterNetwork('AIRTEL')">AIRTEL</button>
+            <button class="network-tab" data-network="9MOBILE" onclick="filterNetwork('9MOBILE')">9MOBILE</button>
+        </div>
+
+        <!-- Plans -->
+        <div id="plansContainer">Loading plans...</div>
+    </div>
+
+    <!-- Fund Modal -->
+    <div id="fundModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeFundModal()">&times;</span>
+            <h2>💰 Fund Wallet</h2>
+            <input type="number" id="fundAmount" placeholder="Enter amount" min="100">
+            <button onclick="fundWallet()">Fund Wallet</button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toastContainer"></div>
+
+    <script>
+        let allPlans = [];
+        let currentNetwork = 'ALL';
+        let isAdmin = false;
+
+        // ============ USER ============
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        isAdmin = user.role === 'admin';
+        document.getElementById('userName').textContent = user.name || 'John Doe';
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/login.html';
+        }
+
+        // ============ TOAST ============
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => { if (toast.parentNode) toast.remove(); }, 5000);
+        }
+
+        // ============ SERVICES ============
+        function serviceAlert(name) {
+            showToast('🚧 ' + name + ' service coming soon!', 'info');
+        }
+
+        // ============ WALLET ============
+        function openFundModal() {
+            document.getElementById('fundModal').style.display = 'block';
+        }
+
+        function closeFundModal() {
+            document.getElementById('fundModal').style.display = 'none';
+        }
+
+        async function fundWallet() {
+            const amount = document.getElementById('fundAmount').value;
+            if (!amount || amount <= 0) {
+                showToast('❌ Please enter a valid amount', 'error');
+                return;
+            }
+            try {
+                const response = await fetch('/api/wallet/fund', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount: parseFloat(amount) })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('✅ Wallet funded! New balance: ₦' + result.balance, 'success');
+                    loadBalance();
+                    closeFundModal();
+                } else {
+                    showToast('❌ Funding failed: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showToast('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        async function loadBalance() {
+            try {
+                const response = await fetch('/api/wallet/balance');
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('balanceDisplay').textContent = '₦' + (result.balance || 0);
+                }
+            } catch (error) {
+                console.error('Balance error:', error);
+            }
+        }
+
+        // ============ PAYSTACK ============
+        async function payWithPaystack() {
+            const email = prompt('📧 Enter your email address:');
+            if (!email) {
+                showToast('❌ Email is required', 'error');
+                return;
+            }
+            const amount = prompt('💰 Enter amount (₦100 minimum):');
+            if (!amount) {
+                showToast('❌ Amount is required', 'error');
+                return;
+            }
+            if (amount < 100) {
+                showToast('❌ Minimum amount is ₦100', 'error');
+                return;
+            }
+            try {
+                showToast('⏳ Initializing payment...', 'info');
+                const response = await fetch('/api/paystack/initialize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, amount: parseFloat(amount) })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    window.open(result.data.authorization_url, '_blank');
+                    showToast('✅ Payment page opened!', 'success');
+                } else {
+                    showToast('❌ ' + result.message, 'error');
+                }
+            } catch (error) {
+                showToast('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        // ============ PLANS ============
+        async function loadPlans() {
+            const container = document.getElementById('plansContainer');
+            container.innerHTML = 'Loading plans...';
+            
+            try {
+                const response = await fetch('/api/vtu/data-plans');
+                const result = await response.json();
+                
+                if (!result.success) {
+                    container.innerHTML = 'Error loading plans';
+                    showToast('❌ Error loading plans', 'error');
+                    return;
+                }
+                
+                allPlans = [];
+                const plans = result.data || {};
+                Object.keys(plans).forEach(network => {
+                    plans[network].forEach(plan => {
+                        allPlans.push({ ...plan, network });
+                    });
+                });
+                
+                renderPlans();
+                loadBalance();
+                
+            } catch (error) {
+                container.innerHTML = 'Error: ' + error.message;
+                showToast('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        function renderPlans() {
+            const container = document.getElementById('plansContainer');
+            let filtered = allPlans;
+            
+            if (currentNetwork !== 'ALL') {
+                filtered = allPlans.filter(p => p.network === currentNetwork);
+            }
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<p>No plans available for this network.</p>';
+                return;
+            }
+            
+            let html = '<div class="plans-grid">';
+            filtered.forEach(plan => {
+                const badgeClass = plan.provider.toLowerCase();
+                const profitDisplay = isAdmin && plan.profit ? '<div class="plan-profit">💰 Profit: ₦' + plan.profit + '</div>' : '';
+                html += '<div class="plan-card">';
+                html += '<span class="provider-badge ' + badgeClass + '">' + plan.provider + '</span>';
+                html += '<h3>' + plan.name + '</h3>';
+                html += '<p>Network: ' + plan.network + '</p>';
+                html += '<p>Validity: ' + plan.validity + '</p>';
+                html += '<div class="price">₦' + plan.price + '</div>';
+                html += profitDisplay;
+                html += '<button class="buy-btn" onclick="buyPlan(\'' + plan.serviceID + '\', ' + plan.price + ')">Buy Now</button>';
+                html += '</div>';
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function filterNetwork(network) {
+            currentNetwork = network;
+            document.querySelectorAll('.network-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.network === network);
+            });
+            renderPlans();
+        }
+
+        async function buyPlan(serviceID, price) {
+            const phone = prompt('📱 Enter phone number:');
+            if (!phone) return;
+            
+            // Check balance
+            try {
+                const balanceResponse = await fetch('/api/wallet/balance');
+                const balanceResult = await balanceResponse.json();
+                if (balanceResult.balance < price) {
+                    showToast('❌ Insufficient balance! Need ₦' + price + ', have ₦' + balanceResult.balance, 'error');
+                    return;
+                }
+            } catch (error) {
+                showToast('❌ Error checking balance', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/vtu/buy-data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ serviceID, phoneNumber: phone })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('✅ Data bundle purchased successfully!', 'success');
+                    loadBalance();
+                } else {
+                    showToast('❌ Purchase failed: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showToast('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        // ============ CLOSE MODAL ============
+        window.onclick = function(event) {
+            const modal = document.getElementById('fundModal');
+            if (event.target === modal) closeFundModal();
+        }
+
+        // ============ INIT ============
+        loadPlans();
+    </script>
+</body>
+</html>

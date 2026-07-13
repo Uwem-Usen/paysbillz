@@ -1,0 +1,356 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Paysbillz - Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .container { background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 500px; width: 100%; padding: 40px; }
+        .logo { text-align: center; margin-bottom: 30px; }
+        .logo h1 { font-size: 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
+        .logo p { color: #666; font-size: 14px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; border: none; background: none; font-weight: 600; color: #666; border-radius: 8px; transition: all 0.3s; }
+        .tab.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .tab:hover:not(.active) { background: #f0f0f0; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; font-size: 14px; }
+        .form-group input, .form-group select { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; transition: all 0.3s; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; color: white; cursor: pointer; transition: all 0.3s; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,0.3); }
+        .btn-secondary { background: #f0f0f0; color: #333; }
+        .btn-secondary:hover { background: #e0e0e0; box-shadow: none; }
+        .btn-success { background: #28a745; }
+        .btn-success:hover { background: #218838; }
+        .btn-danger { background: #dc3545; }
+        .btn-danger:hover { background: #c82333; }
+        .message { margin-top: 15px; padding: 12px; border-radius: 10px; display: none; }
+        .message.success { display: block; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .message.error { display: block; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .message.info { display: block; background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .dashboard { display: none; }
+        .dashboard.active { display: block; }
+        .balance-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 15px; color: white; text-align: center; margin-bottom: 25px; }
+        .balance-box h3 { font-size: 14px; opacity: 0.8; margin-bottom: 5px; }
+        .balance-box .amount { font-size: 36px; font-weight: 800; }
+        .quick-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        .quick-action { padding: 15px; background: #f8f9fa; border: 2px solid #e0e0e0; border-radius: 12px; text-align: center; cursor: pointer; transition: all 0.3s; font-weight: 600; color: #333; }
+        .quick-action:hover { border-color: #667eea; background: #f0f2ff; transform: translateY(-2px); }
+        .profile-info { background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .profile-info .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e0e0e0; }
+        .profile-info .row:last-child { border-bottom: none; }
+        .profile-info .label { font-weight: 600; color: #666; }
+        .profile-info .value { color: #333; }
+        .hidden { display: none !important; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 30px; border-radius: 20px; max-width: 400px; width: 90%; max-height: 90vh; overflow-y: auto; }
+        .modal-content h2 { margin-bottom: 20px; color: #333; }
+        .modal-close { float: right; cursor: pointer; font-size: 24px; color: #999; }
+        .modal-close:hover { color: #333; }
+        .footer { text-align: center; margin-top: 20px; color: #999; font-size: 12px; }
+        @media (max-width: 480px) { .container { padding: 20px; } .quick-actions { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo"><h1>💳 Paysbillz</h1><p>Your All-in-One Payment Platform</p></div>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('login')">Login</button>
+            <button class="tab" onclick="switchTab('register')">Register</button>
+            <button class="tab" id="dashboardTab" onclick="switchTab('dashboard')" style="display:none;">Dashboard</button>
+        </div>
+        <div id="loginForm" class="form-section">
+            <div class="form-group"><label>📱 Phone Number</label><input type="tel" id="loginPhone" placeholder="08012345678" value="08012345678"></div>
+            <div class="form-group"><label>🔒 Password</label><input type="password" id="loginPassword" placeholder="Enter password" value="password123"></div>
+            <button class="btn" onclick="login()">Login</button>
+            <div id="loginMessage" class="message"></div>
+        </div>
+        <div id="registerForm" class="form-section hidden">
+            <div class="form-group"><label>👤 Full Name</label><input type="text" id="registerName" placeholder="John Doe"></div>
+            <div class="form-group"><label>📧 Email</label><input type="email" id="registerEmail" placeholder="john@example.com"></div>
+            <div class="form-group"><label>📱 Phone Number</label><input type="tel" id="registerPhone" placeholder="08012345678"></div>
+            <div class="form-group"><label>🔒 Password</label><input type="password" id="registerPassword" placeholder="Create password"></div>
+            <button class="btn" onclick="register()">Create Account</button>
+            <div id="registerMessage" class="message"></div>
+        </div>
+        <div id="dashboard" class="dashboard">
+            <div class="balance-box"><h3>💰 Wallet Balance</h3><div class="amount" id="walletBalance">₦0.00</div></div>
+            <div class="quick-actions">
+                <div class="quick-action" onclick="openModal('airtime')">📱 Buy Airtime</div>
+                <div class="quick-action" onclick="openModal('data')">📶 Buy Data</div>
+                <div class="quick-action" onclick="openModal('electricity')">⚡ Pay Electricity</div>
+                <div class="quick-action" onclick="openModal('cable')">📺 Cable TV</div>
+            </div>
+            <div class="profile-info">
+                <h3 style="margin-bottom:15px; color:#333;">👤 Profile</h3>
+                <div class="row"><span class="label">Name</span><span class="value" id="profileName">-</span></div>
+                <div class="row"><span class="label">Email</span><span class="value" id="profileEmail">-</span></div>
+                <div class="row"><span class="label">Phone</span><span class="value" id="profilePhone">-</span></div>
+                <div class="row"><span class="label">Status</span><span class="value" id="profileStatus">-</span></div>
+            </div>
+            <button class="btn btn-danger" onclick="logout()">Logout</button>
+        </div>
+        <div class="footer">© 2026 Paysbillz. All rights reserved.</div>
+    </div>
+    <div class="modal" id="serviceModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Service</h2>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+    <script>
+        const API_URL = "http://localhost:3000";
+        let token = localStorage.getItem("token") || "";
+        if (token) { showDashboard(); }
+        function switchTab(tab) {
+            document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+            document.querySelectorAll(".form-section").forEach(f => f.classList.add("hidden"));
+            document.getElementById("dashboard").classList.remove("active");
+            if (tab === "login") {
+                document.querySelector(".tab:first-child").classList.add("active");
+                document.getElementById("loginForm").classList.remove("hidden");
+            } else if (tab === "register") {
+                document.querySelectorAll(".tab")[1].classList.add("active");
+                document.getElementById("registerForm").classList.remove("hidden");
+            } else if (tab === "dashboard") {
+                document.getElementById("dashboardTab").classList.add("active");
+                document.getElementById("dashboard").classList.add("active");
+                loadDashboard();
+            }
+        }
+        function showMessage(element, text, type) {
+            element.textContent = text;
+            element.className = "message " + type;
+            element.style.display = "block";
+            setTimeout(() => { element.style.display = "none"; }, 5000);
+        }
+        async function register() {
+            const name = document.getElementById("registerName").value;
+            const email = document.getElementById("registerEmail").value;
+            const phone = document.getElementById("registerPhone").value;
+            const password = document.getElementById("registerPassword").value;
+            const message = document.getElementById("registerMessage");
+            if (!name || !phone || !password) {
+                showMessage(message, "Please fill in all required fields", "error");
+                return;
+            }
+            try {
+                const response = await fetch(API_URL + "/api/auth/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ fullName: name, email, phone, password })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    token = data.token;
+                    localStorage.setItem("token", token);
+                    showMessage(message, "✅ Registration successful! Welcome " + data.user.fullName, "success");
+                    setTimeout(() => showDashboard(), 1000);
+                } else {
+                    showMessage(message, "❌ " + data.message, "error");
+                }
+            } catch (error) {
+                showMessage(message, "❌ Network error. Is the server running?", "error");
+                console.error(error);
+            }
+        }
+        async function login() {
+            const phone = document.getElementById("loginPhone").value;
+            const password = document.getElementById("loginPassword").value;
+            const message = document.getElementById("loginMessage");
+            if (!phone || !password) {
+                showMessage(message, "Please enter phone and password", "error");
+                return;
+            }
+            try {
+                const response = await fetch(API_URL + "/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ phone, password })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    token = data.token;
+                    localStorage.setItem("token", token);
+                    showMessage(message, "✅ Login successful! Welcome back " + data.user.fullName, "success");
+                    setTimeout(() => showDashboard(), 1000);
+                } else {
+                    showMessage(message, "❌ " + data.message, "error");
+                }
+            } catch (error) {
+                showMessage(message, "❌ Network error. Is the server running?", "error");
+                console.error(error);
+            }
+        }
+        async function loadDashboard() {
+            if (!token) return;
+            try {
+                const profileResponse = await fetch(API_URL + "/api/user/profile", {
+                    headers: { "Authorization": "Bearer " + token }
+                });
+                const profileData = await profileResponse.json();
+                if (profileData.success) {
+                    document.getElementById("profileName").textContent = profileData.user.fullName;
+                    document.getElementById("profileEmail").textContent = profileData.user.email || "Not set";
+                    document.getElementById("profilePhone").textContent = profileData.user.phone;
+                    document.getElementById("profileStatus").textContent = profileData.user.isActive ? "✅ Active" : "❌ Inactive";
+                }
+                const walletResponse = await fetch(API_URL + "/api/wallet/balance", {
+                    headers: { "Authorization": "Bearer " + token }
+                });
+                const walletData = await walletResponse.json();
+                if (walletData.success) {
+                    document.getElementById("walletBalance").textContent = "₦" + Number(walletData.balance).toFixed(2);
+                }
+            } catch (error) {
+                console.error("Error loading dashboard:", error);
+            }
+        }
+        function showDashboard() {
+            document.getElementById("loginForm").classList.add("hidden");
+            document.getElementById("registerForm").classList.add("hidden");
+            document.getElementById("dashboard").classList.add("active");
+            document.getElementById("dashboardTab").style.display = "block";
+            document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+            document.getElementById("dashboardTab").classList.add("active");
+            loadDashboard();
+        }
+        function logout() {
+            localStorage.removeItem("token");
+            token = "";
+            document.getElementById("dashboard").classList.remove("active");
+            document.getElementById("dashboardTab").style.display = "none";
+            document.getElementById("loginForm").classList.remove("hidden");
+            document.querySelector(".tab:first-child").classList.add("active");
+            document.getElementById("loginPhone").value = "08012345678";
+            document.getElementById("loginPassword").value = "password123";
+        }
+        function openModal(service) {
+            document.getElementById("serviceModal").classList.add("active");
+            const titles = { airtime: "📱 Buy Airtime", data: "📶 Buy Data", electricity: "⚡ Pay Electricity", cable: "📺 Cable TV Subscription" };
+            document.getElementById("modalTitle").textContent = titles[service] || "Service";
+            let body = "";
+            if (service === "airtime") {
+                body = '<div class="form-group"><label>📱 Phone Number</label><input type="tel" id="airtimePhone" placeholder="08012345678"></div><div class="form-group"><label>💰 Amount (₦)</label><input type="number" id="airtimeAmount" placeholder="100, 200, 500, 1000"></div><button class="btn btn-success" onclick="buyAirtime()">Buy Airtime</button><div id="airtimeMessage" class="message"></div>';
+            } else if (service === "data") {
+                body = '<div class="form-group"><label>📱 Phone Number</label><input type="tel" id="dataPhone" placeholder="08012345678"></div><div class="form-group"><label>📶 Data Plan</label><select id="dataPlan"><option value="35">500MB - ₦205</option><option value="36">1GB - ₦430</option><option value="37">2GB - ₦800</option><option value="38">5GB - ₦1400</option><option value="39">10GB - ₦2650</option></select></div><button class="btn btn-success" onclick="buyData()">Buy Data</button><div id="dataMessage" class="message"></div>';
+            } else if (service === "electricity") {
+                body = '<div class="form-group"><label>⚡ Meter Number</label><input type="text" id="meterNumber" placeholder="Enter meter number"></div><div class="form-group"><label>💰 Amount (₦)</label><input type="number" id="electricAmount" placeholder="5000"></div><div class="form-group"><label>🏢 DISCO</label><select id="disco"><option value="ikeja">Ikeja Electric</option><option value="eko">Eko Electric</option><option value="abuja">Abuja Electric</option><option value="ibadan">Ibadan Electric</option><option value="kaduna">Kaduna Electric</option><option value="portharcourt">Port Harcourt Electric</option></select></div><button class="btn btn-success" onclick="payElectricity()">Pay Bill</button><div id="electricMessage" class="message"></div>';
+            } else if (service === "cable") {
+                body = '<div class="form-group"><label>📺 Smart Card Number</label><input type="text" id="cableCard" placeholder="Enter smart card number"></div><div class="form-group"><label>📺 Package</label><select id="cablePackage"><option value="DSTV Premium">DSTV Premium - ₦15,000</option><option value="DSTV Compact">DSTV Compact - ₦8,500</option><option value="DSTV Confam">DSTV Confam - ₦4,500</option><option value="GOTV Max">GOTV Max - ₦3,500</option></select></div><button class="btn btn-success" onclick="subscribeCable()">Subscribe</button><div id="cableMessage" class="message"></div>';
+            }
+            document.getElementById("modalBody").innerHTML = body;
+        }
+        function closeModal() {
+            document.getElementById("serviceModal").classList.remove("active");
+        }
+        async function buyAirtime() {
+            const phone = document.getElementById("airtimePhone").value;
+            const amount = document.getElementById("airtimeAmount").value;
+            const message = document.getElementById("airtimeMessage");
+            if (!phone || !amount) { showMessage(message, "Please enter phone and amount", "error"); return; }
+            try {
+                const response = await fetch(API_URL + "/api/airtime/buy", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+                    body: JSON.stringify({ phoneNumber: phone, amount: amount })
+                });
+                const data = await response.json();
+                if (data.status === "success") {
+                    showMessage(message, "✅ Airtime purchased successfully!", "success");
+                    setTimeout(() => { closeModal(); loadDashboard(); }, 2000);
+                } else {
+                    showMessage(message, "❌ " + (data.message || "Purchase failed"), "error");
+                }
+            } catch (error) {
+                showMessage(message, "❌ Network error. Is the server running?", "error");
+                console.error(error);
+            }
+        }
+        async function buyData() {
+            const phone = document.getElementById("dataPhone").value;
+            const serviceID = document.getElementById("dataPlan").value;
+            const message = document.getElementById("dataMessage");
+            if (!phone) { showMessage(message, "Please enter phone number", "error"); return; }
+            try {
+                const response = await fetch(API_URL + "/api/data/buy", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+                    body: JSON.stringify({ serviceID: serviceID, phoneNumber: phone })
+                });
+                const data = await response.json();
+                if (data.status === "success") {
+                    showMessage(message, "✅ Data purchased successfully!", "success");
+                    setTimeout(() => { closeModal(); loadDashboard(); }, 2000);
+                } else {
+                    showMessage(message, "❌ " + (data.message || "Purchase failed"), "error");
+                }
+            } catch (error) {
+                showMessage(message, "❌ Network error. Is the server running?", "error");
+                console.error(error);
+            }
+        }
+        async function payElectricity() {
+            const meterNumber = document.getElementById("meterNumber").value;
+            const amount = document.getElementById("electricAmount").value;
+            const disco = document.getElementById("disco").value;
+            const message = document.getElementById("electricMessage");
+            if (!meterNumber || !amount) { showMessage(message, "Please enter meter number and amount", "error"); return; }
+            try {
+                const response = await fetch(API_URL + "/api/electricity/pay", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+                    body: JSON.stringify({ meterNumber, amount, disco })
+                });
+                const data = await response.json();
+                if (data.status === "success") {
+                    showMessage(message, "✅ Electricity bill paid successfully!", "success");
+                    setTimeout(() => { closeModal(); loadDashboard(); }, 2000);
+                } else {
+                    showMessage(message, "❌ " + (data.message || "Payment failed"), "error");
+                }
+            } catch (error) {
+                showMessage(message, "❌ Network error. Is the server running?", "error");
+                console.error(error);
+            }
+        }
+        async function subscribeCable() {
+            const smartCardNumber = document.getElementById("cableCard").value;
+            const packageName = document.getElementById("cablePackage").value;
+            const message = document.getElementById("cableMessage");
+            if (!smartCardNumber) { showMessage(message, "Please enter smart card number", "error"); return; }
+            try {
+                const response = await fetch(API_URL + "/api/cable/subscribe", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+                    body: JSON.stringify({ smartCardNumber, packageName, amount: 0 })
+                });
+                const data = await response.json();
+                if (data.status === "success") {
+                    showMessage(message, "✅ Cable subscription successful!", "success");
+                    setTimeout(() => { closeModal(); loadDashboard(); }, 2000);
+                } else {
+                    showMessage(message, "❌ " + (data.message || "Subscription failed"), "error");
+                }
+            } catch (error) {
+                showMessage(message, "❌ Network error. Is the server running?", "error");
+                console.error(error);
+            }
+        }
+        document.addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                if (!document.getElementById("loginForm").classList.contains("hidden")) { login(); }
+                else if (!document.getElementById("registerForm").classList.contains("hidden")) { register(); }
+            }
+        });
+        document.getElementById("serviceModal").addEventListener("click", function(e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paysbillz - Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            color: #1a1a2e;
+        }
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 20px 16px;
+            overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s;
+        }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+        .sidebar .logo { font-size: 24px; font-weight: 800; padding: 10px 0 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 16px; }
+        .sidebar .logo span { color: #667eea; }
+        .sidebar .user-info {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .sidebar .user-info .avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600; flex-shrink: 0; }
+        .sidebar .user-info .details .name { font-weight: 600; font-size: 14px; }
+        .sidebar .user-info .details .email { font-size: 11px; color: rgba(255,255,255,0.6); }
+        .sidebar .menu-section { margin-top: 8px; }
+        .sidebar .menu-section .section-title { font-size: 11px; text-transform: uppercase; color: rgba(255,255,255,0.4); letter-spacing: 1px; padding: 12px 0 8px; font-weight: 600; }
+        .sidebar .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            margin-bottom: 2px;
+            position: relative;
+        }
+        .sidebar .menu-item:hover { background: rgba(255,255,255,0.08); color: white; }
+        .sidebar .menu-item.active { background: rgba(102,126,234,0.25); color: white; border: 1px solid rgba(102,126,234,0.2); }
+        .sidebar .menu-item.active::before { content: ''; position: absolute; left: 0; top: 20%; height: 60%; width: 3px; background: #667eea; border-radius: 0 4px 4px 0; }
+        .sidebar .menu-item .icon { font-size: 18px; width: 28px; text-align: center; flex-shrink: 0; }
+        .sidebar .menu-item .badge { margin-left: auto; background: #667eea; color: white; font-size: 10px; padding: 2px 10px; border-radius: 12px; font-weight: 600; }
+        .sidebar .menu-item .badge.green { background: #2e7d32; }
+        .sidebar .menu-item .badge.gold { background: #f9a825; color: #1a1a2e; }
+        .sidebar .logout { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px; }
+        .sidebar .logout .menu-item { color: rgba(255,100,100,0.7); }
+        .sidebar .logout .menu-item:hover { background: rgba(255,100,100,0.15); color: #ff6b6b; }
+        .main-content { margin-left: 260px; padding: 20px 30px; min-height: 100vh; background: #f0f4f8; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 8px 0 20px; flex-wrap: wrap; gap: 12px; }
+        .topbar .page-title h1 { font-size: 24px; font-weight: 700; color: #1a1a2e; }
+        .topbar .page-title p { font-size: 14px; color: #888; }
+        .topbar .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .topbar .actions button { padding: 10px 20px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .topbar .actions .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .topbar .actions .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
+        .topbar .actions .btn-outline { background: white; color: #1a1a2e; border: 1px solid #e0e0e0; }
+        .topbar .actions .btn-outline:hover { border-color: #667eea; color: #667eea; }
+        .wallet-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 24px 28px;
+            color: white;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .wallet-card .balance-info .label { font-size: 13px; opacity: 0.8; }
+        .wallet-card .balance-info .amount { font-size: 32px; font-weight: 800; }
+        .wallet-card .balance-info .account { font-size: 13px; opacity: 0.7; margin-top: 4px; }
+        .wallet-card .wallet-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .wallet-card .wallet-actions button { padding: 10px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; background: rgba(255,255,255,0.1); color: white; cursor: pointer; font-weight: 500; transition: all 0.3s; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+        .wallet-card .wallet-actions button:hover { background: rgba(255,255,255,0.2); }
+        .quick-services {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .quick-service {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid #f0f4f8;
+        }
+        .quick-service:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(102,126,234,0.12); border-color: #667eea; }
+        .quick-service .icon { font-size: 28px; margin-bottom: 6px; }
+        .quick-service .label { font-size: 12px; font-weight: 500; color: #333; }
+        .quick-service .sub-label { font-size: 10px; color: #999; }
+        .quick-service .badge { font-size: 9px; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 4px; }
+        .badge.live { background: #e8f5e9; color: #2e7d32; }
+        .badge.new { background: #fff3e0; color: #e65100; }
+        .badge.popular { background: #fce4ec; color: #c62828; }
+        .badge.betting { background: #fff8e1; color: #f57f17; }
+        .data-plans-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            margin-bottom: 24px;
+        }
+        .data-plans-section .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .data-plans-section .section-header h3 { font-size: 18px; color: #1a1a2e; }
+        .data-plans-section .section-header a { font-size: 13px; color: #667eea; text-decoration: none; font-weight: 500; cursor: pointer; }
+        .network-tabs { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+        .network-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .network-tab:hover { border-color: #667eea; }
+        .network-tab.active { border-color: #667eea; background: #667eea; color: white; }
+        .plan-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+        .plan-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid #e8e8e8;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .plan-card:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-color: #667eea; }
+        .plan-card .plan-name { font-size: 16px; font-weight: 600; color: #1a1a2e; }
+        .plan-card .plan-price { font-size: 18px; font-weight: 700; color: #667eea; margin: 6px 0; }
+        .plan-card .plan-validity { font-size: 12px; color: #888; }
+        .plan-card .plan-badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 10px; font-weight: 600; margin-top: 4px; }
+        .plan-badge.inlomax { background: #e8f5e9; color: #2e7d32; }
+        .plan-badge.strongmb { background: #fff8e1; color: #f57f17; border: 1px solid #f57f17; }
+        .loading-spinner { display: inline-block; width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .text-center { text-align: center; }
+        .text-muted { color: #999; }
+        .mt-10 { margin-top: 10px; }
+        .transactions-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .transactions-section .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .transactions-section .section-header h3 { font-size: 18px; color: #1a1a2e; }
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .transaction-item:last-child { border-bottom: none; }
+        .transaction-item .left { display: flex; align-items: center; gap: 12px; }
+        .transaction-item .info .title { font-size: 14px; font-weight: 500; color: #1a1a2e; }
+        .transaction-item .info .sub { font-size: 12px; color: #999; }
+        .transaction-item .amount { font-size: 14px; font-weight: 600; }
+        .amount.positive { color: #2e7d32; }
+        .amount.negative { color: #c62828; }
+        .empty-state { text-align: center; padding: 30px; color: #999; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-content .close-modal { position: absolute; top: 12px; right: 16px; font-size: 24px; cursor: pointer; color: #999; transition: color 0.3s; }
+        .modal-content .close-modal:hover { color: #333; }
+        .modal-content h3 { font-size: 20px; color: #1a1a2e; margin-bottom: 20px; }
+        .modal-content .form-group { margin-bottom: 16px; }
+        .modal-content label { display: block; font-size: 13px; font-weight: 500; color: #555; margin-bottom: 4px; }
+        .modal-content input, .modal-content select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            background: #fafafa;
+        }
+        .modal-content input:focus, .modal-content select:focus { outline: none; border-color: #667eea; background: white; }
+        .modal-content .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .modal-content .btn-primary:hover { transform: translateY(-2px); }
+        .modal-content .btn-secondary {
+            width: 100%;
+            padding: 14px;
+            background: #f5f5f5;
+            color: #555;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.3s;
+        }
+        .modal-content .btn-secondary:hover { background: #eee; }
+        .sidebar-toggle { display: none; position: fixed; top: 16px; left: 16px; z-index: 200; background: #1a1a2e; color: white; border: none; padding: 10px 14px; border-radius: 8px; font-size: 20px; cursor: pointer; }
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 99; }
+        .sidebar-overlay.active { display: block; }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); width: 280px; }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-toggle { display: block; }
+            .main-content { margin-left: 0; padding: 60px 16px 16px; }
+            .plan-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+            .wallet-card { flex-direction: column; align-items: stretch; text-align: center; }
+            .wallet-card .wallet-actions { justify-content: center; }
+            .topbar { flex-direction: column; align-items: stretch; text-align: center; }
+            .topbar .actions { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="logo">Pays<span>billz</span></div>
+        <div class="user-info">
+            <div class="avatar" id="userAvatar">JD</div>
+            <div class="details">
+                <div class="name" id="sidebarName">John Doe</div>
+                <div class="email" id="sidebarEmail">john@example.com</div>
+            </div>
+        </div>
+        <div class="menu-section">
+            <div class="section-title">Main</div>
+            <div class="menu-item active" id="menuDashboard" onclick="showPage('dashboard')"><span class="icon">📊</span> Dashboard</div>
+            <div class="menu-item" id="menuServices" onclick="showPage('services')"><span class="icon">🛠️</span> Services</div>
+        </div>
+        <div class="menu-section">
+            <div class="section-title">Services</div>
+            <div class="menu-item" onclick="showAirtimeModal()"><span class="icon">📱</span> Buy Airtime</div>
+            <div class="menu-item" onclick="showDataModal()"><span class="icon">📶</span> Buy Data</div>
+            <div class="menu-item" onclick="showTVModal()"><span class="icon">📺</span> Cable Subscription</div>
+            <div class="menu-item" onclick="showElectricityModal()"><span class="icon">💡</span> Electricity Payment</div>
+            <div class="menu-item" onclick="showWaecModal()"><span class="icon">📝</span> Education Pins <span class="badge">New</span></div>
+            <div class="menu-item" onclick="showBettingModal()"><span class="icon">🎰</span> Betting <span class="badge gold">Popular</span></div>
+        </div>
+        <div class="menu-section">
+            <div class="section-title">Payments</div>
+            <div class="menu-item" onclick="showFundModal()"><span class="icon">💳</span> Fund Wallet</div>
+            <div class="menu-item" onclick="showTransferModal()"><span class="icon">🔄</span> P2P Transfer</div>
+            <div class="menu-item" id="menuReferrals" onclick="showPage('referrals')"><span class="icon">🤝</span> Refer and Earn <span class="badge green">Active</span></div>
+            <div class="menu-item" id="menuGiftcards" onclick="showPage('giftcards')"><span class="icon">🎁</span> Gift Card <span class="badge">New</span></div>
+            <div class="menu-item" id="menuHistory" onclick="showPage('history')"><span class="icon">📜</span> History</div>
+            <div class="menu-item" id="menuStatus" onclick="showPage('status')"><span class="icon">📊</span> Service Status</div>
+            <div class="menu-item" id="menuPricing" onclick="showPage('pricing')"><span class="icon">💰</span> Pricings</div>
+        </div>
+        <div class="menu-section">
+            <div class="section-title">Account</div>
+            <div class="menu-item" id="menuSelfService" onclick="showPage('self-service')"><span class="icon">🔧</span> Self-Service</div>
+            <div class="menu-item" id="menuSettings" onclick="showPage('settings')"><span class="icon">⚙️</span> Account Settings</div>
+            <div class="menu-item" id="menuApp" onclick="showPage('app')"><span class="icon">📱</span> App</div>
+            <div class="menu-item" id="menuSupport" onclick="showPage('support')"><span class="icon">💬</span> Support</div>
+        </div>
+        <div class="logout">
+            <div class="menu-item" onclick="logout()"><span class="icon">🚪</span> Logout</div>
+        </div>
+    </div>
+    <div class="main-content" id="mainContent">
+        <div class="topbar">
+            <div class="page-title">
+                <h1 id="pageTitle">Dashboard</h1>
+                <p id="pageSubtitle">Welcome back, <span id="welcomeName">User</span>!</p>
+            </div>
+            <div class="actions">
+                <button class="btn-primary" onclick="showFundModal()">💳 Fund Wallet</button>
+                <button class="btn-outline" onclick="loadDataPlans()">🔄 Refresh Plans</button>
+            </div>
+        </div>
+        <div class="wallet-card" id="walletCard">
+            <div class="balance-info">
+                <div class="label">Wallet Balance</div>
+                <div class="amount">₦<span id="walletBalance">0.00</span></div>
+                <div class="account">PalmPay • <span id="accountNumber">6665958926</span></div>
+            </div>
+            <div class="wallet-actions">
+                <button onclick="showFundModal()">💳 Fund Wallet</button>
+                <button onclick="showTransferModal()">🔄 P2P Transfer</button>
+                <button onclick="showPage('history')">📜 History</button>
+            </div>
+        </div>
+        <div id="pageContentArea"></div>
+    </div>
+    <!-- Modals -->
+    <div id="fundModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('fundModal')">&times;</span>
+            <h3>💳 Fund Wallet</h3>
+            <div id="fundAlert" style="display:none; padding:12px 16px; border-radius:8px; margin-bottom:16px;"></div>
+            <div class="form-group"><label>Amount (₦)</label><input type="number" id="fundAmount" placeholder="Enter amount" min="100"></div>
+            <div class="form-group"><label>Payment Method</label><select id="paymentMethod"><option value="direct">Direct (Test Mode)</option></select></div>
+            <button class="btn-primary" onclick="fundWallet()">💳 Add Money</button>
+            <button class="btn-secondary" onclick="closeModal('fundModal')">Cancel</button>
+        </div>
+    </div>
+    <div id="dataModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('dataModal')">&times;</span>
+            <h3>📶 Buy Data Bundle</h3>
+            <div id="dataModalAlert" style="display:none; padding:12px 16px; border-radius:8px; margin-bottom:16px;"></div>
+            <div class="form-group"><label>Phone Number</label><input type="tel" id="dataPhone" placeholder="08012345678"></div>
+            <div class="form-group"><label>Network</label><select id="dataNetwork"><option value="">Select network</option></select></div>
+            <div class="form-group"><label>Data Plan</label><select id="dataPlan"><option value="">Select a plan</option></select></div>
+            <div class="form-group"><label>Amount (₦)</label><input type="number" id="dataAmount" placeholder="Amount will auto-fill"></div>
+            <button class="btn-primary" onclick="buyData()">Purchase</button>
+            <button class="btn-secondary" onclick="closeModal('dataModal')">Cancel</button>
+        </div>
+    </div>
+    <div id="airtimeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('airtimeModal')">&times;</span>
+            <h3>📱 Buy Airtime</h3>
+            <div class="form-group"><label>Phone Number</label><input type="tel" id="airtimePhone" placeholder="08012345678"></div>
+            <div class="form-group"><label>Network</label><select id="airtimeNetwork"><option value="MTN">MTN</option><option value="GLO">GLO</option><option value="AIRTEL">AIRTEL</option><option value="9MOBILE">9MOBILE</option></select></div>
+            <div class="form-group"><label>Amount (₦)</label><input type="number" id="airtimeAmount" placeholder="100" min="50"></div>
+            <button class="btn-primary" onclick="buyAirtime()">Purchase</button>
+            <button class="btn-secondary" onclick="closeModal('airtimeModal')">Cancel</button>
+        </div>
+    </div>
+    <div id="electricityModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('electricityModal')">&times;</span>
+            <h3>💡 Pay Electricity Bill</h3>
+            <div class="form-group"><label>Meter Number</label><input type="text" id="meterNumber" placeholder="1234567890"></div>
+            <div class="form-group"><label>Disco</label><select id="disco"><option value="IKEDC">Ikeja Electric</option><option value="EKEDC">Eko Electric</option><option value="AEDC">Abuja Electric</option><option value="KEDCO">Kano Electric</option><option value="PHED">Port Harcourt Electric</option></select></div>
+            <div class="form-group"><label>Amount (₦)</label><input type="number" id="electricityAmount" placeholder="5000"></div>
+            <button class="btn-primary" onclick="payElectricity()">Pay Bill</button>
+            <button class="btn-secondary" onclick="closeModal('electricityModal')">Cancel</button>
+        </div>
+    </div>
+    <div id="tvModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('tvModal')">&times;</span>
+            <h3>📺 TV Subscription</h3>
+            <div class="form-group"><label>Smartcard Number</label><input type="text" id="smartcardNumber" placeholder="1234567890"></div>
+            <div class="form-group"><label>Provider</label><select id="tvProvider"><option value="DSTV">DStv</option><option value="GOTV">GOtv</option><option value="STARTIMES">Startimes</option></select></div>
+            <div class="form-group"><label>Package</label><select id="tvPackage"><option value="Compact">Compact - ₦7,500</option><option value="Padi">Padi - ₦3,000</option><option value="Basic">Basic - ₦1,500</option></select></div>
+            <div class="form-group"><label>Amount (₦)</label><input type="number" id="tvAmount" placeholder="Amount"></div>
+            <button class="btn-primary" onclick="payTV()">Subscribe</button>
+            <button class="btn-secondary" onclick="closeModal('tvModal')">Cancel</button>
+        </div>
+    </div>
+    <div id="waecModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('waecModal')">&times;</span>
+            <h3>📝 Buy WAEC PIN</h3>
+            <div class="form-group"><label>Quantity</label><input type="number" id="waecQuantity" value="1" min="1" max="10"></div>
+            <p style="color:#666; font-size:14px;">Price: ₦1,500 per PIN</p>
+            <button class="btn-primary" onclick="buyWaec()">Purchase</button>
+            <button class="btn-secondary" onclick="closeModal('waecModal')">Cancel</button>
+        </div>
+    </div>
+    <div id="bettingModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('bettingModal')">&times;</span>
+            <h3>🎰 Fund Betting Wallet</h3>
+            <div id="bettingAlert" style="display:none; padding:12px 16px; border-radius:8px; margin-bottom:16px;"></div>
+            <div class="form-group"><label>Provider</label><select id="bettingProvider"><option value="bet9ja">Bet9ja</option><option value="sportybet">Sportybet</option><option value="betking">BetKing</option></select></div>
+            <div class="form-group"><label>Betting Account ID</label><input type="text" id="bettingCustomerId" placeholder="Enter your betting account ID"></div>
+            <div class="form-group"><label>Amount (₦)</label><input type="number" id="bettingAmount" placeholder="100" min="100"></div>
+            <button class="btn-primary" onclick="fundBetting()">💳 Fund Account</button>
+            <button class="btn-secondary" onclick="closeModal('bettingModal')">Cancel</button>
+        </div>
+    </div>
+    <div id="transferModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('transferModal')">&times;</span>
+            <h3>🔄 P2P Transfer</h3>
+            <div id="transferAlert" style="display:none; padding:12px 16px; border-radius:8px; margin-bottom:16px;"></div>
+            <div class="form-group"><label>Recipient Phone/Email</label><input type="text" id="transferRecipient" placeholder="08012345678 or email@example.com"></div>
+            <div class="form-group"><label>Amount (₦)</label><input type="number" id="transferAmount" placeholder="100" min="100"></div>
+            <div class="form-group"><label>Narration (Optional)</label><input type="text" id="transferNarration" placeholder="What's this for?"></div>
+            <button class="btn-primary" onclick="transferToUser()">💸 Send Money</button>
+            <button class="btn-secondary" onclick="closeModal('transferModal')">Cancel</button>
+        </div>
+    </div>
+    <script>
+        const API_URL = 'http://localhost:3000';
+        let authToken = localStorage.getItem('token');
+        if (!authToken) { window.location.href = '/'; }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) { modal.style.display = 'none'; }
+            });
+        });
+
+        function showModalAlert(id, message, type) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.textContent = message;
+            el.style.display = 'block';
+            el.style.background = type === 'success' ? '#e8f5e9' : '#fbe9e7';
+            el.style.color = type === 'success' ? '#2e7d32' : '#c62828';
+            el.style.padding = '12px 16px';
+            el.style.borderRadius = '8px';
+            el.style.marginBottom = '16px';
+            setTimeout(() => { el.style.display = 'none'; }, 5000);
+        }
+
+        function showPage(page) {
+            document.querySelectorAll('.sidebar .menu-item').forEach(item => { item.classList.remove('active'); });
+            const menuMap = {
+                'dashboard': 'menuDashboard', 'services': 'menuServices', 'referrals': 'menuReferrals',
+                'giftcards': 'menuGiftcards', 'history': 'menuHistory', 'status': 'menuStatus',
+                'pricing': 'menuPricing', 'self-service': 'menuSelfService', 'settings': 'menuSettings',
+                'app': 'menuApp', 'support': 'menuSupport'
+            };
+            const menuId = menuMap[page];
+            if (menuId) document.getElementById(menuId).classList.add('active');
+            const titles = {
+                'dashboard': 'Dashboard', 'services': 'Services', 'referrals': 'Refer and Earn',
+                'giftcards': 'Gift Cards', 'history': 'Transaction History', 'status': 'Service Status',
+                'pricing': 'Pricings', 'self-service': 'Self-Service', 'settings': 'Account Settings',
+                'app': 'App', 'support': 'Support'
+            };
+            document.getElementById('pageTitle').textContent = titles[page] || page.charAt(0).toUpperCase() + page.slice(1);
+            const contentArea = document.getElementById('pageContentArea');
+            const walletCard = document.getElementById('walletCard');
+            if (page === 'dashboard') {
+                document.getElementById('pageSubtitle').innerHTML = 'Welcome back, <span id="welcomeName">User</span>!';
+                walletCard.style.display = 'flex';
+                contentArea.innerHTML = '';
+                loadDashboardContent();
+            } else {
+                document.getElementById('pageSubtitle').textContent = 'Manage your ' + titles[page].toLowerCase();
+                walletCard.style.display = 'none';
+                contentArea.innerHTML = getPageContent(page);
+            }
+            if (window.innerWidth <= 768) { toggleSidebar(); }
+        }
+
+        function getPageContent(page) {
+            return `<div class="page-content"><h2>${page.charAt(0).toUpperCase() + page.slice(1)}</h2><p class="subtitle">Coming soon!</p><div class="empty-state">📭 Coming soon!</div></div>`;
+        }
+
+        function loadDashboardContent() {
+            const contentArea = document.getElementById('pageContentArea');
+            contentArea.innerHTML = `
+                <div class="quick-services">
+                    <div class="quick-service" onclick="showAirtimeModal()"><div class="icon">📱</div><div class="label">Airtime</div><div class="sub-label">Buy now</div><span class="badge live">Live</span></div>
+                    <div class="quick-service" onclick="showDataModal()"><div class="icon">📶</div><div class="label">Data</div><div class="sub-label">Bundles</div><span class="badge live">Live</span></div>
+                    <div class="quick-service" onclick="showTVModal()"><div class="icon">📺</div><div class="label">TV</div><div class="sub-label">Subscription</div><span class="badge live">Live</span></div>
+                    <div class="quick-service" onclick="showElectricityModal()"><div class="icon">💡</div><div class="label">Bills</div><div class="sub-label">Pay bills</div><span class="badge live">Live</span></div>
+                    <div class="quick-service" onclick="showWaecModal()"><div class="icon">🎓</div><div class="label">Education</div><div class="sub-label">Exam PIN</div><span class="badge new">New</span></div>
+                    <div class="quick-service" onclick="showBettingModal()"><div class="icon">🎰</div><div class="label">Betting</div><div class="sub-label">Fund wallet</div><span class="badge betting">🔥 Popular</span></div>
+                    <div class="quick-service" onclick="showPage('giftcards')"><div class="icon">🎁</div><div class="label">Gift Card</div><div class="sub-label">Buy/Sell</div><span class="badge new">New</span></div>
+                    <div class="quick-service" onclick="showPage('referrals')"><div class="icon">🤝</div><div class="label">Referrals</div><div class="sub-label">Earn bonus</div><span class="badge popular">Popular</span></div>
+                </div>
+                <div class="data-plans-section">
+                    <div class="section-header">
+                        <h3>📶 Data Bundles <span style="font-size:12px; color:#999; font-weight:400;">(Inlomax + Strongmb)</span></h3>
+                        <a onclick="loadDataPlans()">🔄 Refresh</a>
+                    </div>
+                    <div id="dataPlansContainer">
+                        <div class="text-center" style="padding:20px;">
+                            <div class="loading-spinner"></div>
+                            <p class="text-muted">Loading data plans from Inlomax and Strongmb...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="transactions-section">
+                    <div class="section-header"><h3>Recent Transactions</h3><a onclick="loadTransactions()" style="cursor:pointer; color:#667eea; font-size:13px;">Refresh</a></div>
+                    <div id="transactionsList"><div class="empty-state">📭 No transactions yet</div></div>
+                </div>
+            `;
+            loadDataPlans();
+            loadTransactions();
+        }
+
+        // ============ LOAD DATA PLANS - INLOMAX + STRONGMB ============
+        async function loadDataPlans() {
+            const container = document.getElementById('dataPlansContainer');
+            if (!container) return;
+            container.innerHTML = `<div class="text-center" style="padding:20px;"><div class="loading-spinner"></div><p class="text-muted">Loading data plans from Inlomax and Strongmb...</p></div>`;
+            try {
+                const [inlomaxResponse, strongmbResponse] = await Promise.all([
+                    fetch(`${API_URL}/api/data/plans`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
+                    fetch(`${API_URL}/api/strongmb/plans`, { headers: { 'Authorization': `Bearer ${authToken}` } })
+                ]);
+
+                const inlomaxResult = await inlomaxResponse.json();
+                const strongmbResult = await strongmbResponse.json();
+                const combinedData = {};
+
+                // Add Inlomax plans
+                if (inlomaxResult.success && inlomaxResult.data) {
+                    Object.keys(inlomaxResult.data).forEach(network => {
+                        if (!combinedData[network]) combinedData[network] = [];
+                        inlomaxResult.data[network].forEach(plan => {
+                            combinedData[network].push({ ...plan, provider: 'Inlomax' });
+                        });
+                    });
+                }
+
+                // Add Strongmb plans
+                if (strongmbResult.success && strongmbResult.data && strongmbResult.data.all) {
+                    strongmbResult.data.all.forEach(plan => {
+                        const network = plan.network || 'MTN';
+                        if (!combinedData[network]) combinedData[network] = [];
+                        const exists = combinedData[network].some(p => p.name === plan.name && Math.abs(p.price - plan.price) < 10);
+                        if (!exists) {
+                            combinedData[network].push({
+                                serviceID: plan.productCode || plan.code || plan.name,
+                                name: plan.name || 'Data Bundle',
+                                price: plan.price || 0,
+                                validity: plan.validity || plan.duration || 'N/A',
+                                type: plan.type || 'SME',
+                                provider: 'Strongmb'
+                            });
+                        }
+                    });
+                }
+
+                // Sort and display
+                for (const network in combinedData) {
+                    combinedData[network].sort((a, b) => a.price - b.price);
+                }
+
+                const networks = Object.keys(combinedData);
+                if (networks.length === 0) {
+                    container.innerHTML = `<div class="empty-state">📭 No data plans available</div>`;
+                    return;
+                }
+
+                let html = '<div class="network-tabs">';
+                networks.forEach(network => {
+                    html += `<div class="network-tab active" onclick="switchNetwork('${network}')">📶 ${network}</div>`;
+                });
+                html += '</div><div class="plan-grid">';
+                let totalPlans = 0;
+                networks.forEach(network => {
+                    const plans = combinedData[network] || [];
+                    const validPlans = plans.filter(plan => plan.price >= 50);
+                    totalPlans += validPlans.length;
+                    validPlans.forEach(plan => {
+                        const badgeClass = plan.provider === 'Strongmb' ? 'strongmb' : 'inlomax';
+                        const badgeText = plan.provider === 'Strongmb' ? '⚡ Strongmb' : (plan.type || 'SME');
+                        html += `
+                            <div class="plan-card" onclick="selectPlan('${plan.serviceID}', '${network}', '${plan.name}', ${plan.price})">
+                                <div class="plan-name">${plan.name}</div>
+                                <div class="plan-price">₦${plan.price.toLocaleString()}</div>
+                                <div class="plan-validity">⏱️ ${plan.validity}</div>
+                                <span class="plan-badge ${badgeClass}">${badgeText}</span>
+                            </div>
+                        `;
+                    });
+                });
+                html += '</div>';
+                html += `<div class="text-muted mt-10">${totalPlans} plans available (Inlomax + Strongmb)</div>`;
+                html += `<div style="font-size:11px; color:#999; margin-top:8px;">🔵 Inlomax &nbsp;|&nbsp; 🟡 Strongmb</div>`;
+                container.innerHTML = html;
+                console.log('✅ Data plans loaded: Inlomax + Strongmb');
+            } catch (error) {
+                console.error('Error loading data plans:', error);
+                container.innerHTML = `<div class="empty-state">❌ Error loading plans. Please try again.</div>`;
+            }
+        }
+
+        function switchNetwork(network) { loadDataPlans(); }
+
+        function selectPlan(serviceID, network, name, price) {
+            showDataModalWithPlan(serviceID, network, name, price);
+        }
+
+        async function loadBalance() {
+            try {
+                const r = await fetch(`${API_URL}/api/wallet/balance`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+                const d = await r.json();
+                if (d.success) document.getElementById('walletBalance').textContent = d.balance.toFixed(2);
+            } catch(e) {}
+        }
+
+        async function loadUserInfo() {
+            try {
+                const r = await fetch(`${API_URL}/api/user/profile`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+                const d = await r.json();
+                if (d.success && d.user) {
+                    const name = d.user.fullName || 'User';
+                    document.getElementById('sidebarName').textContent = name;
+                    document.getElementById('welcomeName').textContent = name;
+                    document.getElementById('userAvatar').textContent = name.split(' ').map(n => n[0]).join('').toUpperCase();
+                    document.getElementById('sidebarEmail').textContent = d.user.email || 'user@example.com';
+                }
+            } catch(e) {}
+        }
+
+        async function loadTransactions() {
+            const container = document.getElementById('transactionsList');
+            if (!container) return;
+            try {
+                const r = await fetch(`${API_URL}/api/transactions`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+                const d = await r.json();
+                if (d.success && d.transactions && d.transactions.length > 0) {
+                    let html = '';
+                    d.transactions.slice(0, 5).forEach(t => {
+                        const isCredit = t.type === 'payment' || t.type === 'funding';
+                        const sign = isCredit ? '+' : '-';
+                        const icon = { 'airtime': '📱', 'data': '📶', 'electricity': '💡', 'cable': '📺', 'education': '📝', 'betting': '🎰', 'transfer': '🔄', 'funding': '💰', 'payment': '💳', 'withdrawal': '🏦' }[t.service_type] || '💰';
+                        html += `<div class="transaction-item"><div class="left"><div style="font-size:20px;">${icon}</div><div class="info"><div class="title">${t.description || t.type}</div><div class="sub">${new Date(t.created_at).toLocaleDateString()}</div></div></div><div class="amount ${isCredit ? 'positive' : 'negative'}">${sign}₦${Math.abs(t.amount).toFixed(2)}</div></div>`;
+                    });
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<div class="empty-state">📭 No transactions yet</div>';
+                }
+            } catch(e) {
+                container.innerHTML = '<div class="empty-state">⚠️ Could not load transactions</div>';
+            }
+        }
+
+        function showFundModal() { document.getElementById('fundModal').style.display = 'flex'; }
+        function showAirtimeModal() { document.getElementById('airtimeModal').style.display = 'flex'; }
+        function showElectricityModal() { document.getElementById('electricityModal').style.display = 'flex'; }
+        function showTVModal() { document.getElementById('tvModal').style.display = 'flex'; }
+        function showWaecModal() { document.getElementById('waecModal').style.display = 'flex'; }
+        function showTransferModal() { document.getElementById('transferModal').style.display = 'flex'; }
+        function showBettingModal() { document.getElementById('bettingModal').style.display = 'flex'; }
+
+        function showDataModal() {
+            document.getElementById('dataModal').style.display = 'flex';
+            loadDataPlansForModal();
+        }
+
+        let modalPlansData = null;
+
+        async function loadDataPlansForModal() {
+            const networkSelect = document.getElementById('dataNetwork');
+            const planSelect = document.getElementById('dataPlan');
+            networkSelect.innerHTML = '<option value="">Loading networks...</option>';
+            planSelect.innerHTML = '<option value="">Loading plans...</option>';
+            try {
+                const r = await fetch(`${API_URL}/api/data/plans`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+                const d = await r.json();
+                if (d.success && d.data) {
+                    modalPlansData = d.data;
+                    const networks = Object.keys(d.data);
+                    networkSelect.innerHTML = '<option value="">Select network</option>';
+                    networks.forEach(network => {
+                        const opt = document.createElement('option');
+                        opt.value = network;
+                        opt.textContent = network;
+                        networkSelect.appendChild(opt);
+                    });
+                    networkSelect.onchange = function() {
+                        const selected = this.value;
+                        planSelect.innerHTML = '<option value="">Select a plan</option>';
+                        if (selected && modalPlansData[selected]) {
+                            const validPlans = modalPlansData[selected].filter(plan => plan.price >= 50);
+                            validPlans.forEach(plan => {
+                                const opt = document.createElement('option');
+                                opt.value = plan.serviceID;
+                                opt.textContent = plan.name + ' - ₦' + plan.price + ' (' + plan.validity + ')';
+                                opt.dataset.price = plan.price;
+                                opt.dataset.name = plan.name;
+                                planSelect.appendChild(opt);
+                            });
+                            planSelect.onchange = function() {
+                                const selected = this.options[this.selectedIndex];
+                                const price = selected?.dataset?.price;
+                                if (price) document.getElementById('dataAmount').value = price;
+                            };
+                        }
+                    };
+                    if (networks.length > 0) { networkSelect.value = networks[0]; networkSelect.onchange(); }
+                }
+            } catch(e) { networkSelect.innerHTML = '<option value="">Error loading plans</option>'; }
+        }
+
+        function showDataModalWithPlan(serviceID, network, name, price) {
+            document.getElementById('dataModal').style.display = 'flex';
+            const networkSelect = document.getElementById('dataNetwork');
+            const planSelect = document.getElementById('dataPlan');
+            loadDataPlansForModal().then(() => {
+                networkSelect.value = network;
+                networkSelect.dispatchEvent(new Event('change'));
+                setTimeout(() => {
+                    for (let i = 0; i < planSelect.options.length; i++) {
+                        if (planSelect.options[i].value === serviceID) {
+                            planSelect.selectedIndex = i;
+                            planSelect.dispatchEvent(new Event('change'));
+                            break;
+                        }
+                    }
+                }, 500);
+            });
+        }
+
+        async function buyData() {
+            const phone = document.getElementById('dataPhone').value;
+            const planSelect = document.getElementById('dataPlan');
+            const serviceID = planSelect.value;
+            const selectedOption = planSelect.options[planSelect.selectedIndex];
+            const amount = parseFloat(document.getElementById('dataAmount').value) || parseFloat(selectedOption?.dataset?.price || 0);
+            const name = selectedOption?.dataset?.name || 'Data';
+            if (!phone) { showModalAlert('dataModalAlert', 'Please enter your phone number', 'error'); return; }
+            if (!serviceID) { showModalAlert('dataModalAlert', 'Please select a data plan', 'error'); return; }
+            if (!amount || amount <= 0) { showModalAlert('dataModalAlert', 'Invalid amount', 'error'); return; }
+            if (!confirm('Purchase ' + name + ' for ₦' + amount + ' to ' + phone + '?')) return;
+            try {
+                const r = await fetch(`${API_URL}/api/data/buy`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                    body: JSON.stringify({ serviceID: serviceID, phoneNumber: phone })
+                });
+                const d = await r.json();
+                if (d.success) {
+                    showModalAlert('dataModalAlert', '✅ ' + (d.message || 'Data purchased successfully!'), 'success');
+                    setTimeout(() => { closeModal('dataModal'); loadBalance(); loadTransactions(); }, 2000);
+                } else {
+                    showModalAlert('dataModalAlert', d.message || 'Purchase failed', 'error');
+                }
+            } catch(e) { showModalAlert('dataModalAlert', 'Error purchasing data', 'error'); }
+        }
+
+        async function buyAirtime() {
+            const phone = document.getElementById('airtimePhone').value;
+            const amount = parseFloat(document.getElementById('airtimeAmount').value);
+            if (!phone || !amount || amount < 50) { alert('Please enter valid phone and amount (min ₦50)'); return; }
+            try {
+                const r = await fetch(`${API_URL}/api/airtime/buy`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                    body: JSON.stringify({ phoneNumber: phone, amount })
+                });
+                const d = await r.json();
+                if (d.success) { alert(d.message || 'Airtime purchased successfully!'); closeModal('airtimeModal'); loadBalance(); loadTransactions(); }
+                else { alert(d.message || 'Purchase failed'); }
+            } catch(e) { alert('Error purchasing airtime.'); }
+        }
+
+        async function payElectricity() {
+            const meterNumber = document.getElementById('meterNumber').value;
+            const disco = document.getElementById('disco').value;
+            const amount = parseFloat(document.getElementById('electricityAmount').value);
+            if (!meterNumber || !amount) { alert('Please enter valid details'); return; }
+            try {
+                const r = await fetch(`${API_URL}/api/electricity/pay`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                    body: JSON.stringify({ meterNumber, amount, disco })
+                });
+                const d = await r.json();
+                if (d.success) { alert(d.message || 'Electricity bill paid successfully!'); closeModal('electricityModal'); loadBalance(); loadTransactions(); }
+                else { alert(d.message || 'Payment failed'); }
+            } catch(e) { alert('Error paying electricity bill.'); }
+        }
+
+        async function payTV() {
+            const smartcardNumber = document.getElementById('smartcardNumber').value;
+            const provider = document.getElementById('tvProvider').value;
+            const packageName = document.getElementById('tvPackage').value;
+            const amount = parseFloat(document.getElementById('tvAmount').value);
+            if (!smartcardNumber || !amount) { alert('Please enter valid details'); return; }
+            try {
+                const r = await fetch(`${API_URL}/api/cable/subscribe`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                    body: JSON.stringify({ smartCardNumber: smartcardNumber, packageName, amount })
+                });
+                const d = await r.json();
+                if (d.success) { alert(d.message || 'TV subscription activated!'); closeModal('tvModal'); loadBalance(); loadTransactions(); }
+                else { alert(d.message || 'Subscription failed'); }
+            } catch(e) { alert('Error subscribing to TV.'); }
+        }
+
+        async function buyWaec() {
+            const quantity = parseInt(document.getElementById('waecQuantity').value) || 1;
+            const amount = quantity * 1500;
+            if (!confirm('Purchase ' + quantity + ' WAEC PIN(s) for ₦' + amount.toLocaleString() + '?')) return;
+            try {
+                const r = await fetch(`${API_URL}/api/education/waec`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                    body: JSON.stringify({ quantity })
+                });
+                const d = await r.json();
+                if (d.success) { alert(d.message || 'WAEC PIN purchased successfully!'); closeModal('waecModal'); loadBalance(); loadTransactions(); }
+                else { alert(d.message || 'Purchase failed'); }
+            } catch(e) { alert('Error purchasing WAEC PIN.'); }
+        }
+
+        async function fundBetting() {
+            const provider = document.getElementById('bettingProvider').value;
+            const customerId = document.getElementById('bettingCustomerId').value;
+            const amount = parseFloat(document.getElementById('bettingAmount').value);
+            if (!provider) { showModalAlert('bettingAlert', 'Please select a betting provider', 'error'); return; }
+            if (!customerId) { showModalAlert('bettingAlert', 'Please enter your betting account ID', 'error'); return; }
+            if (!amount || amount < 100) { showModalAlert('bettingAlert', 'Minimum amount is ₦100', 'error'); return; }
+            if (!confirm('Fund ' + provider + ' wallet with ₦' + amount + '?')) return;
+            try {
+                const r = await fetch(`${API_URL}/api/betting/deposit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                    body: JSON.stringify({ platform: provider, amount: amount, customerId: customerId })
+                });
+                const d = await r.json();
+                if (d.success) {
+                    showModalAlert('bettingAlert', '✅ ' + (d.message || 'Betting wallet funded successfully!'), 'success');
+                    setTimeout(() => { closeModal('bettingModal'); loadBalance(); loadTransactions(); }, 2000);
+                } else {
+                    showModalAlert('bettingAlert', d.message || 'Funding failed', 'error');
+                }
+            } catch(e) { showModalAlert('bettingAlert', 'Error funding betting account', 'error'); }
+        }
+
+        async function fundWallet() {
+            const amount = parseFloat(document.getElementById('fundAmount').value);
+            if (!amount || amount < 100) { showModalAlert('fundAlert', 'Minimum amount is ₦100', 'error'); return; }
+            try {
+                const r = await fetch(`${API_URL}/api/wallet/direct-fund`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                    body: JSON.stringify({ amount })
+                });
+                const d = await r.json();
+                if (d.success) {
+                    showModalAlert('fundAlert', '✅ ₦' + amount.toLocaleString() + ' added successfully!', 'success');
+                    setTimeout(() => { closeModal('fundModal'); loadBalance(); loadTransactions(); }, 1500);
+                } else {
+                    showModalAlert('fundAlert', d.message || 'Failed to add money', 'error');
+                }
+            } catch(e) { showModalAlert('fundAlert', 'Error adding money. Try again.', 'error'); }
+        }
+
+        async function transferToUser() {
+            const recipient = document.getElementById('transferRecipient').value;
+            const amount = parseFloat(document.getElementById('transferAmount').value);
+            const narration = document.getElementById('transferNarration').value;
+            if (!recipient) { showModalAlert('transferAlert', 'Please enter recipient phone or email', 'error'); return; }
+            if (!amount || amount < 100) { showModalAlert('transferAlert', 'Minimum amount is ₦100', 'error'); return; }
+            if (!confirm('Send ₦' + amount + ' to ' + recipient + '?')) return;
+            try {
+                const r = await fetch(`${API_URL}/api/transfer/p2p`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                    body: JSON.stringify({ recipient, amount, narration })
+                });
+                const d = await r.json();
+                if (d.success) {
+                    showModalAlert('transferAlert', '✅ ' + (d.message || 'Transfer successful!'), 'success');
+                    setTimeout(() => { closeModal('transferModal'); loadBalance(); loadTransactions(); }, 2000);
+                } else {
+                    showModalAlert('transferAlert', d.message || 'Transfer failed', 'error');
+                }
+            } catch(e) { showModalAlert('transferAlert', 'Error processing transfer', 'error'); }
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('token');
+                window.location.href = '/';
+            }
+        }
+
+        showPage('dashboard');
+        loadUserInfo();
+        loadBalance();
+        console.log('✅ Paysbillz Dashboard loaded! Inlomax + Strongmb plans displayed.');
+    </script>
+</body>
+</html>
