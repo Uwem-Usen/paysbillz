@@ -2,72 +2,133 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard</title>
+    <title>Dashboard v3</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .plan { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .price { color: green; font-weight: bold; font-size: 20px; }
+        button { background: #1976d2; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        .success { color: green; }
+        .error { color: red; }
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; }
+        .inlomax { background: #e3f2fd; color: #0d47a1; }
+        .strongmb { background: #f3e5f5; color: #4a148c; }
+    </style>
 </head>
 <body>
-    <h1>Dashboard</h1>
-    <div id="status">Loading...</div>
+    <h2>💰 Paysbillz Dashboard v3</h2>
+    <div id="user">Loading...</div>
+    <div id="balance">Balance: ₦0</div>
+    <button onclick="logout()">Logout</button>
+    <hr>
+    <div id="status">Loading plans...</div>
     <div id="plans"></div>
+    <div id="result"></div>
+
     <script>
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        document.getElementById('user').textContent = 'Welcome ' + (user.name || 'User') + '!';
+
         async function loadData() {
             const status = document.getElementById('status');
             const plansDiv = document.getElementById('plans');
             
             try {
-                const token = localStorage.getItem('token');
                 if (!token) {
                     window.location.href = '/login.html';
                     return;
                 }
                 
-                status.innerHTML = 'Fetching plans...';
+                status.innerHTML = '📡 Fetching plans...';
                 
                 const response = await fetch('/api/vtu/data-plans', {
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
                 
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+                
                 const data = await response.json();
+                console.log('Data:', data);
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'Failed to load');
+                }
+                
                 status.innerHTML = '✅ Loaded ' + (data.total || 0) + ' plans';
                 
                 let html = '';
                 const plans = data.data || {};
                 Object.keys(plans).forEach(network => {
                     plans[network].forEach(plan => {
-                        html += '<div style="border:1px solid #ddd;padding:10px;margin:5px;">';
-                        html += '<strong>' + plan.name + '</strong><br>';
-                        html += 'Price: ₦' + plan.price + '<br>';
-                        html += 'Provider: ' + plan.provider + '<br>';
+                        const badgeClass = plan.provider.toLowerCase();
+                        html += '<div class="plan">';
+                        html += '<span class="badge ' + badgeClass + '">' + plan.provider + '</span>';
+                        html += '<h3>' + plan.name + '</h3>';
+                        html += '<p>Network: ' + network + ' | Validity: ' + plan.validity + '</p>';
+                        html += '<div class="price">₦' + plan.price + '</div>';
                         html += '<button onclick="buy(\'' + plan.serviceID + '\')">Buy Now</button>';
                         html += '</div>';
                     });
                 });
                 plansDiv.innerHTML = html;
                 
+                // Load balance
+                const balanceResponse = await fetch('/api/wallet/balance', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const balanceData = await balanceResponse.json();
+                if (balanceData.success) {
+                    document.getElementById('balance').textContent = 'Balance: ₦' + balanceData.balance;
+                }
+                
             } catch (error) {
                 status.innerHTML = '❌ Error: ' + error.message;
+                console.error('Error:', error);
             }
         }
-        
+
         async function buy(serviceID) {
-            const phone = prompt('Enter phone number:');
+            const phone = prompt('📱 Enter phone number:');
             if (!phone) return;
             
-            const token = localStorage.getItem('token');
-            const response = await fetch('/api/vtu/buy-data', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + token
-                },
-                body: JSON.stringify({ serviceID, phoneNumber: phone })
-            });
-            const result = await response.json();
-            alert(result.success ? '✅ Success!' : '❌ ' + result.message);
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '⏳ Processing...';
+            
+            try {
+                const response = await fetch('/api/vtu/buy-data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ serviceID, phoneNumber: phone })
+                });
+                
+                const data = await response.json();
+                console.log('Buy response:', data);
+                
+                if (data.success) {
+                    resultDiv.innerHTML = '<span class="success">✅ ' + data.message + ' | New Balance: ₦' + data.newBalance + '</span>';
+                    loadData(); // Reload to update balance
+                } else {
+                    resultDiv.innerHTML = '<span class="error">❌ ' + data.message + '</span>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<span class="error">❌ Error: ' + error.message + '</span>';
+            }
         }
-        
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/login.html';
+        }
+
         loadData();
     </script>
 </body>
