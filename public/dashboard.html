@@ -3,32 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Paysbillz Dashboard</title>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 20px; }
         .container { max-width: 1200px; margin: 0 auto; }
-        
         .header { background: linear-gradient(135deg, #1a237e, #0d47a1); color: white; padding: 25px; border-radius: 15px; margin-bottom: 25px; }
         .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         .balance-amount { font-size: 32px; font-weight: 700; color: #4caf50; }
-        
         .btn { padding: 8px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin-left: 10px; }
         .btn-fund { background: #4caf50; color: white; }
         .btn-paystack { background: #0a3d62; color: white; }
         .btn-logout { background: #c62828; color: white; }
-        
         .services { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
         .service-card { background: white; padding: 20px; text-align: center; border-radius: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #e8e8e8; transition: all 0.3s; }
         .service-card:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(0,0,0,0.12); border-color: #1976d2; }
         .service-card .icon { font-size: 30px; }
         .service-card .label { font-weight: 600; margin-top: 5px; }
         .service-card .badge { font-size: 11px; padding: 2px 10px; border-radius: 10px; background: #e8f5e9; color: #2e7d32; display: inline-block; margin-top: 5px; }
-        
         .network-tabs { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
         .network-tab { padding: 8px 20px; border: 2px solid #ddd; border-radius: 20px; cursor: pointer; background: white; font-weight: 600; }
         .network-tab.active { background: #1976d2; color: white; border-color: #1976d2; }
-        
         .plans-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .plan-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); position: relative; border: 1px solid #e8e8e8; }
         .plan-card .provider-badge { position: absolute; top: 10px; right: 10px; font-size: 11px; padding: 2px 10px; border-radius: 12px; font-weight: 700; }
@@ -38,7 +32,6 @@
         .plan-card .buy-btn { width: 100%; padding: 12px; background: #1976d2; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
         .plan-card .buy-btn:hover { background: #1565c0; }
         .plan-profit { font-size: 12px; color: #e65100; background: #fff3e0; padding: 2px 10px; border-radius: 10px; display: inline-block; margin: 5px 0; }
-        
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
         .modal-content { background: white; margin: 10% auto; padding: 30px; border-radius: 15px; max-width: 400px; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -50,7 +43,6 @@
         .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
         .submit-btn { width: 100%; padding: 12px; background: #1976d2; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
         .submit-btn:hover { background: #1565c0; }
-        
         .toast { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 10px; color: white; font-weight: 600; z-index: 9999; }
         .toast.success { background: #2e7d32; }
         .toast.error { background: #c62828; }
@@ -78,27 +70,273 @@
             <div class="service-card" onclick="openServiceModal('airtime')">
                 <div class="icon">📱</div>
                 <div class="label">Airtime</div>
-                <div class="badge">Live</div>
+                <div class="badge">Buy Now</div>
             </div>
             <div class="service-card" onclick="openServiceModal('tv')">
                 <div class="icon">📺</div>
-                <div class="label">TV Subscription</div>
-                <div class="badge">Live</div>
+                <div class="label">TV</div>
+                <div class="badge">Subscribe</div>
             </div>
             <div class="service-card" onclick="openServiceModal('electricity')">
                 <div class="icon">💡</div>
                 <div class="label">Electricity</div>
-                <div class="badge">Live</div>
+                <div class="badge">Pay Bill</div>
             </div>
             <div class="service-card" onclick="openServiceModal('education')">
                 <div class="icon">🎓</div>
                 <div class="label">Education</div>
-                <div class="badge">Live</div>
+                <div class="badge">Get PIN</div>
             </div>
             <div class="service-card" onclick="openServiceModal('betting')">
                 <div class="icon">🎰</div>
                 <div class="label">Betting</div>
-                <div class="badge">Live</div>
+                <div class="badge">Fund</div>
+            </div>
+        </div>
+
+        <div class="network-tabs">
+            <button class="network-tab active" onclick="filterNetwork('ALL')">🌐 All</button>
+            <button class="network-tab" onclick="filterNetwork('MTN')">MTN</button>
+            <button class="network-tab" onclick="filterNetwork('GLO')">GLO</button>
+            <button class="network-tab" onclick="filterNetwork('AIRTEL')">AIRTEL</button>
+            <button class="network-tab" onclick="filterNetwork('9MOBILE')">9MOBILE</button>
+        </div>
+
+        <div id="status">Loading plans...</div>
+        <div id="plansContainer"></div>
+    </div>
+
+    <!-- Service Modal -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="serviceModalTitle">Service</h2>
+                <span class="close" onclick="closeServiceModal()">&times;</span>
+            </div>
+            <div id="serviceModalBody"></div>
+        </div>
+    </div>
+
+    <!-- Fund Modal -->
+    <div id="fundModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>💰 Fund Wallet</h2>
+                <span class="close" onclick="closeFundModal()">&times;</span>
+            </div>
+            <div class="form-group"><label>Amount (₦)</label><input type="number" id="fundAmount" placeholder="Enter amount" min="100"></div>
+            <button class="submit-btn" onclick="fundWallet()">Fund Wallet</button>
+        </div>
+    </div>
+
+    <div id="toastContainer"></div>
+
+    <script>
+        var token = localStorage.getItem('token');
+        var user = JSON.parse(localStorage.getItem('user') || '{}');
+        var allPlans = [];
+        var currentNetwork = 'ALL';
+
+        if (!token) {
+            window.location.href = '/login.html';
+        }
+
+        document.getElementById('userName').textContent = user.name || 'User';
+        document.getElementById('userEmail').textContent = user.email || '';
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/login.html';
+        }
+
+        function showToast(message, type) {
+            var container = document.getElementById('toastContainer');
+            var toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(function() { toast.remove(); }, 5000);
+        }
+
+        function openFundModal() {
+            document.getElementById('fundModal').style.display = 'block';
+        }
+
+        function closeFundModal() {
+            document.getElementById('fundModal').style.display = 'none';
+        }
+
+        async function fundWallet() {
+            var amount = document.getElementById('fundAmount').value;
+            if (!amount || amount <= 0) {
+                showToast('Please enter a valid amount', 'error');
+                return;
+            }
+            try {
+                var response = await fetch('/api/wallet/fund', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ amount: parseFloat(amount) })
+                });
+                var data = await response.json();
+                if (data.success) {
+                    showToast('Wallet funded! New balance: ₦' + data.balance, 'success');
+                    closeFundModal();
+                    loadBalance();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+        }
+
+        async function payWithPaystack() {
+            var email = prompt('Enter your email address:');
+            if (!email) return;
+            var amount = prompt('Enter amount to fund (₦100 minimum):');
+            if (!amount) return;
+            if (amount < 100) {
+                showToast('Minimum amount is ₦100', 'error');
+                return;
+            }
+            try {
+                var response = await fetch('/api/paystack/initialize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ email: email, amount: parseFloat(amount) })
+                });
+                var data = await response.json();
+                if (data.success) {
+                    window.open(data.data.authorization_url, '_blank');
+                    showToast('Payment page opened!', 'success');
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
+        }
+
+        function openServiceModal(type) {
+            var modal = document.getElementById('serviceModal');
+            var title = document.getElementById('serviceModalTitle');
+            var body = document.getElementById('serviceModalBody');
+            
+            var services = {
+                airtime: {
+                    title: 'Buy Airtime',
+                    fields: '<div class="form-group"><label>Phone Number</label><input type="text" id="airtimePhone" placeholder="08012345678"></div><div class="form-group"><label>Network</label><select id="airtimeNetwork"><option value="MTN">MTN</option><option value="GLO">GLO</option><option value="AIRTEL">AIRTEL</option><option value="9MOBILE">9MOBILE</option></select></div><div class="form-group"><label>Amount</label><input type="number" id="airtimeAmount" placeholder="Enter amount" min="50"></div><button class="submit-btn" onclick="buyService(\'airtime\')">Buy Airtime</button>'
+                },
+                tv: {
+                    title: 'TV Subscription',
+                    fields: '<div class="form-group"><label>Provider</label><select id="tvProvider"><option value="DStv">DStv</option><option value="GOtv">GOtv</option><option value="StarTimes">StarTimes</option></select></div><div class="form-group"><label>Smart Card Number</label><input type="text" id="tvSmartCard" placeholder="Enter smart card number"></div><div class="form-group"><label>Package</label><select id="tvPackage"><option value="Premium">Premium</option><option value="Compact Plus">Compact Plus</option><option value="Compact">Compact</option></select></div><div class="form-group"><label>Amount</label><input type="number" id="tvAmount" placeholder="Enter amount"></div><button class="submit-btn" onclick="buyService(\'tv\')">Subscribe</button>'
+                },
+                electricity: {
+                    title: 'Pay Electricity',
+                    fields: '<div class="form-group"><label>Provider</label><select id="elecProvider"><option value="Ikeja Electric">Ikeja Electric</option><option value="Eko Electric">Eko Electric</option><option value="Ibadan Electric">Ibadan Electric</option></select></div><div class="form-group"><label>Meter Number</label><input type="text" id="elecMeter" placeholder="Enter meter number"></div><div class="form-group"><label>Amount</label><input type="number" id="
+# Create the complete dashboard file
+@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Paysbillz Dashboard</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: linear-gradient(135deg, #1a237e, #0d47a1); color: white; padding: 25px; border-radius: 15px; margin-bottom: 25px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .balance-amount { font-size: 32px; font-weight: 700; color: #4caf50; }
+        .btn { padding: 8px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin-left: 10px; }
+        .btn-fund { background: #4caf50; color: white; }
+        .btn-paystack { background: #0a3d62; color: white; }
+        .btn-logout { background: #c62828; color: white; }
+        .services { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
+        .service-card { background: white; padding: 20px; text-align: center; border-radius: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #e8e8e8; transition: all 0.3s; }
+        .service-card:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(0,0,0,0.12); border-color: #1976d2; }
+        .service-card .icon { font-size: 30px; }
+        .service-card .label { font-weight: 600; margin-top: 5px; }
+        .service-card .badge { font-size: 11px; padding: 2px 10px; border-radius: 10px; background: #e8f5e9; color: #2e7d32; display: inline-block; margin-top: 5px; }
+        .network-tabs { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
+        .network-tab { padding: 8px 20px; border: 2px solid #ddd; border-radius: 20px; cursor: pointer; background: white; font-weight: 600; }
+        .network-tab.active { background: #1976d2; color: white; border-color: #1976d2; }
+        .plans-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .plan-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); position: relative; border: 1px solid #e8e8e8; }
+        .plan-card .provider-badge { position: absolute; top: 10px; right: 10px; font-size: 11px; padding: 2px 10px; border-radius: 12px; font-weight: 700; }
+        .plan-card .provider-badge.inlomax { background: #e3f2fd; color: #0d47a1; }
+        .plan-card .provider-badge.strongmb { background: #f3e5f5; color: #4a148c; }
+        .plan-card .price { font-size: 24px; font-weight: 700; color: #2e7d32; }
+        .plan-card .buy-btn { width: 100%; padding: 12px; background: #1976d2; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .plan-card .buy-btn:hover { background: #1565c0; }
+        .plan-profit { font-size: 12px; color: #e65100; background: #fff3e0; padding: 2px 10px; border-radius: 10px; display: inline-block; margin: 5px 0; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; margin: 10% auto; padding: 30px; border-radius: 15px; max-width: 400px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { color: #1a237e; }
+        .close { font-size: 28px; cursor: pointer; color: #999; }
+        .close:hover { color: #333; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .submit-btn { width: 100%; padding: 12px; background: #1976d2; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .submit-btn:hover { background: #1565c0; }
+        .toast { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 10px; color: white; font-weight: 600; z-index: 9999; }
+        .toast.success { background: #2e7d32; }
+        .toast.error { background: #c62828; }
+        .toast.info { background: #1976d2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-top">
+                <div>
+                    <h2>👋 <span id="userName">John Doe</span></h2>
+                    <div id="userEmail">john@example.com</div>
+                </div>
+                <div>
+                    <span class="balance-amount" id="balanceDisplay">₦0.00</span>
+                    <button class="btn btn-fund" onclick="openFundModal()">💰 Fund Wallet</button>
+                    <button class="btn btn-paystack" onclick="payWithPaystack()">💳 Paystack</button>
+                    <button class="btn btn-logout" onclick="logout()">🚪 Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="services">
+            <div class="service-card" onclick="openServiceModal('airtime')">
+                <div class="icon">📱</div>
+                <div class="label">Airtime</div>
+                <div class="badge">Buy Now</div>
+            </div>
+            <div class="service-card" onclick="openServiceModal('tv')">
+                <div class="icon">📺</div>
+                <div class="label">TV</div>
+                <div class="badge">Subscribe</div>
+            </div>
+            <div class="service-card" onclick="openServiceModal('electricity')">
+                <div class="icon">💡</div>
+                <div class="label">Electricity</div>
+                <div class="badge">Pay Bill</div>
+            </div>
+            <div class="service-card" onclick="openServiceModal('education')">
+                <div class="icon">🎓</div>
+                <div class="label">Education</div>
+                <div class="badge">Get PIN</div>
+            </div>
+            <div class="service-card" onclick="openServiceModal('betting')">
+                <div class="icon">🎰</div>
+                <div class="label">Betting</div>
+                <div class="badge">Fund</div>
             </div>
         </div>
 
@@ -463,7 +701,6 @@
             }
         }
 
-        // Close modals when clicking outside
         window.onclick = function(event) {
             var serviceModal = document.getElementById('serviceModal');
             var fundModal = document.getElementById('fundModal');
