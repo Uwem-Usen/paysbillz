@@ -2,134 +2,662 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard v3</title>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
+    <title>Paysbillz Dashboard</title>
     <style>
-        body { font-family: Arial; padding: 20px; }
-        .plan { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
-        .price { color: green; font-weight: bold; font-size: 20px; }
-        button { background: #1976d2; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
-        .success { color: green; }
-        .error { color: red; }
-        .badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; }
-        .inlomax { background: #e3f2fd; color: #0d47a1; }
-        .strongmb { background: #f3e5f5; color: #4a148c; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .header { background: linear-gradient(135deg, #1a237e, #0d47a1); color: white; padding: 25px; border-radius: 15px; margin-bottom: 25px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .balance-amount { font-size: 32px; font-weight: 700; color: #4caf50; }
+        .balance-label { font-size: 13px; opacity: 0.8; }
+        
+        .btn { padding: 8px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin-left: 10px; }
+        .btn-fund { background: #4caf50; color: white; }
+        .btn-fund:hover { background: #388e3c; }
+        .btn-paystack { background: #0a3d62; color: white; }
+        .btn-paystack:hover { background: #1a4d72; }
+        .btn-logout { background: #c62828; color: white; }
+        .btn-logout:hover { background: #b71c1c; }
+        
+        .provider-status { display: flex; gap: 20px; margin-top: 15px; flex-wrap: wrap; align-items: center; }
+        .status-item { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .status-dot.online { background: #4caf50; animation: pulse 2s infinite; }
+        .status-dot.offline { background: #f44336; }
+        
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        .service-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
+        .service-card { background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #e8e8e8; cursor: pointer; transition: all 0.3s; }
+        .service-card:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(0,0,0,0.12); border-color: #1976d2; }
+        .service-card .icon { font-size: 30px; margin-bottom: 8px; }
+        .service-card .label { font-weight: 600; font-size: 14px; }
+        .service-card .badge { font-size: 11px; padding: 2px 10px; border-radius: 10px; background: #e8f5e9; color: #2e7d32; margin-top: 5px; display: inline-block; }
+        
+        .network-tabs, .provider-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .network-tab, .provider-tab { padding: 10px 24px; border: 2px solid #ddd; border-radius: 25px; cursor: pointer; background: white; font-weight: 600; transition: all 0.3s; }
+        .network-tab:hover, .provider-tab:hover { border-color: #1976d2; transform: translateY(-2px); }
+        .network-tab.active, .provider-tab.active { background: #1976d2; color: white; border-color: #1976d2; }
+        .provider-tab .badge { background: #e8f5e9; color: #2e7d32; padding: 0 10px; border-radius: 12px; font-size: 12px; }
+        .provider-tab.active .badge { background: rgba(255,255,255,0.2); color: white; }
+        
+        .plans-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 10px; }
+        .plan-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); position: relative; border: 1px solid #e8e8e8; transition: all 0.3s; }
+        .plan-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); border-color: #1976d2; }
+        .plan-card .provider-badge { position: absolute; top: 12px; right: 12px; font-size: 11px; padding: 4px 12px; border-radius: 12px; font-weight: 700; text-transform: uppercase; }
+        .plan-card .provider-badge.inlomax { background: #e3f2fd; color: #0d47a1; }
+        .plan-card .provider-badge.strongmb { background: #f3e5f5; color: #4a148c; }
+        .plan-card .plan-size { font-size: 24px; font-weight: 700; color: #1a237e; }
+        .plan-card .plan-price { font-size: 22px; font-weight: 700; color: #2e7d32; margin: 10px 0; }
+        .plan-card .plan-profit { font-size: 13px; color: #e65100; background: #fff3e0; padding: 2px 10px; border-radius: 10px; display: inline-block; margin-bottom: 5px; }
+        .plan-card .plan-validity { font-size: 13px; color: #666; margin-bottom: 12px; }
+        .plan-card .plan-type { font-size: 12px; color: #999; margin-bottom: 5px; }
+        .plan-card .buy-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #1976d2, #1565c0); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .plan-card .buy-btn:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3); }
+        
+        .loading-state { text-align: center; padding: 60px 20px; color: #666; }
+        .loading-state .spinner { width: 40px; height: 40px; border: 4px solid #e0e0e0; border-top-color: #1976d2; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .transactions { background: white; border-radius: 12px; padding: 20px; margin-top: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .transaction-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+        .transaction-item:last-child { border-bottom: none; }
+        .transaction-amount { font-weight: 700; }
+        .transaction-amount.positive { color: #2e7d32; }
+        .transaction-amount.negative { color: #c62828; }
+        .transaction-date { font-size: 12px; color: #999; }
+        
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; margin: 10% auto; padding: 30px; border-radius: 15px; max-width: 400px; position: relative; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { color: #1a237e; }
+        .close { font-size: 28px; cursor: pointer; color: #999; }
+        .close:hover { color: #333; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #1976d2; }
+        .submit-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #4caf50, #388e3c); color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; }
+        .submit-btn:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3); }
+        
+        .toast { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 10px; color: white; font-weight: 600; z-index: 9999; animation: slideInRight 0.4s ease; }
+        .toast.success { background: linear-gradient(135deg, #43a047, #2e7d32); }
+        .toast.error { background: linear-gradient(135deg, #e53935, #c62828); }
+        .toast.info { background: linear-gradient(135deg, #1e88e5, #0d47a1); }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        .profit-summary { background: #e8f5e9; padding: 10px 15px; border-radius: 8px; margin: 10px 0; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+        .profit-summary .label { font-weight: 600; color: #1a237e; }
+        .profit-summary .value { color: #2e7d32; font-weight: 700; }
     </style>
 </head>
 <body>
-    <h2>💰 Paysbillz Dashboard v3</h2>
-    <div id="user">Loading...</div>
-    <div id="balance">Balance: ₦0</div>
-    <button onclick="logout()">Logout</button>
-    <hr>
-    <div id="status">Loading plans...</div>
-    <div id="plans"></div>
-    <div id="result"></div>
+    <div class="container">
+        <div class="header">
+            <div class="header-top">
+                <div>
+                    <h2>👋 <span id="userName">John Doe</span></h2>
+                    <div style="opacity:0.8;" id="userEmail">john@example.com</div>
+                </div>
+                <div style="text-align:right;">
+                    <div>
+                        <span class="balance-amount" id="balanceDisplay">₦0.00</span>
+                        <button class="btn btn-fund" onclick="openFundModal()">💰 Fund Wallet</button>
+                        <button class="btn btn-paystack" onclick="payWithPaystack()">💳 Paystack</button>
+                        <button class="btn btn-logout" onclick="logout()">🚪 Logout</button>
+                    </div>
+                    <div class="balance-label">Wallet Balance</div>
+                </div>
+            </div>
+            <div class="provider-status">
+                <span>📡 Provider Status:</span>
+                <span class="status-item"><span class="status-dot online" id="inlomaxDot"></span> <span id="inlomaxStatus">Inlomax Online</span></span>
+                <span class="status-item"><span class="status-dot online" id="strongmbDot"></span> <span id="strongmbStatus">StrongMB Online</span></span>
+                <button class="refresh-btn" onclick="refreshAll()" style="padding:8px 20px;background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.2);border-radius:8px;cursor:pointer;">🔄 Refresh</button>
+            </div>
+            <div class="profit-summary">
+                <span><span class="label">💰 Total Profit:</span> <span class="value" id="totalProfit">₦0</span></span>
+                <span><span class="label">📊 Average Profit:</span> <span class="value" id="avgProfit">₦0</span></span>
+            </div>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="service-grid">
+            <div class="service-card" onclick="openServiceModal('airtime')">
+                <div class="icon">📱</div>
+                <div class="label">Airtime</div>
+                <div class="badge">Live</div>
+            </div>
+            <div class="service-card" onclick="openServiceModal('tv')">
+                <div class="icon">📺</div>
+                <div class="label">TV Subscription</div>
+                <div class="badge">Live</div>
+            </div>
+            <div class="service-card" onclick="openServiceModal('electricity')">
+                <div class="icon">💡</div>
+                <div class="label">Electricity</div>
+                <div class="badge">Live</div>
+            </div>
+            <div class="service-card" onclick="openServiceModal('education')">
+                <div class="icon">🎓</div>
+                <div class="label">Education</div>
+                <div class="badge">New</div>
+            </div>
+            <div class="service-card" onclick="openServiceModal('betting')">
+                <div class="icon">🎰</div>
+                <div class="label">Betting</div>
+                <div class="badge">Popular</div>
+            </div>
+        </div>
+
+        <!-- Network Tabs -->
+        <div class="network-tabs" id="networkTabs">
+            <button class="network-tab active" data-network="ALL" onclick="selectNetwork('ALL')">🌐 All Networks</button>
+            <button class="network-tab" data-network="MTN" onclick="selectNetwork('MTN')">📶 MTN</button>
+            <button class="network-tab" data-network="GLO" onclick="selectNetwork('GLO')">📶 GLO</button>
+            <button class="network-tab" data-network="AIRTEL" onclick="selectNetwork('AIRTEL')">📶 Airtel</button>
+            <button class="network-tab" data-network="9MOBILE" onclick="selectNetwork('9MOBILE')">📶 9Mobile</button>
+        </div>
+
+        <!-- Provider Tabs -->
+        <div class="provider-tabs" id="providerTabs">
+            <button class="provider-tab active" data-provider="all" onclick="selectProvider('all')">All Providers <span class="badge" id="allCount">0</span></button>
+            <button class="provider-tab" data-provider="inlomax" onclick="selectProvider('inlomax')">Inlomax <span class="badge" id="inlomaxCount">0</span></button>
+            <button class="provider-tab" data-provider="strongmb" onclick="selectProvider('strongmb')">StrongMB <span class="badge" id="strongmbCount">0</span></button>
+        </div>
+
+        <!-- Plans Container -->
+        <div id="plansContainer"><div class="loading-state"><div class="spinner"></div>Loading data plans...</div></div>
+
+        <!-- Transactions -->
+        <div class="transactions">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                <h3>📋 Recent Transactions</h3>
+                <button onclick="loadTransactions()" style="padding:5px 15px;background:#1976d2;color:white;border:none;border-radius:5px;cursor:pointer;">Refresh</button>
+            </div>
+            <div id="transactionsContainer"><div style="text-align:center;color:#999;padding:20px;">Loading transactions...</div></div>
+        </div>
+    </div>
+
+    <!-- Fund Wallet Modal -->
+    <div id="fundModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h2>💰 Fund Wallet</h2><span class="close" onclick="closeFundModal()">&times;</span></div>
+            <form id="fundForm" onsubmit="fundWallet(event)">
+                <div class="form-group"><label>Phone Number</label><input type="text" id="fundPhone" value="08012345678" readonly></div>
+                <div class="form-group"><label>Amount (₦)</label><input type="number" id="fundAmount" placeholder="Enter amount" min="100" required></div>
+                <div class="form-group"><label>Payment Method</label>
+                    <select id="paymentMethod">
+                        <option value="bank_transfer">Bank Transfer</option>
+                        <option value="card">Card Payment</option>
+                        <option value="ussd">USSD</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn">💳 Fund Wallet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Service Modal -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h2 id="serviceModalTitle">Service</h2><span class="close" onclick="closeServiceModal()">&times;</span></div>
+            <div id="serviceModalBody"></div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
 
     <script>
+        // ============ AUTH ============
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        document.getElementById('user').textContent = 'Welcome ' + (user.name || 'User') + '!';
+        const isAdmin = user.role === 'admin';
+        
+        if (!token) {
+            window.location.href = '/login.html';
+        }
+        
+        document.getElementById('userName').textContent = user.name || 'User';
+        document.getElementById('userEmail').textContent = user.email || '';
 
-        async function loadData() {
-            const status = document.getElementById('status');
-            const plansDiv = document.getElementById('plans');
-            
-            try {
-                if (!token) {
-                    window.location.href = '/login.html';
-                    return;
-                }
-                
-                status.innerHTML = '📡 Fetching plans...';
-                
-                const response = await fetch('/api/vtu/data-plans', {
-                    headers: { 'Authorization': 'Bearer ' + token }
-                });
-                
-                if (!response.ok) {
-                    throw new Error('HTTP ' + response.status);
-                }
-                
-                const data = await response.json();
-                console.log('Data:', data);
-                
-                if (!data.success) {
-                    throw new Error(data.message || 'Failed to load');
-                }
-                
-                status.innerHTML = '✅ Loaded ' + (data.total || 0) + ' plans';
-                
-                let html = '';
-                const plans = data.data || {};
-                Object.keys(plans).forEach(network => {
-                    plans[network].forEach(plan => {
-                        const badgeClass = plan.provider.toLowerCase();
-                        html += '<div class="plan">';
-                        html += '<span class="badge ' + badgeClass + '">' + plan.provider + '</span>';
-                        html += '<h3>' + plan.name + '</h3>';
-                        html += '<p>Network: ' + network + ' | Validity: ' + plan.validity + '</p>';
-                        html += '<div class="price">₦' + plan.price + '</div>';
-                        html += '<button onclick="buy(\'' + plan.serviceID + '\')">Buy Now</button>';
-                        html += '</div>';
-                    });
-                });
-                plansDiv.innerHTML = html;
-                
-                // Load balance
-                const balanceResponse = await fetch('/api/wallet/balance', {
-                    headers: { 'Authorization': 'Bearer ' + token }
-                });
-                const balanceData = await balanceResponse.json();
-                if (balanceData.success) {
-                    document.getElementById('balance').textContent = 'Balance: ₦' + balanceData.balance;
-                }
-                
-            } catch (error) {
-                status.innerHTML = '❌ Error: ' + error.message;
-                console.error('Error:', error);
+        // ============ API HELPER ============
+        async function apiCall(url, options = {}) {
+            const headers = {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json',
+                ...options.headers
+            };
+            const response = await fetch(url, { ...options, headers });
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/login.html';
+                return;
             }
+            return response.json();
         }
 
-        async function buy(serviceID) {
-            const phone = prompt('📱 Enter phone number:');
-            if (!phone) return;
-            
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = '⏳ Processing...';
-            
-            try {
-                const response = await fetch('/api/vtu/buy-data', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
-                    },
-                    body: JSON.stringify({ serviceID, phoneNumber: phone })
-                });
-                
-                const data = await response.json();
-                console.log('Buy response:', data);
-                
-                if (data.success) {
-                    resultDiv.innerHTML = '<span class="success">✅ ' + data.message + ' | New Balance: ₦' + data.newBalance + '</span>';
-                    loadData(); // Reload to update balance
-                } else {
-                    resultDiv.innerHTML = '<span class="error">❌ ' + data.message + '</span>';
-                }
-            } catch (error) {
-                resultDiv.innerHTML = '<span class="error">❌ Error: ' + error.message + '</span>';
-            }
-        }
-
+        // ============ LOGOUT ============
         function logout() {
-            localStorage.clear();
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
             window.location.href = '/login.html';
         }
 
-        loadData();
+        // ============ PAYSTACK ============
+        async function payWithPaystack() {
+            const email = prompt('📧 Enter your email address:');
+            if (!email) return;
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                showToast('❌ Please enter a valid email address', 'error');
+                return;
+            }
+            const amount = prompt('💰 Enter amount to fund (₦100 minimum):');
+            if (!amount) return;
+            if (amount < 100) {
+                showToast('❌ Minimum amount is ₦100', 'error');
+                return;
+            }
+            try {
+                showToast('⏳ Initializing payment...', 'info');
+                const initResult = await apiCall('/api/paystack/initialize', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, amount: parseFloat(amount), phone: '08012345678' })
+                });
+                if (!initResult || !initResult.success) {
+                    showToast('❌ ' + (initResult?.message || 'Payment initialization failed'), 'error');
+                    return;
+                }
+                window.open(initResult.data.authorization_url, '_blank');
+                showToast('✅ Payment page opened! Complete payment and come back.', 'success');
+                const checkPayment = setInterval(async () => {
+                    try {
+                        const verifyResult = await apiCall('/api/paystack/verify/' + initResult.data.reference);
+                        if (verifyResult && verifyResult.success) {
+                            clearInterval(checkPayment);
+                            showToast('✅ Payment successful! ₦' + verifyResult.data.amount + ' added to your wallet!', 'success');
+                            loadBalance();
+                            loadTransactions();
+                        }
+                    } catch (e) {}
+                }, 5000);
+                setTimeout(() => clearInterval(checkPayment), 300000);
+            } catch (error) {
+                showToast('❌ Payment failed: ' + error.message, 'error');
+            }
+        }
+
+        // ============ LOAD DATA PLANS ============
+        async function loadDataPlans() {
+            const container = document.getElementById('plansContainer');
+            container.innerHTML = '<div class="loading-state"><div class="spinner"></div>Loading data plans...</div>';
+            try {
+                const result = await apiCall('/api/vtu/data-plans');
+                if (!result || !result.success) throw new Error(result?.message || 'Failed to load plans');
+                
+                const allPlans = [];
+                const data = result.data || {};
+                Object.keys(data).forEach(function(network) {
+                    if (Array.isArray(data[network])) {
+                        data[network].forEach(function(plan) {
+                            allPlans.push({ 
+                                ...plan, 
+                                network: network,
+                                provider: plan.provider || 'Inlomax'
+                            });
+                        });
+                    }
+                });
+
+                document.getElementById('allCount').textContent = allPlans.length;
+                document.getElementById('inlomaxCount').textContent = allPlans.filter(p => p.provider === 'Inlomax').length;
+                document.getElementById('strongmbCount').textContent = allPlans.filter(p => p.provider === 'StrongMB').length;
+
+                if (isAdmin && result.profitSummary) {
+                    document.getElementById('totalProfit').textContent = '₦' + result.profitSummary.totalProfit;
+                    document.getElementById('avgProfit').textContent = '₦' + result.profitSummary.averageProfit;
+                }
+
+                window.allPlans = allPlans;
+                renderPlans();
+                checkProviderStatus();
+                loadBalance();
+                loadTransactions();
+            } catch (error) {
+                console.error('Error loading plans:', error);
+                container.innerHTML = '<div class="loading-state">❌ Error loading plans: ' + error.message + '<br><br><button onclick="loadDataPlans()" style="padding:10px 20px;background:#1976d2;color:white;border:none;border-radius:6px;cursor:pointer;">Retry</button></div>';
+            }
+        }
+
+        function renderPlans() {
+            const container = document.getElementById('plansContainer');
+            const allPlans = window.allPlans || [];
+            if (!allPlans.length) {
+                container.innerHTML = '<div class="loading-state">📭 No data plans available</div>';
+                return;
+            }
+
+            const currentProvider = document.querySelector('.provider-tab.active')?.dataset.provider || 'all';
+            let filtered = allPlans;
+            if (currentProvider === 'inlomax') filtered = filtered.filter(p => p.provider === 'Inlomax');
+            if (currentProvider === 'strongmb') filtered = filtered.filter(p => p.provider === 'StrongMB');
+            
+            if (!filtered.length) {
+                container.innerHTML = '<div class="loading-state">📭 No plans for this provider</div>';
+                return;
+            }
+
+            filtered.sort((a, b) => (a.price || 0) - (b.price || 0));
+            let html = '<div class="plans-grid">';
+            filtered.forEach(function(plan) {
+                const profitDisplay = (isAdmin && plan.yourProfit) ? '<div class="plan-profit">💰 Your Profit: ₦' + plan.yourProfit + '</div>' : '';
+                html += '<div class="plan-card">';
+                html += '<span class="provider-badge ' + plan.provider.toLowerCase() + '">' + plan.provider + '</span>';
+                html += '<div class="plan-size">' + (plan.name || plan.size || 'Data Plan') + '</div>';
+                html += '<div class="plan-type">' + (plan.type || 'Regular') + '</div>';
+                html += '<div class="plan-price">₦' + (plan.price || 0) + '</div>';
+                html += profitDisplay;
+                html += '<div class="plan-validity">⏱️ ' + (plan.validity || 'N/A') + ' • 📶 ' + plan.network + '</div>';
+                html += '<button class="buy-btn" onclick="purchasePlan(\'' + (plan.serviceID || plan.id) + '\')">Buy Now</button>';
+                html += '</div>';
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // ============ SELECT FUNCTIONS ============
+        function selectNetwork(network) {
+            document.querySelectorAll('#networkTabs .network-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.network === network);
+            });
+            loadDataPlans();
+        }
+
+        function selectProvider(provider) {
+            document.querySelectorAll('#providerTabs .provider-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.provider === provider);
+            });
+            renderPlans();
+        }
+
+        function refreshAll() {
+            loadDataPlans();
+            loadBalance();
+            loadTransactions();
+        }
+
+        // ============ PURCHASE PLAN ============
+        async function purchasePlan(serviceID) {
+            const phone = prompt('📱 Enter phone number:');
+            if (!phone) return;
+            if (!phone.match(/^[0-9]{10,12}$/)) {
+                showToast('❌ Invalid phone number', 'error');
+                return;
+            }
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+            try {
+                const result = await apiCall('/api/vtu/buy-data', {
+                    method: 'POST',
+                    body: JSON.stringify({ serviceID, phoneNumber: phone, provider: 'inlomax', network: 'MTN' })
+                });
+                if (result && result.success) {
+                    showToast('✅ ' + (result.message || 'Purchase successful!'), 'success');
+                    loadDataPlans();
+                } else {
+                    showToast('❌ ' + (result?.message || 'Purchase failed'), 'error');
+                }
+            } catch (error) {
+                showToast('❌ Purchase failed: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Buy Now';
+            }
+        }
+
+        // ============ CHECK PROVIDER STATUS ============
+        async function checkProviderStatus() {
+            try {
+                const result = await apiCall('/api/vtu/provider-status');
+                if (result && result.success) {
+                    const inlomax = result.data.inlomax;
+                    const strongmb = result.data.strongmb;
+                    document.getElementById('inlomaxStatus').textContent = inlomax.available ? 'Inlomax (₦' + (inlomax.balance || 0) + ')' : 'Inlomax Offline';
+                    document.getElementById('inlomaxDot').className = 'status-dot ' + (inlomax.available ? 'online' : 'offline');
+                    document.getElementById('strongmbStatus').textContent = strongmb.available ? 'StrongMB (₦' + (strongmb.balance || 0) + ')' : 'StrongMB Offline';
+                    document.getElementById('strongmbDot').className = 'status-dot ' + (strongmb.available ? 'online' : 'offline');
+                }
+            } catch (e) { console.error('Status check failed:', e); }
+        }
+
+        // ============ LOAD BALANCE ============
+        async function loadBalance() {
+            try {
+                const result = await apiCall('/api/wallet/balance?phone=08012345678');
+                if (result && result.success) {
+                    document.getElementById('balanceDisplay').textContent = '₦' + (result.balance || 0);
+                }
+            } catch (e) { console.error('Balance load failed:', e); }
+        }
+
+        // ============ LOAD TRANSACTIONS ============
+        async function loadTransactions() {
+            const container = document.getElementById('transactionsContainer');
+            container.innerHTML = '<div style="text-align:center;color:#999;padding:20px;">Loading transactions...</div>';
+            try {
+                const result = await apiCall('/api/vtu/transactions');
+                if (!result || !result.success || !result.transactions || !result.transactions.length) {
+                    container.innerHTML = '<div style="text-align:center;color:#999;padding:20px;">📭 No transactions found</div>';
+                    return;
+                }
+                let html = '';
+                result.transactions.slice(0, 5).forEach(t => {
+                    const amountClass = t.amount > 0 ? 'positive' : 'negative';
+                    const sign = t.amount > 0 ? '+' : '';
+                    html += '<div class="transaction-item">';
+                    html += '<div><strong>' + (t.description || t.type || 'Transaction') + '</strong><div class="transaction-date">' + new Date(t.created_at).toLocaleString() + '</div></div>';
+                    html += '<div class="transaction-amount ' + amountClass + '">' + sign + '₦' + Math.abs(t.amount) + '</div>';
+                    html += '</div>';
+                });
+                container.innerHTML = html;
+            } catch (e) {
+                console.error('Transactions load failed:', e);
+                container.innerHTML = '<div style="text-align:center;color:#999;padding:20px;">❌ Could not load transactions</div>';
+            }
+        }
+
+        // ============ FUND WALLET ============
+        function openFundModal() { document.getElementById('fundModal').style.display = 'block'; }
+        function closeFundModal() { document.getElementById('fundModal').style.display = 'none'; }
+
+        async function fundWallet(event) {
+            event.preventDefault();
+            const amount = document.getElementById('fundAmount').value;
+            if (!amount || amount <= 0) {
+                showToast('❌ Please enter a valid amount', 'error');
+                return;
+            }
+            const btn = event.target.querySelector('.submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+            try {
+                const result = await apiCall('/api/wallet/fund', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        phone: '08012345678',
+                        amount: parseFloat(amount),
+                        paymentMethod: document.getElementById('paymentMethod').value
+                    })
+                });
+                if (result && result.success) {
+                    showToast('✅ ' + result.message + ' New balance: ₦' + result.balance, 'success');
+                    closeFundModal();
+                    loadBalance();
+                    loadTransactions();
+                } else {
+                    showToast('❌ ' + (result?.message || 'Funding failed'), 'error');
+                }
+            } catch (error) {
+                showToast('❌ Funding failed: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💳 Fund Wallet';
+            }
+        }
+
+        // ============ SERVICE MODALS ============
+        function openServiceModal(type) {
+            const modal = document.getElementById('serviceModal');
+            const title = document.getElementById('serviceModalTitle');
+            const body = document.getElementById('serviceModalBody');
+            
+            const services = {
+                airtime: {
+                    title: '📱 Buy Airtime',
+                    fields: 
+                        <div class="form-group"><label>Phone Number</label><input type="text" id="airtimePhone" placeholder="08012345678"></div>
+                        <div class="form-group"><label>Network</label><select id="airtimeNetwork"><option value="MTN">MTN</option><option value="GLO">GLO</option><option value="AIRTEL">AIRTEL</option><option value="9MOBILE">9MOBILE</option></select></div>
+                        <div class="form-group"><label>Amount (₦)</label><input type="number" id="airtimeAmount" placeholder="Enter amount"></div>
+                        <button class="submit-btn" onclick="buyService('airtime')">Buy Airtime</button>
+                    
+                },
+                tv: {
+                    title: '📺 TV Subscription',
+                    fields: 
+                        <div class="form-group"><label>Provider</label><select id="tvProvider"><option value="dstv">DStv</option><option value="gotv">GOtv</option><option value="startimes">StarTimes</option></select></div>
+                        <div class="form-group"><label>Smart Card Number</label><input type="text" id="tvSmartCard" placeholder="Enter smart card number"></div>
+                        <div class="form-group"><label>Package</label><select id="tvPackage"><option value="Premium">Premium</option><option value="Compact Plus">Compact Plus</option><option value="Compact">Compact</option></select></div>
+                        <div class="form-group"><label>Amount (₦)</label><input type="number" id="tvAmount" placeholder="Enter amount"></div>
+                        <button class="submit-btn" onclick="buyService('tv')">Subscribe</button>
+                    
+                },
+                electricity: {
+                    title: '💡 Pay Electricity',
+                    fields: 
+                        <div class="form-group"><label>Provider</label><select id="elecProvider"><option value="ikeja">Ikeja Electric</option><option value="eko">Eko Electric</option><option value="ibadan">Ibadan Electric</option></select></div>
+                        <div class="form-group"><label>Meter Number</label><input type="text" id="elecMeter" placeholder="Enter meter number"></div>
+                        <div class="form-group"><label>Amount (₦)</label><input type="number" id="elecAmount" placeholder="Enter amount"></div>
+                        <button class="submit-btn" onclick="buyService('electricity')">Pay Bill</button>
+                    
+                },
+                education: {
+                    title: '🎓 Buy Education PIN',
+                    fields: 
+                        <div class="form-group"><label>Exam Type</label><select id="eduExam"><option value="waec">WAEC</option><option value="neco">NECO</option><option value="jamb">JAMB</option></select></div>
+                        <div class="form-group"><label>Quantity</label><input type="number" id="eduQuantity" placeholder="Number of pins" value="1"></div>
+                        <div class="form-group"><label>Amount (₦)</label><input type="number" id="eduAmount" placeholder="Enter amount"></div>
+                        <button class="submit-btn" onclick="buyService('education')">Buy PIN</button>
+                    
+                },
+                betting: {
+                    title: '🎰 Fund Betting Wallet',
+                    fields: 
+                        <div class="form-group"><label>Provider</label><select id="betProvider"><option value="bet9ja">Bet9ja</option><option value="sportybet">SportyBet</option><option value="1xbet">1xBet</option></select></div>
+                        <div class="form-group"><label>Username</label><input type="text" id="betUsername" placeholder="Enter username"></div>
+                        <div class="form-group"><label>Amount (₦)</label><input type="number" id="betAmount" placeholder="Enter amount"></div>
+                        <button class="submit-btn" onclick="buyService('betting')">Fund Wallet</button>
+                    
+                }
+            };
+            
+            const service = services[type];
+            title.textContent = service.title;
+            body.innerHTML = service.fields;
+            modal.style.display = 'block';
+        }
+
+        function closeServiceModal() {
+            document.getElementById('serviceModal').style.display = 'none';
+        }
+
+        async function buyService(type) {
+            let endpoint, data;
+            
+            switch(type) {
+                case 'airtime':
+                    endpoint = '/api/services/airtime/buy';
+                    data = {
+                        phone: document.getElementById('airtimePhone').value,
+                        network: document.getElementById('airtimeNetwork').value,
+                        amount: parseFloat(document.getElementById('airtimeAmount').value)
+                    };
+                    break;
+                case 'tv':
+                    endpoint = '/api/services/tv/subscribe';
+                    data = {
+                        provider: document.getElementById('tvProvider').value,
+                        smartCardNumber: document.getElementById('tvSmartCard').value,
+                        package: document.getElementById('tvPackage').value,
+                        amount: parseFloat(document.getElementById('tvAmount').value)
+                    };
+                    break;
+                case 'electricity':
+                    endpoint = '/api/services/electricity/pay';
+                    data = {
+                        provider: document.getElementById('elecProvider').value,
+                        meterNumber: document.getElementById('elecMeter').value,
+                        amount: parseFloat(document.getElementById('elecAmount').value)
+                    };
+                    break;
+                case 'education':
+                    endpoint = '/api/services/education/buy-pin';
+                    data = {
+                        exam: document.getElementById('eduExam').value,
+                        quantity: parseInt(document.getElementById('eduQuantity').value),
+                        amount: parseFloat(document.getElementById('eduAmount').value)
+                    };
+                    break;
+                case 'betting':
+                    endpoint = '/api/services/betting/fund';
+                    data = {
+                        provider: document.getElementById('betProvider').value,
+                        username: document.getElementById('betUsername').value,
+                        amount: parseFloat(document.getElementById('betAmount').value)
+                    };
+                    break;
+            }
+            
+            try {
+                const result = await apiCall(endpoint, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                if (result && result.success) {
+                    showToast('✅ ' + result.message, 'success');
+                    closeServiceModal();
+                    loadBalance();
+                    loadTransactions();
+                } else {
+                    showToast('❌ ' + (result?.message || 'Service failed'), 'error');
+                }
+            } catch (error) {
+                showToast('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        // ============ TOAST ============
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 5000);
+        }
+
+        // ============ CLOSE MODALS ============
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('serviceModal')) closeServiceModal();
+            if (event.target === document.getElementById('fundModal')) closeFundModal();
+        }
+
+        // ============ INITIALIZE ============
+        loadDataPlans();
     </script>
 </body>
 </html>
