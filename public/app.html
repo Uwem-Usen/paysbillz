@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Paysbillz Dashboard</title>
+<title>Paysbillz</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{font-family:Arial,sans-serif;background:#f0f2f5;padding:12px;overflow-x:hidden}
@@ -86,26 +86,24 @@ html,body{font-family:Arial,sans-serif;background:#f0f2f5;padding:12px;overflow-
 <div class="modal" id="modal"><div class="modal-content"><button class="close" id="modalClose">&times;</button><h2 id="modalTitle">Service</h2><div id="modalBody"></div></div></div>
 <script>
 (function(){
-"use strict";
-const API='https://paysbillz-api.onrender.com';
-const phone=localStorage.getItem('userPhone')||'08027449527';
-let loading=false;
-let loaded=false;
+var API='https://paysbillz-api.onrender.com';
+var phone=localStorage.getItem('userPhone')||'08027449527';
+var loading=false;
+var loaded=false;
 
-// Display user name from localStorage
-const userName = localStorage.getItem('userName') || 'Customer';
+// Display user name
+var userName = localStorage.getItem('userName') || 'Customer';
 document.getElementById('nameDisplay').textContent = '👤 ' + userName;
-
 document.getElementById('phoneDisplay').textContent='Phone: '+phone;
 
-async function loadData(){
+function loadData(){
  if(loading||loaded)return;
  loading=true;
- try{
-  const r=await fetch(API+'/api/profile?phone='+phone);
-  const d=await r.json();
+ fetch(API+'/api/profile?phone='+phone)
+ .then(function(r){return r.json();})
+ .then(function(d){
   if(d.success){
-   const u=d.user;
+   var u=d.user;
    document.getElementById('phoneDisplay').textContent='Phone: '+u.phone;
    if(u.name) {
        document.getElementById('nameDisplay').textContent = '👤 ' + u.name;
@@ -117,42 +115,42 @@ async function loadData(){
    renderTxns(u.transactions);
    loaded=true;
   }
- }catch(e){}
- loading=false;
+  loading=false;
+ })
+ .catch(function(e){loading=false;});
 }
 
 function renderTxns(t){
- const c=document.getElementById('transactions');
+ var c=document.getElementById('transactions');
  if(!t||t.length===0){c.innerHTML='<p class="no-transactions">No transactions yet.</p>';return;}
- let h='';
- t.slice().reverse().slice(0,10).forEach(function(x){
-  const s=x.status||'pending';
-  const amt=Number(x.amount||0);
-  const p=Number(x.profit||0);
-  const d=x.created_at?new Date(x.created_at).toLocaleDateString():'N/A';
+ var h='';
+ for(var i=0;i<Math.min(t.length,10);i++){
+  var x=t[t.length-1-i];
+  var s=x.status||'pending';
+  var amt=Number(x.amount||0);
+  var p=Number(x.profit||0);
+  var d=x.created_at?new Date(x.created_at).toLocaleDateString():'N/A';
   h+='<div class="transaction-item"><div class="left"><span class="type">'+(x.type||'Txn')+'</span><span class="date">'+d+'</span></div><div style="text-align:right;"><div class="amount">₦'+amt.toFixed(2)+'</div>'+(p>0?'<span class="profit-badge">+₦'+p.toFixed(2)+'</span>':'')+'<span class="status '+s+'">'+s.toUpperCase()+'</span></div></div>';
- });
+ }
  c.innerHTML=h;
 }
 
-let modalType='';
 function openModal(type){
- modalType=type;
- const m=document.getElementById('modal');
- const t=document.getElementById('modalTitle');
- const b=document.getElementById('modalBody');
+ var m=document.getElementById('modal');
+ var t=document.getElementById('modalTitle');
+ var b=document.getElementById('modalBody');
  m.style.display='flex';
  document.body.style.overflow='hidden';
- const forms={
- data:'<form id="frmData"><input type="text" id="dataPhone" value="'+phone+'" placeholder="Phone"><select id="dataPlan"><optgroup label="MTN SME Plans"><option value="MTN_SME_500MB">MTN SME 500MB - ₦500</option><option value="MTN_SME_1GB">MTN SME 1GB - ₦800</option><option value="MTN_SME_2GB">MTN SME 2GB - ₦1,200</option><option value="MTN_SME_3GB">MTN SME 3GB - ₦1,500</option><option value="MTN_SME_5GB">MTN SME 5GB - ₦2,000</option></optgroup><optgroup label="MTN AWOOF (Cheap)"><option value="MTN_AWOOF_500MB">MTN AWOOF 500MB - ₦220</option><option value="MTN_AWOOF_1GB">MTN AWOOF 1GB - ₦260</option><option value="MTN_AWOOF_2.5GB">MTN AWOOF 2.5GB - ₦590</option><option value="MTN_AWOOF_5GB">MTN AWOOF 5GB - ₦1,150</option><option value="MTN_AWOOF_10GB">MTN AWOOF 10GB - ₦3,500</option></optgroup><optgroup label="MTN SHARE (Gifting)"><option value="MTN_SHARE_500MB">MTN SHARE 500MB - ₦330</option><option value="MTN_SHARE_1GB">MTN SHARE 1GB - ₦435</option><option value="MTN_SHARE_2GB">MTN SHARE 2GB - ₦970</option><option value="MTN_SHARE_3GB">MTN SHARE 3GB - ₦1,380</option><option value="MTN_SHARE_5GB">MTN SHARE 5GB - ₦1,700</option></optgroup><optgroup label="MTN Big Plans"><option value="MTN_10GB">MTN 10GB - ₦4,448</option><option value="MTN_20GB">MTN 20GB - ₦4,925</option><option value="MTN_50GB">MTN 50GB - ₦17,730</option><option value="MTN_100GB">MTN 100GB - ₦24,525</option></optgroup><optgroup label="AIRTEL Plans"><option value="AIRTEL_500MB">AIRTEL 500MB - ₦450</option><option value="AIRTEL_1GB">AIRTEL 1GB - ₦750</option><option value="AIRTEL_2GB">AIRTEL 2GB - ₦1,200</option><option value="AIRTEL_3GB">AIRTEL 3GB - ₦1,500</option><option value="AIRTEL_5GB">AIRTEL 5GB - ₦2,000</option><option value="AIRTEL_10GB">AIRTEL 10GB - ₦3,944</option></optgroup><optgroup label="AIRTEL AWOOF"><option value="AIRTEL_AWOOF_150MB">AIRTEL AWOOF 150MB - ₦68</option><option value="AIRTEL_AWOOF_300MB">AIRTEL AWOOF 300MB - ₦125</option><option value="AIRTEL_AWOOF_600MB">AIRTEL AWOOF 600MB - ₦230</option><option value="AIRTEL_AWOOF_10GB">AIRTEL AWOOF 10GB - ₦3,080</option></optgroup><optgroup label="AIRTEL BINGE"><option value="AIRTEL_BINGE_1.5GB">AIRTEL BINGE 1.5GB - ₦500</option><option value="AIRTEL_BINGE_2GB">AIRTEL BINGE 2GB - ₦600</option><option value="AIRTEL_BINGE_3GB">AIRTEL BINGE 3GB - ₦750</option></optgroup><optgroup label="GLO Plans"><option value="GLO_500MB">GLO 500MB - ₦400</option><option value="GLO_1GB">GLO 1GB - ₦700</option><option value="GLO_2GB">GLO 2GB - ₦1,100</option><option value="GLO_3GB">GLO 3GB - ₦1,500</option><option value="GLO_5GB">GLO 5GB - ₦2,000</option><option value="GLO_10GB">GLO 10GB - ₦2,850</option></optgroup><optgroup label="GLO AWOOF"><option value="GLO_AWOOF_750MB">GLO AWOOF 750MB - ₦210</option><option value="GLO_AWOOF_1.5GB">GLO AWOOF 1.5GB - ₦315</option><option value="GLO_AWOOF_2.5GB">GLO AWOOF 2.5GB - ₦515</option><option value="GLO_AWOOF_10GB">GLO AWOOF 10GB - ₦1,920</option></optgroup><optgroup label="9mobile Plans"><option value="9MOBILE_500MB">9MOBILE 500MB - ₦350</option><option value="9MOBILE_1GB">9MOBILE 1GB - ₦600</option><option value="9MOBILE_2GB">9MOBILE 2GB - ₦1,000</option><option value="9MOBILE_3GB">9MOBILE 3GB - ₦1,400</option><option value="9MOBILE_5GB">9MOBILE 5GB - ₦2,000</option><option value="9MOBILE_10GB">9MOBILE 10GB - ₦5,000</option></optgroup></select><button type="submit" class="btn btn-primary">Buy Data</button></form><div id="dataResult"></div>',
+ var forms={
+ data:'<form id="frmData"><input type="text" id="dataPhone" value="'+phone+'" placeholder="Phone"><select id="dataPlan"><optgroup label="MTN SME Plans"><option value="MTN_SME_500MB">MTN SME 500MB - ₦500</option><option value="MTN_SME_1GB">MTN SME 1GB - ₦800</option><option value="MTN_SME_2GB">MTN SME 2GB - ₦1,200</option><option value="MTN_SME_3GB">MTN SME 3GB - ₦1,500</option><option value="MTN_SME_5GB">MTN SME 5GB - ₦2,000</option></optgroup><optgroup label="MTN AWOOF"><option value="MTN_AWOOF_500MB">MTN AWOOF 500MB - ₦220</option><option value="MTN_AWOOF_1GB">MTN AWOOF 1GB - ₦260</option><option value="MTN_AWOOF_2.5GB">MTN AWOOF 2.5GB - ₦590</option><option value="MTN_AWOOF_5GB">MTN AWOOF 5GB - ₦1,150</option><option value="MTN_AWOOF_10GB">MTN AWOOF 10GB - ₦3,500</option></optgroup><optgroup label="MTN SHARE"><option value="MTN_SHARE_500MB">MTN SHARE 500MB - ₦330</option><option value="MTN_SHARE_1GB">MTN SHARE 1GB - ₦435</option><option value="MTN_SHARE_2GB">MTN SHARE 2GB - ₦970</option><option value="MTN_SHARE_3GB">MTN SHARE 3GB - ₦1,380</option><option value="MTN_SHARE_5GB">MTN SHARE 5GB - ₦1,700</option></optgroup><optgroup label="MTN Big"><option value="MTN_10GB">MTN 10GB - ₦4,448</option><option value="MTN_20GB">MTN 20GB - ₦4,925</option><option value="MTN_50GB">MTN 50GB - ₦17,730</option><option value="MTN_100GB">MTN 100GB - ₦24,525</option></optgroup><optgroup label="AIRTEL"><option value="AIRTEL_500MB">AIRTEL 500MB - ₦450</option><option value="AIRTEL_1GB">AIRTEL 1GB - ₦750</option><option value="AIRTEL_2GB">AIRTEL 2GB - ₦1,200</option><option value="AIRTEL_3GB">AIRTEL 3GB - ₦1,500</option><option value="AIRTEL_5GB">AIRTEL 5GB - ₦2,000</option><option value="AIRTEL_10GB">AIRTEL 10GB - ₦3,944</option></optgroup><optgroup label="AIRTEL AWOOF"><option value="AIRTEL_AWOOF_150MB">AIRTEL AWOOF 150MB - ₦68</option><option value="AIRTEL_AWOOF_300MB">AIRTEL AWOOF 300MB - ₦125</option><option value="AIRTEL_AWOOF_600MB">AIRTEL AWOOF 600MB - ₦230</option><option value="AIRTEL_AWOOF_10GB">AIRTEL AWOOF 10GB - ₦3,080</option></optgroup><optgroup label="GLO"><option value="GLO_500MB">GLO 500MB - ₦400</option><option value="GLO_1GB">GLO 1GB - ₦700</option><option value="GLO_2GB">GLO 2GB - ₦1,100</option><option value="GLO_3GB">GLO 3GB - ₦1,500</option><option value="GLO_5GB">GLO 5GB - ₦2,000</option><option value="GLO_10GB">GLO 10GB - ₦2,850</option></optgroup><optgroup label="GLO AWOOF"><option value="GLO_AWOOF_750MB">GLO AWOOF 750MB - ₦210</option><option value="GLO_AWOOF_1.5GB">GLO AWOOF 1.5GB - ₦315</option><option value="GLO_AWOOF_2.5GB">GLO AWOOF 2.5GB - ₦515</option><option value="GLO_AWOOF_10GB">GLO AWOOF 10GB - ₦1,920</option></optgroup><optgroup label="9mobile"><option value="9MOBILE_500MB">9MOBILE 500MB - ₦350</option><option value="9MOBILE_1GB">9MOBILE 1GB - ₦600</option><option value="9MOBILE_2GB">9MOBILE 2GB - ₦1,000</option><option value="9MOBILE_3GB">9MOBILE 3GB - ₦1,400</option><option value="9MOBILE_5GB">9MOBILE 5GB - ₦2,000</option><option value="9MOBILE_10GB">9MOBILE 10GB - ₦5,000</option></optgroup></select><button type="submit" class="btn btn-primary">Buy Data</button></form><div id="dataResult"></div>',
  airtime:'<form id="frmAirtime"><input type="text" id="airtimePhone" value="'+phone+'" placeholder="Phone"><input type="number" id="airtimeAmount" placeholder="Amount (min ₦50)" min="50"><button type="submit" class="btn btn-primary">Buy Airtime</button></form><div id="airtimeResult"></div>',
- tv:'<form id="frmTV"><input type="text" id="tvIuc" placeholder="Smart Card Number"><select id="tvService"><option value="90">DSTV Padi - ₦4,400</option><option value="91">DSTV Yanga - ₦6,000</option><option value="92">DSTV Confam - ₦11,000</option><option value="93">DSTV Compact - ₦19,000</option><option value="105">DSTV Compact Plus - ₦30,000</option><option value="94">GOTV Smallie - ₦1,900</option><option value="96">GOTV Jolli - ₦5,800</option><option value="97">GOTV Jinja - ₦3,900</option><option value="95">GOTV Max - ₦8,500</option></select><button type="submit" class="btn btn-primary">Subscribe</button></form><div id="tvResult"></div>',
- electricity:'<form id="frmElec"><select id="elecService"><option value="1">IKEDC</option><option value="2">EKEDC</option><option value="3">KEDCO</option><option value="4">PHED</option><option value="5">JED</option><option value="6">IBEDC</option><option value="8">AEDC</option><option value="9">EEDC</option></select><input type="text" id="elecMeter" placeholder="Meter Number"><select id="elecType"><option value="1">Prepaid</option><option value="2">Postpaid</option></select><input type="number" id="elecAmount" placeholder="Amount"><button type="submit" class="btn btn-primary">Pay</button></form><div id="elecResult"></div>',
+ tv:'<form id="frmTV"><input type="text" id="tvIuc" placeholder="Smart Card"><select id="tvService"><option value="90">DSTV Padi - ₦4,400</option><option value="91">DSTV Yanga - ₦6,000</option><option value="92">DSTV Confam - ₦11,000</option><option value="93">DSTV Compact - ₦19,000</option><option value="105">DSTV Compact Plus - ₦30,000</option><option value="94">GOTV Smallie - ₦1,900</option><option value="96">GOTV Jolli - ₦5,800</option><option value="97">GOTV Jinja - ₦3,900</option><option value="95">GOTV Max - ₦8,500</option></select><button type="submit" class="btn btn-primary">Subscribe</button></form><div id="tvResult"></div>',
+ electricity:'<form id="frmElec"><select id="elecService"><option value="1">IKEDC</option><option value="2">EKEDC</option><option value="3">KEDCO</option><option value="4">PHED</option><option value="5">JED</option><option value="6">IBEDC</option><option value="8">AEDC</option><option value="9">EEDC</option></select><input type="text" id="elecMeter" placeholder="Meter"><select id="elecType"><option value="1">Prepaid</option><option value="2">Postpaid</option></select><input type="number" id="elecAmount" placeholder="Amount"><button type="submit" class="btn btn-primary">Pay</button></form><div id="elecResult"></div>',
  education:'<form id="frmEdu"><select id="eduService"><option value="1">WAEC - ₦5,250</option><option value="2">NECO - ₦2,250</option><option value="3">NABTEB - ₦900</option></select><input type="number" id="eduQuantity" value="1" min="1"><button type="submit" class="btn btn-primary">Buy Pin</button></form><div id="eduResult"></div>',
- fund:'<form id="frmFund"><div style="background:#e3f2fd;padding:12px;border-radius:8px;margin-bottom:12px;"><p style="font-size:13px;color:#555;margin:0;">💡 Enter your email and amount to fund your wallet via Paystack. You will be redirected to Paystack to complete payment securely.</p></div><input type="email" id="fundEmail" placeholder="Email Address (required)" required><input type="number" id="fundAmount" placeholder="Amount (min ₦100)" min="100" required><button type="submit" class="btn btn-success">💳 Pay with Paystack</button></form><div id="fundResult"></div>',
+ fund:'<form id="frmFund"><div style="background:#e3f2fd;padding:12px;border-radius:8px;margin-bottom:12px;"><p style="font-size:13px;color:#555;margin:0;">💡 Enter email & amount to fund via Paystack</p></div><input type="email" id="fundEmail" placeholder="Email" required><input type="number" id="fundAmount" placeholder="Amount (min ₦100)" min="100" required><button type="submit" class="btn btn-success">💳 Pay with Paystack</button></form><div id="fundResult"></div>',
  withdraw:'<form id="frmWithdraw"><div style="background:#fff3e0;padding:12px;border-radius:8px;margin-bottom:12px;"><p style="font-size:13px;color:#555;margin:0;">💰 Available: <strong id="wBal">₦'+document.getElementById('profitDisplay').textContent.replace(/[^0-9.]/g,'')+'</strong></p></div><input type="number" id="withdrawAmount" placeholder="Amount (min ₦100)" min="100" required><input type="text" id="withdrawBank" placeholder="Bank Name" required><input type="text" id="withdrawAccount" placeholder="Account Number" required><input type="text" id="withdrawName" placeholder="Account Name" required><button type="submit" class="btn btn-withdraw">💸 Request Withdrawal</button></form><div id="withdrawResult"></div>'
  };
- const titles={data:'📱 Buy Data',airtime:'📞 Buy Airtime',tv:'📺 TV Subscription',electricity:'💡 Pay Electricity',education:'📚 Buy Exam Pins',fund:'💳 Fund Wallet',withdraw:'💸 Withdraw Profit'};
+ var titles={data:'📱 Buy Data',airtime:'📞 Buy Airtime',tv:'📺 TV',electricity:'💡 Electricity',education:'📚 Exam Pins',fund:'💳 Fund Wallet',withdraw:'💸 Withdraw Profit'};
  t.textContent=titles[type]||'Service';
  b.innerHTML=forms[type]||'<p>Invalid</p>';
  if(type==='data'){document.getElementById('frmData').addEventListener('submit',buyData);}
@@ -172,81 +170,35 @@ document.querySelectorAll('[data-modal]').forEach(function(btn){btn.addEventList
 // ============================================
 // BUY FUNCTIONS
 // ============================================
-async function buyData(e){e.preventDefault();const r=document.getElementById('dataResult');r.innerHTML='<div class="result-msg loading">⏳ Processing...</div>';try{const res=await fetch(API+'/api/buy-data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:document.getElementById('dataPhone').value,plan:document.getElementById('dataPlan').value})});const d=await res.json();if(d.success){r.innerHTML='<div class="result-msg success">✅ Success! Profit: ₦'+(d.result.profit||0)+'</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ '+(d.error||'Failed')+'</div>';}}catch(err){r.innerHTML='<div class="result-msg error">❌ '+err.message+'</div>';}}
+function buyData(e){e.preventDefault();var r=document.getElementById('dataResult');r.innerHTML='<div class="result-msg loading">⏳ Processing...</div>';fetch(API+'/api/buy-data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:document.getElementById('dataPhone').value,plan:document.getElementById('dataPlan').value})}).then(function(res){return res.json();}).then(function(d){if(d.success){r.innerHTML='<div class="result-msg success">✅ Success! Profit: ₦'+(d.result.profit||0)+'</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ '+(d.error||'Failed')+'</div>';}}).catch(function(err){r.innerHTML='<div class="result-msg error">❌ '+err.message+'</div>';});}
 
-async function buyAirtime(e){e.preventDefault();const r=document.getElementById('airtimeResult');const amt=document.getElementById('airtimeAmount').value;if(!amt||amt<50){r.innerHTML='<div class="result-msg error">❌ Min ₦50</div>';return;}r.innerHTML='<div class="result-msg loading">⏳ Processing...</div>';try{const res=await fetch(API+'/api/buy-airtime',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:document.getElementById('airtimePhone').value,amount:Number(amt)})});const d=await res.json();if(d.success){r.innerHTML='<div class="result-msg success">✅ Success! Profit: ₦'+(d.result.profit||0)+'</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ '+(d.error||'Failed')+'</div>';}}catch(err){r.innerHTML='<div class="result-msg error">❌ '+err.message+'</div>';}}
+function buyAirtime(e){e.preventDefault();var r=document.getElementById('airtimeResult');var amt=document.getElementById('airtimeAmount').value;if(!amt||amt<50){r.innerHTML='<div class="result-msg error">❌ Min ₦50</div>';return;}r.innerHTML='<div class="result-msg loading">⏳ Processing...</div>';fetch(API+'/api/buy-airtime',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:document.getElementById('airtimePhone').value,amount:Number(amt)})}).then(function(res){return res.json();}).then(function(d){if(d.success){r.innerHTML='<div class="result-msg success">✅ Success! Profit: ₦'+(d.result.profit||0)+'</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ '+(d.error||'Failed')+'</div>';}}).catch(function(err){r.innerHTML='<div class="result-msg error">❌ '+err.message+'</div>';});}
 
-async function buyTV(e){e.preventDefault();const r=document.getElementById('tvResult');const iuc=document.getElementById('tvIuc').value;if(!iuc){r.innerHTML='<div class="result-msg error">❌ Smart Card required</div>';return;}r.innerHTML='<div class="result-msg loading">⏳ Processing...</div>';try{const res=await fetch(API+'/api/buy-tv',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({serviceID:document.getElementById('tvService').value,iucNum:iuc})});const d=await res.json();if(d.success){r.innerHTML='<div class="result-msg success">✅ TV Subscription successful!</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ '+(d.error||'Failed')+'</div>';}}catch(err){r.innerHTML='<div class="result-msg error">❌ '+err.message+'</div>';}}
+function buyTV(e){e.preventDefault();var r=document.getElementById('tvResult');var iuc=document.getElementById('tvIuc').value;if(!iuc){r.innerHTML='<div class="result-msg error">❌ Smart Card required</div>';return;}r.innerHTML='<div class="result-msg loading">⏳ Processing...</div>';fetch(API+'/api/buy-tv',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({serviceID:document.getElementById('tvService').value,iucNum:iuc})}).then(function(res){return res.json();}).then(function(d){if(d.success){r.innerHTML='<div class="result-msg success">✅ TV Subscription successful!</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ '+(d.error||'Failed')+'</div>';}}).catch(function(err){r.innerHTML='<div class="result-msg error">❌ '+err.message+'</div>';});}
 
-async function buyElectricity(e){e.preventDefault();const r=document.getElementById('elecResult');const meter=document.getElementById('elecMeter').value;const amt=document.getElementById('elecAmount').value;if(!meter||!amt){r.innerHTML='<div class="result-msg error">❌ Meter and Amount required</div>';return;}r.innerHTML='<div class="result-msg loading">⏳ Processing...</div>';try{const res=await fetch(API+'/api/buy-electricity',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({serviceID:document.getElementById('elecService').value,meterNum:meter,meterType:Number(document.getElementById('elecType').value),amount:Number(amt)})});const d=await res.json();if(d.success){r.innerHTML='<div class="result-msg success">✅ Electricity payment successful!</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ '+(d.error||'Failed')+'</div>';}}catch(err){r.innerHTML='<div class="result-msg error">❌ '+err.message+'</div>';}}
+function buyElectricity(e){e.preventDefault();var r=document.getElementById('elecResult');var meter=document.getElementById('elecMeter').value;var amt=document.getElementById('elecAmount').value;if(!meter||!amt){r.innerHTML='<div class="result-msg error">❌ Meter and Amount required</div>';return;}r.innerHTML='<div class="result-msg loading">⏳ Processing...</div>';fetch(API+'/api/buy-electricity',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({serviceID:document.getElementById('elecService').value,meterNum:meter,meterType:Number(document.getElementById('elecType').value),amount:Number(amt)})}).then(function(res){return res.json();}).then(function(d){if(d.success){r.innerHTML='<div class="result-msg success">✅ Electricity payment successful!</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ '+(d.error||'Failed')+'</div>';}}).catch(function(err){r.innerHTML='<div class="result-msg error">❌ '+err.message+'</div>';});}
 
-async function buyEducation(e){e.preventDefault();const r=document.getElementById('eduResult');r.innerHTML='<div class="result-msg loading">⏳ Processing...</div>';try{const res=await fetch(API+'/api/buy-education',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({serviceID:document.getElementById('eduService').value,quantity:Number(document.getElementById('eduQuantity').value)})});const d=await res.json();if(d.success){r.innerHTML='<div class="result-msg success">✅ Exam pin purchased!</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ '+(d.error||'Failed')+'</div>';}}catch(err){r.innerHTML='<div class="result-msg error">❌ '+err.message+'</div>';}}
+function buyEducation(e){e.preventDefault();var r=document.getElementById('eduResult');r.innerHTML='<div class="result-msg loading">⏳ Processing...</div>';fetch(API+'/api/buy-education',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({serviceID:document.getElementById('eduService').value,quantity:Number(document.getElementById('eduQuantity').value)})}).then(function(res){return res.json();}).then(function(d){if(d.success){r.innerHTML='<div class="result-msg success">✅ Exam pin purchased!</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ '+(d.error||'Failed')+'</div>';}}).catch(function(err){r.innerHTML='<div class="result-msg error">❌ '+err.message+'</div>';});}
 
-// ============================================
-// FUND WALLET WITH PAYSTACK - REAL PAYMENT
-// ============================================
-async function fundWallet(e) {
-    e.preventDefault();
-    const r = document.getElementById('fundResult');
-    const email = document.getElementById('fundEmail').value;
-    const amt = document.getElementById('fundAmount').value;
-    
-    if (!email) {
-        r.innerHTML = '<div class="result-msg error">❌ Email address is required</div>';
-        return;
-    }
-    if (!amt || amt < 100) {
-        r.innerHTML = '<div class="result-msg error">❌ Amount must be at least ₦100</div>';
-        return;
-    }
-    
-    r.innerHTML = '<div class="result-msg loading">⏳ Initializing payment...</div>';
-    
-    try {
-        const res = await fetch(API + '/api/fund-wallet-paystack', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email: email,
-                amount: Number(amt),
-                phone: phone
-            })
-        });
-        
-        const d = await res.json();
-        if (d.success) {
-            r.innerHTML = '<div class="result-msg success">✅ Redirecting to Paystack...</div>';
-            window.open(d.authorization_url, '_blank');
-            setTimeout(function() {
-                closeModal();
-                loadData();
-            }, 2000);
-        } else {
-            r.innerHTML = '<div class="result-msg error">❌ ' + (d.error || 'Payment initialization failed') + '</div>';
-        }
-    } catch (err) {
-        r.innerHTML = '<div class="result-msg error">❌ Connection error: ' + err.message + '</div>';
-    }
-}
+function fundWallet(e){e.preventDefault();var r=document.getElementById('fundResult');var email=document.getElementById('fundEmail').value;var amt=document.getElementById('fundAmount').value;if(!email){r.innerHTML='<div class="result-msg error">❌ Email required</div>';return;}if(!amt||amt<100){r.innerHTML='<div class="result-msg error">❌ Min ₦100</div>';return;}r.innerHTML='<div class="result-msg loading">⏳ Initializing...</div>';fetch(API+'/api/fund-wallet-paystack',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,amount:Number(amt),phone:phone})}).then(function(res){return res.json();}).then(function(d){if(d.success){r.innerHTML='<div class="result-msg success">✅ Redirecting to Paystack...</div>';window.open(d.authorization_url,'_blank');setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ '+(d.error||'Failed')+'</div>';}}).catch(function(err){r.innerHTML='<div class="result-msg error">❌ '+err.message+'</div>';});}
+
+function withdrawProfit(e){e.preventDefault();var r=document.getElementById('withdrawResult');var amt=document.getElementById('withdrawAmount').value;var bank=document.getElementById('withdrawBank').value;var acc=document.getElementById('withdrawAccount').value;var name=document.getElementById('withdrawName').value;if(!amt||amt<100){r.innerHTML='<div class="result-msg error">❌ Min ₦100</div>';return;}if(!bank||!acc||!name){r.innerHTML='<div class="result-msg error">❌ All bank details required</div>';return;}r.innerHTML='<div class="result-msg loading">⏳ Processing...</div>';fetch(API+'/api/withdraw-profit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:phone,amount:Number(amt),bankName:bank,accountNumber:acc,accountName:name})}).then(function(res){return res.json();}).then(function(d){if(d.success){r.innerHTML='<div class="result-msg success">✅ Withdrawal submitted!</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ '+(d.error||'Failed')+'</div>';}}).catch(function(err){r.innerHTML='<div class="result-msg error">❌ '+err.message+'</div>';});}
 
 // ============================================
-// WITHDRAW PROFIT
+// LOGOUT - SIMPLE AND WORKING
 // ============================================
-async function withdrawProfit(e){e.preventDefault();const r=document.getElementById('withdrawResult');const amt=document.getElementById('withdrawAmount').value;const bank=document.getElementById('withdrawBank').value;const acc=document.getElementById('withdrawAccount').value;const name=document.getElementById('withdrawName').value;if(!amt||amt<100){r.innerHTML='<div class="result-msg error">❌ Min ₦100</div>';return;}if(!bank||!acc||!name){r.innerHTML='<div class="result-msg error">❌ All bank details required</div>';return;}r.innerHTML='<div class="result-msg loading">⏳ Processing...</div>';try{const res=await fetch(API+'/api/withdraw-profit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:phone,amount:Number(amt),bankName:bank,accountNumber:acc,accountName:name})});const d=await res.json();if(d.success){r.innerHTML='<div class="result-msg success">✅ Withdrawal request submitted!</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ '+(d.error||'Failed')+'</div>';}}catch(err){r.innerHTML='<div class="result-msg error">❌ '+err.message+'</div>';}}
-
-// ============================================
-// LOGOUT - FIXED VERSION
-// ============================================
-document.getElementById('logoutBtn').addEventListener('click', function(e) {
-    e.preventDefault();
+document.getElementById('logoutBtn').addEventListener('click', function() {
     localStorage.clear();
     sessionStorage.clear();
-    window.location.href = '/';
+    window.location = '/';
 });
 
 // ============================================
-// LOAD DATA ONCE
+// LOAD DATA
 // ============================================
+if (!localStorage.getItem('user')) {
+    window.location = '/';
+}
 loadData();
 
 })();
