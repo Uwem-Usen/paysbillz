@@ -2,103 +2,218 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Paysbillz Dashboard</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; }
+        html, body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background: #f0f2f5; 
+            padding: 12px;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            width: 100%;
+        }
         
-        .header { background: linear-gradient(135deg, #1976d2, #0d47a1); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
-        .header h1 { font-size: 24px; margin-bottom: 5px; }
-        .header .phone { font-size: 14px; opacity: 0.8; }
+        .header { 
+            background: linear-gradient(135deg, #1976d2, #0d47a1); 
+            color: white; 
+            padding: 16px 20px; 
+            border-radius: 12px; 
+            margin-bottom: 16px; 
+        }
+        .header h1 { font-size: 22px; margin-bottom: 4px; }
+        .header .phone { font-size: 13px; opacity: 0.8; word-break: break-all; }
         
-        .balance-card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; justify-content: space-between; flex-wrap: wrap; }
-        .balance-item { text-align: center; padding: 10px; flex: 1; min-width: 100px; }
-        .balance-item .label { font-size: 12px; color: #888; }
-        .balance-item .amount { font-size: 24px; font-weight: bold; }
+        .balance-card { 
+            background: white; 
+            padding: 16px; 
+            border-radius: 12px; 
+            margin-bottom: 16px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+            display: flex; 
+            justify-content: space-around; 
+            flex-wrap: wrap;
+        }
+        .balance-item { 
+            text-align: center; 
+            padding: 6px 8px; 
+            flex: 1; 
+            min-width: 80px; 
+        }
+        .balance-item .label { font-size: 11px; color: #888; }
+        .balance-item .amount { font-size: 20px; font-weight: bold; }
         .balance-item .amount.primary { color: #1976d2; }
         .balance-item .amount.profit { color: #2e7d32; }
-<div class="menu-grid">
-    <button class="menu-item" onclick="openModal('data')">
-        <span class="icon">📱</span>
-        <span class="name">Buy Data</span>
-    </button>
-    <button class="menu-item" onclick="openModal('airtime')">
-        <span class="icon">📞</span>
-        <span class="name">Buy Airtime</span>
-    </button>
-    <button class="menu-item" onclick="openModal('tv')">
-        <span class="icon">📺</span>
-        <span class="name">TV</span>
-    </button>
-    <button class="menu-item" onclick="openModal('electricity')">
-        <span class="icon">💡</span>
-        <span class="name">Electricity</span>
-    </button>
-    <button class="menu-item" onclick="openModal('education')">
-        <span class="icon">📚</span>
-        <span class="name">Exam Pins</span>
-    </button>
-    <button class="menu-item fund" onclick="openModal('fund')">
-        <span class="icon">💳</span>
-        <span class="name">Fund</span>
-    </button>
-    <!-- ✅ ADD THIS WITHDRAW BUTTON -->
-    <button class="menu-item withdraw" onclick="openModal('withdraw')">
-        <span class="icon">💸</span>
-        <span class="name">Withdraw</span>
-    </button>
-    <!-- ✅ END OF WITHDRAW BUTTON -->
-    <button class="menu-item danger" onclick="logout()">
-        <span class="icon">🚪</span>
-        <span class="name">Logout</span>
-    </button>
-</div>
         
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
-        .menu-item { background: white; padding: 15px 10px; border-radius: 12px; text-align: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; text-decoration: none; color: #333; border: none; font-size: 14px; }
-        .menu-item:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .menu-item .icon { font-size: 28px; display: block; margin-bottom: 5px; }
-        .menu-item .name { font-size: 12px; font-weight: bold; }
+        .menu-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 8px; 
+            margin-bottom: 16px; 
+        }
+        .menu-item { 
+            background: white; 
+            padding: 12px 4px; 
+            border-radius: 10px; 
+            text-align: center; 
+            cursor: pointer; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08); 
+            text-decoration: none; 
+            color: #333; 
+            border: none; 
+            font-size: 12px; 
+            width: 100%;
+            transition: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .menu-item:active { 
+            transform: scale(0.96); 
+            opacity: 0.8;
+        }
+        .menu-item .icon { font-size: 24px; display: block; margin-bottom: 2px; }
+        .menu-item .name { font-size: 10px; font-weight: bold; }
         .menu-item.fund { background: linear-gradient(135deg, #2e7d32, #1b5e20); color: white; }
         .menu-item.danger { background: linear-gradient(135deg, #d32f2f, #b71c1c); color: white; }
+        .menu-item.withdraw { background: linear-gradient(135deg, #f57c00, #e65100); color: white; }
         
-        .card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .card h3 { margin-bottom: 15px; color: #333; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .card { 
+            background: white; 
+            padding: 16px; 
+            border-radius: 12px; 
+            margin-bottom: 16px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+        }
+        .card h3 { 
+            margin-bottom: 12px; 
+            color: #333; 
+            font-size: 15px; 
+            border-bottom: 1px solid #eee; 
+            padding-bottom: 8px; 
+        }
         
-        .transaction-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f5f5f5; align-items: center; flex-wrap: wrap; }
+        .transaction-item { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 8px 0; 
+            border-bottom: 1px solid #f5f5f5; 
+            align-items: center; 
+            flex-wrap: wrap; 
+        }
         .transaction-item .left { display: flex; flex-direction: column; }
-        .transaction-item .type { font-weight: bold; font-size: 14px; }
-        .transaction-item .date { font-size: 11px; color: #888; }
-        .transaction-item .amount { font-weight: bold; }
-        .transaction-item .status { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+        .transaction-item .type { font-weight: bold; font-size: 13px; }
+        .transaction-item .date { font-size: 10px; color: #888; }
+        .transaction-item .amount { font-weight: bold; font-size: 14px; }
+        .transaction-item .status { 
+            padding: 2px 10px; 
+            border-radius: 10px; 
+            font-size: 10px; 
+            font-weight: bold; 
+        }
         .status.success { background: #e8f5e9; color: #2e7d32; }
         .status.failed { background: #ffebee; color: #c62828; }
         .status.pending { background: #fff3e0; color: #e65100; }
-        .profit-badge { background: #e8f5e9; color: #2e7d32; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+        .profit-badge { 
+            background: #e8f5e9; 
+            color: #2e7d32; 
+            padding: 1px 8px; 
+            border-radius: 8px; 
+            font-size: 10px; 
+        }
         
-        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .btn { 
+            padding: 10px 16px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 14px; 
+            width: 100%;
+            touch-action: manipulation;
+        }
         .btn-primary { background: #1976d2; color: white; }
-        .btn-primary:hover { background: #1565c0; }
+        .btn-primary:active { background: #1565c0; }
         .btn-success { background: #2e7d32; color: white; }
-        .btn-success:hover { background: #1b5e20; }
-        .btn-danger { background: #d32f2f; color: white; }
-        .btn-danger:hover { background: #b71c1c; }
+        .btn-success:active { background: #1b5e20; }
+        .btn-withdraw { background: #f57c00; color: white; }
+        .btn-withdraw:active { background: #e65100; }
         
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.5); 
+            z-index: 1000; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 16px;
+            overflow-y: auto;
+        }
         .modal.show { display: flex; }
-        .modal-content { background: white; padding: 30px; border-radius: 12px; max-width: 450px; width: 90%; max-height: 80vh; overflow-y: auto; }
-        .modal-content h2 { margin-bottom: 15px; color: #1976d2; }
-        .modal-content input, .modal-content select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-        .modal-content .close { float: right; cursor: pointer; font-size: 24px; color: #888; }
-        .modal-content .close:hover { color: #333; }
-        .result-msg { margin-top: 10px; padding: 10px; border-radius: 8px; text-align: center; }
+        .modal-content { 
+            background: white; 
+            padding: 24px; 
+            border-radius: 12px; 
+            max-width: 450px; 
+            width: 100%; 
+            max-height: 90vh; 
+            overflow-y: auto; 
+            position: relative;
+            margin: auto;
+        }
+        .modal-content h2 { margin-bottom: 15px; color: #1976d2; font-size: 20px; }
+        .modal-content input, .modal-content select { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 8px 0; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            font-size: 14px; 
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .modal-content .close { 
+            float: right; 
+            cursor: pointer; 
+            font-size: 28px; 
+            color: #888; 
+            line-height: 1;
+            padding: 0 8px;
+        }
+        .modal-content .close:active { color: #333; }
+        .result-msg { 
+            margin-top: 10px; 
+            padding: 10px; 
+            border-radius: 8px; 
+            text-align: center; 
+            font-size: 14px; 
+        }
         .result-msg.success { background: #e8f5e9; color: #2e7d32; }
         .result-msg.error { background: #ffebee; color: #c62828; }
+        .result-msg { background: #fff3e0; color: #e65100; }
         
         @media (max-width: 600px) {
-            .balance-card { flex-direction: column; }
+            body { padding: 8px; }
+            .header h1 { font-size: 18px; }
+            .balance-item .amount { font-size: 17px; }
+            .menu-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+            .menu-item { padding: 10px 4px; }
+            .menu-item .icon { font-size: 20px; }
+            .menu-item .name { font-size: 9px; }
+            .modal-content { padding: 18px; margin: 10px; }
+            .balance-card { padding: 12px; }
+        }
+        
+        @media (max-width: 400px) {
             .menu-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
@@ -122,8 +237,8 @@
                 <div class="amount profit" id="profitDisplay">₦0.00</div>
             </div>
             <div class="balance-item">
-                <div class="label">Total Transactions</div>
-                <div class="amount" id="transactionCount" style="font-size:20px;color:#555;">0</div>
+                <div class="label">Transactions</div>
+                <div class="amount" id="transactionCount" style="font-size:18px;color:#555;">0</div>
             </div>
         </div>
 
@@ -131,15 +246,15 @@
         <div class="menu-grid">
             <button class="menu-item" onclick="openModal('data')">
                 <span class="icon">📱</span>
-                <span class="name">Buy Data</span>
+                <span class="name">Data</span>
             </button>
             <button class="menu-item" onclick="openModal('airtime')">
                 <span class="icon">📞</span>
-                <span class="name">Buy Airtime</span>
+                <span class="name">Airtime</span>
             </button>
             <button class="menu-item" onclick="openModal('tv')">
                 <span class="icon">📺</span>
-                <span class="name">TV Subscription</span>
+                <span class="name">TV</span>
             </button>
             <button class="menu-item" onclick="openModal('electricity')">
                 <span class="icon">💡</span>
@@ -151,7 +266,11 @@
             </button>
             <button class="menu-item fund" onclick="openModal('fund')">
                 <span class="icon">💳</span>
-                <span class="name">Fund Wallet</span>
+                <span class="name">Fund</span>
+            </button>
+            <button class="menu-item withdraw" onclick="openModal('withdraw')">
+                <span class="icon">💸</span>
+                <span class="name">Withdraw</span>
             </button>
             <button class="menu-item danger" onclick="logout()">
                 <span class="icon">🚪</span>
@@ -163,7 +282,7 @@
         <div class="card">
             <h3>📋 Recent Transactions</h3>
             <div id="transactions">
-                <p style="color:#888;text-align:center;">No transactions yet.</p>
+                <p style="color:#888;text-align:center;font-size:14px;">No transactions yet.</p>
             </div>
         </div>
     </div>
@@ -210,7 +329,7 @@
             const container = document.getElementById('transactions');
             
             if (!transactions || transactions.length === 0) {
-                container.innerHTML = '<p style="color:#888;text-align:center;">No transactions yet.</p>';
+                container.innerHTML = '<p style="color:#888;text-align:center;font-size:14px;">No transactions yet.</p>';
                 return;
             }
             
@@ -220,17 +339,19 @@
                 const amount = Number(t.amount || 0);
                 const profit = Number(t.profit || 0);
                 const date = t.created_at ? new Date(t.created_at).toLocaleDateString() : 'N/A';
+                const type = t.type || 'Transaction';
                 
                 html += `
                     <div class="transaction-item">
                         <div class="left">
-                            <span class="type">${t.type || 'Transaction'}</span>
+                            <span class="type">${type}</span>
                             <span class="date">${date}</span>
-                            ${t.plan ? `<span style="font-size:11px;color:#888;">${t.plan}</span>` : ''}
+                            ${t.plan ? `<span style="font-size:10px;color:#888;">${t.plan}</span>` : ''}
+                            ${t.bankName ? `<span style="font-size:10px;color:#888;">${t.bankName}</span>` : ''}
                         </div>
                         <div style="text-align:right;">
                             <div class="amount">₦${amount.toFixed(2)}</div>
-                            ${profit > 0 ? `<span class="profit-badge">+₦${profit.toFixed(2)} profit</span>` : ''}
+                            ${profit > 0 ? `<span class="profit-badge">+₦${profit.toFixed(2)}</span>` : ''}
                             <span class="status ${statusClass}">${statusClass.toUpperCase()}</span>
                         </div>
                     </div>
@@ -249,6 +370,7 @@
             const body = document.getElementById('modalBody');
             
             modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
             
             switch(type) {
                 case 'data':
@@ -267,7 +389,7 @@
                                 <option value="GLO_500MB">GLO 500MB - ₦400</option>
                                 <option value="GLO_1GB">GLO 1GB - ₦700</option>
                             </select>
-                            <button type="submit" class="btn btn-primary" style="width:100%;">Buy Data</button>
+                            <button type="submit" class="btn btn-primary">Buy Data</button>
                         </form>
                         <div id="dataResult"></div>
                     `;
@@ -279,7 +401,7 @@
                         <form onsubmit="buyAirtime(event)">
                             <input type="text" id="airtimePhone" value="${userPhone}" placeholder="Phone Number">
                             <input type="number" id="airtimeAmount" placeholder="Amount (min ₦50)" min="50">
-                            <button type="submit" class="btn btn-primary" style="width:100%;">Buy Airtime</button>
+                            <button type="submit" class="btn btn-primary">Buy Airtime</button>
                         </form>
                         <div id="airtimeResult"></div>
                     `;
@@ -301,7 +423,7 @@
                                 <option value="97">GOTV Jinja - ₦3,900</option>
                                 <option value="95">GOTV Max - ₦8,500</option>
                             </select>
-                            <button type="submit" class="btn btn-primary" style="width:100%;">Subscribe</button>
+                            <button type="submit" class="btn btn-primary">Subscribe</button>
                         </form>
                         <div id="tvResult"></div>
                     `;
@@ -327,7 +449,7 @@
                                 <option value="2">Postpaid</option>
                             </select>
                             <input type="number" id="elecAmount" placeholder="Amount">
-                            <button type="submit" class="btn btn-primary" style="width:100%;">Pay</button>
+                            <button type="submit" class="btn btn-primary">Pay</button>
                         </form>
                         <div id="elecResult"></div>
                     `;
@@ -343,7 +465,7 @@
                                 <option value="3">NABTEB - ₦900</option>
                             </select>
                             <input type="number" id="eduQuantity" value="1" min="1" placeholder="Quantity">
-                            <button type="submit" class="btn btn-primary" style="width:100%;">Buy Pin</button>
+                            <button type="submit" class="btn btn-primary">Buy Pin</button>
                         </form>
                         <div id="eduResult"></div>
                     `;
@@ -353,13 +475,32 @@
                     title.textContent = '💳 Fund Wallet';
                     body.innerHTML = `
                         <form onsubmit="fundWallet(event)">
-                            <div style="background:#e3f2fd;padding:15px;border-radius:8px;margin-bottom:15px;">
-                                <p style="font-size:14px;color:#555;margin:0;">💡 Enter amount and click "Add Funds" to credit your wallet instantly.</p>
+                            <div style="background:#e3f2fd;padding:12px;border-radius:8px;margin-bottom:12px;">
+                                <p style="font-size:13px;color:#555;margin:0;">💡 Enter amount to credit your wallet instantly.</p>
                             </div>
                             <input type="number" id="fundAmount" placeholder="Amount (min ₦100)" min="100" required>
-                            <button type="submit" class="btn btn-success" style="width:100%;">💳 Add Funds</button>
+                            <button type="submit" class="btn btn-success">💳 Add Funds</button>
                         </form>
                         <div id="fundResult"></div>
+                    `;
+                    break;
+
+                case 'withdraw':
+                    title.textContent = '💸 Withdraw Profit';
+                    body.innerHTML = `
+                        <form onsubmit="withdrawProfit(event)">
+                            <div style="background:#fff3e0;padding:12px;border-radius:8px;margin-bottom:12px;">
+                                <p style="font-size:13px;color:#555;margin:0;">
+                                    💰 Available: <strong id="withdrawBalance">₦${document.getElementById('profitDisplay').textContent.replace(/[^0-9.]/g, '') || '0'}</strong>
+                                </p>
+                            </div>
+                            <input type="number" id="withdrawAmount" placeholder="Amount (min ₦100)" min="100" required>
+                            <input type="text" id="withdrawBank" placeholder="Bank Name (e.g., GTBank)" required>
+                            <input type="text" id="withdrawAccount" placeholder="Account Number" required>
+                            <input type="text" id="withdrawName" placeholder="Account Name" required>
+                            <button type="submit" class="btn btn-withdraw">💸 Request Withdrawal</button>
+                        </form>
+                        <div id="withdrawResult"></div>
                     `;
                     break;
             }
@@ -367,6 +508,7 @@
 
         function closeModal() {
             document.getElementById('modal').classList.remove('show');
+            document.body.style.overflow = 'auto';
         }
 
         // Click outside to close
@@ -394,7 +536,7 @@
                 
                 const data = await response.json();
                 if (data.success) {
-                    resultDiv.innerHTML = `<div class="result-msg success">✅ Success! Data purchased. Profit: ₦${data.result.profit || 0}</div>`;
+                    resultDiv.innerHTML = `<div class="result-msg success">✅ Success! Profit: ₦${data.result.profit || 0}</div>`;
                     setTimeout(() => { closeModal(); loadDashboard(); }, 2000);
                 } else {
                     resultDiv.innerHTML = `<div class="result-msg error">❌ ${data.error || 'Purchase failed'}</div>`;
@@ -426,7 +568,7 @@
                 
                 const data = await response.json();
                 if (data.success) {
-                    resultDiv.innerHTML = `<div class="result-msg success">✅ Success! Airtime purchased. Profit: ₦${data.result.profit || 0}</div>`;
+                    resultDiv.innerHTML = `<div class="result-msg success">✅ Success! Profit: ₦${data.result.profit || 0}</div>`;
                     setTimeout(() => { closeModal(); loadDashboard(); }, 2000);
                 } else {
                     resultDiv.innerHTML = `<div class="result-msg error">❌ ${data.error || 'Purchase failed'}</div>`;
@@ -458,7 +600,7 @@
                 
                 const data = await response.json();
                 if (data.success) {
-                    resultDiv.innerHTML = `<div class="result-msg success">✅ TV Subscription successful!</div>`;
+                    resultDiv.innerHTML = '<div class="result-msg success">✅ TV Subscription successful!</div>';
                     setTimeout(() => { closeModal(); loadDashboard(); }, 2000);
                 } else {
                     resultDiv.innerHTML = `<div class="result-msg error">❌ ${data.error || 'Subscription failed'}</div>`;
@@ -492,7 +634,7 @@
                 
                 const data = await response.json();
                 if (data.success) {
-                    resultDiv.innerHTML = `<div class="result-msg success">✅ Electricity payment successful!</div>`;
+                    resultDiv.innerHTML = '<div class="result-msg success">✅ Electricity payment successful!</div>';
                     setTimeout(() => { closeModal(); loadDashboard(); }, 2000);
                 } else {
                     resultDiv.innerHTML = `<div class="result-msg error">❌ ${data.error || 'Payment failed'}</div>`;
@@ -519,7 +661,7 @@
                 
                 const data = await response.json();
                 if (data.success) {
-                    resultDiv.innerHTML = `<div class="result-msg success">✅ Exam pin purchased successfully!</div>`;
+                    resultDiv.innerHTML = '<div class="result-msg success">✅ Exam pin purchased successfully!</div>';
                     setTimeout(() => { closeModal(); loadDashboard(); }, 2000);
                 } else {
                     resultDiv.innerHTML = `<div class="result-msg error">❌ ${data.error || 'Purchase failed'}</div>`;
@@ -530,7 +672,7 @@
         }
 
         // ============================================
-        // Fund Wallet - Manual (Instant Credit)
+        // Fund Wallet
         // ============================================
         async function fundWallet(e) {
             e.preventDefault();
@@ -545,7 +687,6 @@
             resultDiv.innerHTML = '<div class="result-msg">⏳ Processing...</div>';
             
             try {
-                // Call the /api/fund-wallet endpoint
                 const response = await fetch(`${API_URL}/api/fund-wallet`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -557,10 +698,58 @@
                 
                 const data = await response.json();
                 if (data.success) {
-                    resultDiv.innerHTML = `<div class="result-msg success">✅ Wallet funded successfully! ₦${Number(amount).toLocaleString()} added.</div>`;
+                    resultDiv.innerHTML = `<div class="result-msg success">✅ ₦${Number(amount).toLocaleString()} added!</div>`;
                     setTimeout(() => { closeModal(); loadDashboard(); }, 1500);
                 } else {
                     resultDiv.innerHTML = `<div class="result-msg error">❌ ${data.error || 'Funding failed'}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result-msg error">❌ Connection error: ${error.message}</div>`;
+            }
+        }
+
+        // ============================================
+        // WITHDRAW PROFIT
+        // ============================================
+        async function withdrawProfit(e) {
+            e.preventDefault();
+            const amount = document.getElementById('withdrawAmount').value;
+            const bank = document.getElementById('withdrawBank').value;
+            const account = document.getElementById('withdrawAccount').value;
+            const name = document.getElementById('withdrawName').value;
+            const resultDiv = document.getElementById('withdrawResult');
+            
+            if (!amount || amount < 100) {
+                resultDiv.innerHTML = '<div class="result-msg error">❌ Amount must be at least ₦100</div>';
+                return;
+            }
+            
+            if (!bank || !account || !name) {
+                resultDiv.innerHTML = '<div class="result-msg error">❌ Please fill all bank details</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="result-msg">⏳ Processing withdrawal request...</div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/withdraw-profit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        phone: userPhone, 
+                        amount: Number(amount),
+                        bankName: bank,
+                        accountNumber: account,
+                        accountName: name
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    resultDiv.innerHTML = `<div class="result-msg success">✅ Withdrawal request submitted!</div>`;
+                    setTimeout(() => { closeModal(); loadDashboard(); }, 2000);
+                } else {
+                    resultDiv.innerHTML = `<div class="result-msg error">❌ ${data.error || 'Withdrawal failed'}</div>`;
                 }
             } catch (error) {
                 resultDiv.innerHTML = `<div class="result-msg error">❌ Connection error: ${error.message}</div>`;
