@@ -235,12 +235,13 @@ async function fundWallet(e) {
 async function withdrawProfit(e){e.preventDefault();const r=document.getElementById('withdrawResult');const amt=document.getElementById('withdrawAmount').value;const bank=document.getElementById('withdrawBank').value;const acc=document.getElementById('withdrawAccount').value;const name=document.getElementById('withdrawName').value;if(!amt||amt<100){r.innerHTML='<div class="result-msg error">❌ Min ₦100</div>';return;}if(!bank||!acc||!name){r.innerHTML='<div class="result-msg error">❌ All bank details required</div>';return;}r.innerHTML='<div class="result-msg loading">⏳ Processing...</div>';try{const res=await fetch(API+'/api/withdraw-profit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:phone,amount:Number(amt),bankName:bank,accountNumber:acc,accountName:name})});const d=await res.json();if(d.success){r.innerHTML='<div class="result-msg success">✅ Withdrawal request submitted!</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ '+(d.error||'Failed')+'</div>';}}catch(err){r.innerHTML='<div class="result-msg error">❌ '+err.message+'</div>';}}
 
 // ============================================
-// LOGOUT
+// LOGOUT - FIXED VERSION
 // ============================================
-document.getElementById('logoutBtn').addEventListener('click',function(){
- localStorage.clear();
- sessionStorage.clear();
- window.location.replace('/');
+document.getElementById('logoutBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = '/';
 });
 
 // ============================================
