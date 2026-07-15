@@ -19,6 +19,42 @@
         .balance-item .amount { font-size: 24px; font-weight: bold; }
         .balance-item .amount.primary { color: #1976d2; }
         .balance-item .amount.profit { color: #2e7d32; }
+<div class="menu-grid">
+    <button class="menu-item" onclick="openModal('data')">
+        <span class="icon">📱</span>
+        <span class="name">Buy Data</span>
+    </button>
+    <button class="menu-item" onclick="openModal('airtime')">
+        <span class="icon">📞</span>
+        <span class="name">Buy Airtime</span>
+    </button>
+    <button class="menu-item" onclick="openModal('tv')">
+        <span class="icon">📺</span>
+        <span class="name">TV</span>
+    </button>
+    <button class="menu-item" onclick="openModal('electricity')">
+        <span class="icon">💡</span>
+        <span class="name">Electricity</span>
+    </button>
+    <button class="menu-item" onclick="openModal('education')">
+        <span class="icon">📚</span>
+        <span class="name">Exam Pins</span>
+    </button>
+    <button class="menu-item fund" onclick="openModal('fund')">
+        <span class="icon">💳</span>
+        <span class="name">Fund</span>
+    </button>
+    <!-- ✅ ADD THIS WITHDRAW BUTTON -->
+    <button class="menu-item withdraw" onclick="openModal('withdraw')">
+        <span class="icon">💸</span>
+        <span class="name">Withdraw</span>
+    </button>
+    <!-- ✅ END OF WITHDRAW BUTTON -->
+    <button class="menu-item danger" onclick="logout()">
+        <span class="icon">🚪</span>
+        <span class="name">Logout</span>
+    </button>
+</div>
         
         .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
         .menu-item { background: white; padding: 15px 10px; border-radius: 12px; text-align: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; text-decoration: none; color: #333; border: none; font-size: 14px; }
