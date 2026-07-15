@@ -13,11 +13,13 @@
             min-height: 100vh;
             overflow-x: hidden;
             -webkit-text-size-adjust: 100%;
+            -webkit-font-smoothing: antialiased;
         }
         .container { 
             max-width: 900px; 
             margin: 0 auto; 
             width: 100%;
+            min-height: 100vh;
         }
         
         .header { 
@@ -26,9 +28,12 @@
             padding: 16px 20px; 
             border-radius: 12px; 
             margin-bottom: 16px; 
+            position: relative;
+            z-index: 1;
         }
         .header h1 { font-size: 22px; margin-bottom: 4px; }
         .header .phone { font-size: 13px; opacity: 0.9; word-break: break-all; }
+        .header .phone .loading-text { opacity: 0.7; }
         
         .balance-card { 
             background: white; 
@@ -39,6 +44,7 @@
             display: flex; 
             justify-content: space-around; 
             flex-wrap: wrap;
+            min-height: 80px;
         }
         .balance-item { 
             text-align: center; 
@@ -47,7 +53,7 @@
             min-width: 80px; 
         }
         .balance-item .label { font-size: 11px; color: #888; }
-        .balance-item .amount { font-size: 20px; font-weight: bold; }
+        .balance-item .amount { font-size: 20px; font-weight: bold; transition: none; }
         .balance-item .amount.primary { color: #1976d2; }
         .balance-item .amount.profit { color: #2e7d32; }
         
@@ -64,18 +70,17 @@
             text-align: center; 
             cursor: pointer; 
             box-shadow: 0 2px 6px rgba(0,0,0,0.08); 
-            text-decoration: none; 
-            color: #333; 
             border: none; 
             font-size: 12px; 
             width: 100%;
             transition: none;
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
         }
         .menu-item:active { 
-            transform: scale(0.96); 
-            opacity: 0.8;
+            transform: scale(0.95); 
         }
         .menu-item .icon { font-size: 24px; display: block; margin-bottom: 2px; }
         .menu-item .name { font-size: 10px; font-weight: bold; }
@@ -89,6 +94,7 @@
             border-radius: 12px; 
             margin-bottom: 16px; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+            min-height: 100px;
         }
         .card h3 { 
             margin-bottom: 12px; 
@@ -106,6 +112,7 @@
             align-items: center; 
             flex-wrap: wrap; 
         }
+        .transaction-item:last-child { border-bottom: none; }
         .transaction-item .left { display: flex; flex-direction: column; }
         .transaction-item .type { font-weight: bold; font-size: 13px; }
         .transaction-item .date { font-size: 10px; color: #888; }
@@ -115,6 +122,7 @@
             border-radius: 10px; 
             font-size: 10px; 
             font-weight: bold; 
+            display: inline-block;
         }
         .status.success { background: #e8f5e9; color: #2e7d32; }
         .status.failed { background: #ffebee; color: #c62828; }
@@ -125,6 +133,7 @@
             padding: 1px 8px; 
             border-radius: 8px; 
             font-size: 10px; 
+            display: inline-block;
         }
         
         .btn { 
@@ -136,13 +145,13 @@
             font-size: 14px; 
             width: 100%;
             touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
         }
+        .btn:active { transform: scale(0.98); }
         .btn-primary { background: #1976d2; color: white; }
-        .btn-primary:active { background: #1565c0; }
         .btn-success { background: #2e7d32; color: white; }
-        .btn-success:active { background: #1b5e20; }
         .btn-withdraw { background: #f57c00; color: white; }
-        .btn-withdraw:active { background: #e65100; }
         
         .modal { 
             display: none; 
@@ -169,6 +178,11 @@
             overflow-y: auto; 
             position: relative;
             margin: auto;
+            animation: modalFadeIn 0.2s ease;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
         .modal-content h2 { margin-bottom: 15px; color: #1976d2; font-size: 20px; }
         .modal-content input, .modal-content select { 
@@ -199,7 +213,14 @@
         }
         .result-msg.success { background: #e8f5e9; color: #2e7d32; }
         .result-msg.error { background: #ffebee; color: #c62828; }
-        .result-msg { background: #fff3e0; color: #e65100; }
+        .result-msg.loading { background: #fff3e0; color: #e65100; }
+        
+        .no-transactions {
+            color: #888;
+            text-align: center;
+            font-size: 14px;
+            padding: 20px 0;
+        }
         
         @media (max-width: 600px) {
             body { padding: 8px; }
@@ -216,11 +237,6 @@
         @media (max-width: 400px) {
             .menu-grid { grid-template-columns: repeat(2, 1fr); }
         }
-        
-        .loading-text {
-            color: #ffd54f;
-            font-size: 13px;
-        }
     </style>
 </head>
 <body>
@@ -232,7 +248,7 @@
         </div>
 
         <!-- Balance -->
-        <div class="balance-card" id="balanceCard">
+        <div class="balance-card">
             <div class="balance-item">
                 <div class="label">Wallet Balance</div>
                 <div class="amount primary" id="balanceDisplay">₦0.00</div>
@@ -287,7 +303,7 @@
         <div class="card">
             <h3>📋 Recent Transactions</h3>
             <div id="transactions">
-                <p style="color:#888;text-align:center;font-size:14px;">No transactions yet.</p>
+                <p class="no-transactions">Loading transactions...</p>
             </div>
         </div>
     </div>
@@ -302,36 +318,51 @@
     </div>
 
     <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
         const API_URL = 'https://paysbillz-api.onrender.com';
         let userPhone = localStorage.getItem('userPhone') || '08027449527';
+        let isLoading = false;
+
+        // ============================================
+        // INIT - Load immediately
+        // ============================================
+        // Show phone from localStorage immediately
+        if (localStorage.getItem('userPhone')) {
+            document.getElementById('phoneDisplay').innerHTML = 'Phone: <strong>' + localStorage.getItem('userPhone') + '</strong>';
+        }
 
         // ============================================
         // Load User Data
         // ============================================
         async function loadDashboard() {
+            if (isLoading) return;
+            isLoading = true;
+            
             try {
-                // Update phone immediately from localStorage
-                const savedPhone = localStorage.getItem('userPhone');
-                if (savedPhone) {
-                    document.getElementById('phoneDisplay').innerHTML = 'Phone: <strong>' + savedPhone + '</strong>';
-                }
-                
                 const response = await fetch(`${API_URL}/api/profile?phone=${userPhone}`);
                 const data = await response.json();
                 
                 if (data.success) {
                     const user = data.user;
+                    
+                    // Update phone
                     document.getElementById('phoneDisplay').innerHTML = 'Phone: <strong>' + user.phone + '</strong>';
+                    
+                    // Update balances
                     document.getElementById('balanceDisplay').textContent = '₦' + Number(user.balance || 0).toLocaleString();
                     document.getElementById('profitDisplay').textContent = '₦' + Number(user.profitBalance || 0).toLocaleString();
                     document.getElementById('transactionCount').textContent = user.transactions ? user.transactions.length : 0;
                     
+                    // Update transactions
                     renderTransactions(user.transactions);
                 }
             } catch (error) {
                 console.error('❌ Error loading dashboard:', error);
-                // Keep showing the phone from localStorage if API fails
             }
+            
+            isLoading = false;
         }
 
         // ============================================
@@ -341,12 +372,14 @@
             const container = document.getElementById('transactions');
             
             if (!transactions || transactions.length === 0) {
-                container.innerHTML = '<p style="color:#888;text-align:center;font-size:14px;">No transactions yet.</p>';
+                container.innerHTML = '<p class="no-transactions">No transactions yet.</p>';
                 return;
             }
             
             let html = '';
-            transactions.slice().reverse().slice(0, 10).forEach(t => {
+            const latest = transactions.slice().reverse().slice(0, 10);
+            
+            latest.forEach(t => {
                 const statusClass = t.status || 'pending';
                 const amount = Number(t.amount || 0);
                 const profit = Number(t.profit || 0);
@@ -537,7 +570,7 @@
             const plan = document.getElementById('dataPlan').value;
             const resultDiv = document.getElementById('dataResult');
             
-            resultDiv.innerHTML = '<div class="result-msg">⏳ Processing...</div>';
+            resultDiv.innerHTML = '<div class="result-msg loading">⏳ Processing...</div>';
             
             try {
                 const response = await fetch(`${API_URL}/api/buy-data`, {
@@ -569,7 +602,7 @@
                 return;
             }
             
-            resultDiv.innerHTML = '<div class="result-msg">⏳ Processing...</div>';
+            resultDiv.innerHTML = '<div class="result-msg loading">⏳ Processing...</div>';
             
             try {
                 const response = await fetch(`${API_URL}/api/buy-airtime`, {
@@ -601,7 +634,7 @@
                 return;
             }
             
-            resultDiv.innerHTML = '<div class="result-msg">⏳ Processing...</div>';
+            resultDiv.innerHTML = '<div class="result-msg loading">⏳ Processing...</div>';
             
             try {
                 const response = await fetch(`${API_URL}/api/buy-tv`, {
@@ -635,7 +668,7 @@
                 return;
             }
             
-            resultDiv.innerHTML = '<div class="result-msg">⏳ Processing...</div>';
+            resultDiv.innerHTML = '<div class="result-msg loading">⏳ Processing...</div>';
             
             try {
                 const response = await fetch(`${API_URL}/api/buy-electricity`, {
@@ -662,7 +695,7 @@
             const quantity = document.getElementById('eduQuantity').value;
             const resultDiv = document.getElementById('eduResult');
             
-            resultDiv.innerHTML = '<div class="result-msg">⏳ Processing...</div>';
+            resultDiv.innerHTML = '<div class="result-msg loading">⏳ Processing...</div>';
             
             try {
                 const response = await fetch(`${API_URL}/api/buy-education`, {
@@ -696,7 +729,7 @@
                 return;
             }
             
-            resultDiv.innerHTML = '<div class="result-msg">⏳ Processing...</div>';
+            resultDiv.innerHTML = '<div class="result-msg loading">⏳ Processing...</div>';
             
             try {
                 const response = await fetch(`${API_URL}/api/fund-wallet`, {
@@ -741,7 +774,7 @@
                 return;
             }
             
-            resultDiv.innerHTML = '<div class="result-msg">⏳ Processing withdrawal request...</div>';
+            resultDiv.innerHTML = '<div class="result-msg loading">⏳ Processing withdrawal request...</div>';
             
             try {
                 const response = await fetch(`${API_URL}/api/withdraw-profit`, {
@@ -784,18 +817,9 @@
         }
 
         // ============================================
-        // Load Dashboard
+        // Load Dashboard - Only once on page load
         // ============================================
-        // Show phone immediately from localStorage
-        const savedPhone = localStorage.getItem('userPhone');
-        if (savedPhone) {
-            document.getElementById('phoneDisplay').innerHTML = 'Phone: <strong>' + savedPhone + '</strong>';
-        }
-        
         loadDashboard();
-
-        // Refresh every 30 seconds
-        setInterval(loadDashboard, 30000);
     </script>
 </body>
 </html>
