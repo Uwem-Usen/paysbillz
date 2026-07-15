@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paysbillz</title>
+<style>
+body{font-family:Arial;background:#f0f2f5;padding:12px;margin:0}
+.container{max-width:900px;margin:0 auto}
+.header{background:linear-gradient(135deg,#1976d2,#0d47a1);color:#fff;padding:16px 20px;border-radius:12px;margin-bottom:16px}
+.header h1{font-size:22px;margin:0}
+.header .phone{font-size:13px;opacity:.9;margin-top:4px}
+.balance-card{background:#fff;padding:16px;border-radius:12px;margin-bottom:16px;display:flex;justify-content:space-around;flex-wrap:wrap}
+.balance-item{text-align:center;padding:6px 8px;flex:1;min-width:80px}
+.balance-item .label{font-size:11px;color:#888}
+.balance-item .amount{font-size:20px;font-weight:bold}
+.balance-item .amount.primary{color:#1976d2}
+.balance-item .amount.profit{color:#2e7d32}
+.menu-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.menu-item{background:#fff;padding:12px 4px;border-radius:10px;text-align:center;cursor:pointer;border:none;font-size:12px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.menu-item .icon{font-size:24px;display:block}
+.menu-item .name{font-size:10px;font-weight:bold}
+.menu-item.fund{background:linear-gradient(135deg,#2e7d32,#1b5e20);color:#fff}
+.menu-item.danger{background:linear-gradient(135deg,#d32f2f,#b71c1c);color:#fff}
+.menu-item.withdraw{background:linear-gradient(135deg,#f57c00,#e65100);color:#fff}
+.card{background:#fff;padding:16px;border-radius:12px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.card h3{margin-bottom:12px;color:#333;border-bottom:1px solid #eee;padding-bottom:8px}
+.transaction-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5}
+.status{padding:2px 10px;border-radius:10px;font-size:10px;font-weight:bold}
+.status.success{background:#e8f5e9;color:#2e7d32}
+.no-transactions{color:#888;text-align:center;padding:20px 0}
+.btn{padding:10px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:14px;width:100%}
+.btn-primary{background:#1976d2;color:#fff}
+.btn-success{background:#2e7d32;color:#fff}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;justify-content:center;align-items:center;padding:16px}
+.modal.show{display:flex}
+.modal-content{background:#fff;padding:24px;border-radius:12px;max-width:450px;width:100%;max-height:90vh;overflow-y:auto}
+.modal-content h2{margin-bottom:15px;color:#1976d2;font-size:20px}
+.modal-content input,.modal-content select{width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;font-size:14px}
+.modal-content .close{float:right;cursor:pointer;font-size:28px;color:#888;background:none;border:none}
+.result-msg{margin-top:10px;padding:10px;border-radius:8px;text-align:center}
+.result-msg.success{background:#e8f5e9;color:#2e7d32}
+.result-msg.error{background:#ffebee;color:#c62828}
+.result-msg.loading{background:#fff3e0;color:#e65100}
+@media(max-width:600px){.menu-grid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header"><h1>💰 Paysbillz</h1><div class="phone" id="phoneDisplay">Loading...</div></div>
+<div class="balance-card">
+<div class="balance-item"><div class="label">Wallet</div><div class="amount primary" id="balanceDisplay">₦0.00</div></div>
+<div class="balance-item"><div class="label">Profit</div><div class="amount profit" id="profitDisplay">₦0.00</div></div>
+<div class="balance-item"><div class="label">Txns</div><div class="amount" id="transactionCount" style="font-size:18px;color:#555;">0</div></div>
+</div>
+<div class="menu-grid">
+<button class="menu-item" onclick="openModal('data')"><span class="icon">📱</span><span class="name">Data</span></button>
+<button class="menu-item" onclick="openModal('airtime')"><span class="icon">📞</span><span class="name">Airtime</span></button>
+<button class="menu-item" onclick="openModal('tv')"><span class="icon">📺</span><span class="name">TV</span></button>
+<button class="menu-item" onclick="openModal('electricity')"><span class="icon">💡</span><span class="name">Electricity</span></button>
+<button class="menu-item" onclick="openModal('education')"><span class="icon">📚</span><span class="name">Exam Pins</span></button>
+<button class="menu-item fund" onclick="openModal('fund')"><span class="icon">💳</span><span class="name">Fund</span></button>
+<button class="menu-item withdraw" onclick="openModal('withdraw')"><span class="icon">💸</span><span class="name">Withdraw</span></button>
+<button class="menu-item danger" id="logoutBtn"><span class="icon">🚪</span><span class="name">Logout</span></button>
+</div>
+<div class="card"><h3>📋 Recent</h3><div id="transactions"><p class="no-transactions">Loading...</p></div></div>
+</div>
+<div class="modal" id="modal"><div class="modal-content"><button class="close" onclick="closeModal()">&times;</button><h2 id="modalTitle">Service</h2><div id="modalBody"></div></div></div>
+<script>
+var API='https://paysbillz-api.onrender.com';
+var phone=localStorage.getItem('userPhone')||'08027449527';
+
+document.getElementById('phoneDisplay').textContent='Phone: '+phone;
+
+function loadData(){
+ fetch(API+'/api/profile?phone='+phone)
+ .then(r=>r.json())
+ .then(d=>{
+  if(d.success){
+   var u=d.user;
+   document.getElementById('phoneDisplay').textContent='Phone: '+u.phone;
+   document.getElementById('balanceDisplay').textContent='₦'+(u.balance||0).toLocaleString();
+   document.getElementById('profitDisplay').textContent='₦'+(u.profitBalance||0).toLocaleString();
+   document.getElementById('transactionCount').textContent=u.transactions?u.transactions.length:0;
+   var c=document.getElementById('transactions');
+   var t=u.transactions||[];
+   if(t.length===0){c.innerHTML='<p class="no-transactions">No transactions yet.</p>';return;}
+   var h='';
+   for(var i=t.length-1;i>=Math.max(0,t.length-10);i--){
+    var x=t[i];
+    h+='<div class="transaction-item"><span>'+(x.type||'Txn')+'</span><span>₦'+(x.amount||0).toFixed(2)+'</span></div>';
+   }
+   c.innerHTML=h;
+  }
+ });
+}
+
+function openModal(type){
+ var m=document.getElementById('modal');
+ var t=document.getElementById('modalTitle');
+ var b=document.getElementById('modalBody');
+ m.classList.add('show');
+ var forms={
+ data:'<form onsubmit="buyData(event)"><input type="text" id="dataPhone" value="'+phone+'" placeholder="Phone"><select id="dataPlan"><option value="MTN_SME_500MB">MTN SME 500MB - ₦500</option><option value="MTN_SME_1GB">MTN SME 1GB - ₦800</option><option value="MTN_SME_2GB">MTN SME 2GB - ₦1,200</option><option value="MTN_SME_3GB">MTN SME 3GB - ₦1,500</option><option value="MTN_SME_5GB">MTN SME 5GB - ₦2,000</option><option value="AIRTEL_500MB">AIRTEL 500MB - ₦450</option><option value="AIRTEL_1GB">AIRTEL 1GB - ₦750</option><option value="GLO_500MB">GLO 500MB - ₦400</option><option value="GLO_1GB">GLO 1GB - ₦700</option></select><button type="submit" class="btn btn-primary">Buy Data</button></form><div id="dataResult"></div>',
+ airtime:'<form onsubmit="buyAirtime(event)"><input type="text" id="airtimePhone" value="'+phone+'" placeholder="Phone"><input type="number" id="airtimeAmount" placeholder="Amount" min="50"><button type="submit" class="btn btn-primary">Buy Airtime</button></form><div id="airtimeResult"></div>',
+ tv:'<form onsubmit="buyTV(event)"><input type="text" id="tvIuc" placeholder="Smart Card"><select id="tvService"><option value="90">DSTV Padi - ₦4,400</option><option value="94">GOTV Smallie - ₦1,900</option></select><button type="submit" class="btn btn-primary">Subscribe</button></form><div id="tvResult"></div>',
+ electricity:'<form onsubmit="buyElectricity(event)"><select id="elecService"><option value="1">IKEDC</option><option value="2">EKEDC</option></select><input type="text" id="elecMeter" placeholder="Meter"><input type="number" id="elecAmount" placeholder="Amount"><button type="submit" class="btn btn-primary">Pay</button></form><div id="elecResult"></div>',
+ education:'<form onsubmit="buyEducation(event)"><select id="eduService"><option value="1">WAEC - ₦5,250</option><option value="2">NECO - ₦2,250</option></select><input type="number" id="eduQuantity" value="1"><button type="submit" class="btn btn-primary">Buy Pin</button></form><div id="eduResult"></div>',
+ fund:'<form onsubmit="fundWallet(event)"><input type="email" id="fundEmail" placeholder="Email" required><input type="number" id="fundAmount" placeholder="Amount (min ₦100)" min="100" required><button type="submit" class="btn btn-success">💳 Pay with Paystack</button></form><div id="fundResult"></div>',
+ withdraw:'<form onsubmit="withdrawProfit(event)"><input type="number" id="withdrawAmount" placeholder="Amount" min="100"><input type="text" id="withdrawBank" placeholder="Bank"><input type="text" id="withdrawAccount" placeholder="Account"><input type="text" id="withdrawName" placeholder="Name"><button type="submit" class="btn btn-withdraw">💸 Request</button></form><div id="withdrawResult"></div>'
+ };
+ var titles={data:'📱 Data',airtime:'📞 Airtime',tv:'📺 TV',electricity:'💡 Electricity',education:'📚 Exam Pins',fund:'💳 Fund',withdraw:'💸 Withdraw'};
+ t.textContent=titles[type]||'Service';
+ b.innerHTML=forms[type]||'<p>Invalid</p>';
+}
+
+function closeModal(){document.getElementById('modal').classList.remove('show');}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+function buyData(e){e.preventDefault();var r=document.getElementById('dataResult');r.innerHTML='<div class="result-msg loading">Processing...</div>';fetch(API+'/api/buy-data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:document.getElementById('dataPhone').value,plan:document.getElementById('dataPlan').value})}).then(r=>r.json()).then(d=>{if(d.success){r.innerHTML='<div class="result-msg success">✅ Success!</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ Failed</div>';}}).catch(()=>{r.innerHTML='<div class="result-msg error">❌ Error</div>';});}
+
+function buyAirtime(e){e.preventDefault();var r=document.getElementById('airtimeResult');var amt=document.getElementById('airtimeAmount').value;if(!amt||amt<50){r.innerHTML='<div class="result-msg error">Min ₦50</div>';return;}r.innerHTML='<div class="result-msg loading">Processing...</div>';fetch(API+'/api/buy-airtime',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:document.getElementById('airtimePhone').value,amount:Number(amt)})}).then(r=>r.json()).then(d=>{if(d.success){r.innerHTML='<div class="result-msg success">✅ Success!</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ Failed</div>';}}).catch(()=>{r.innerHTML='<div class="result-msg error">❌ Error</div>';});}
+
+function buyTV(e){e.preventDefault();var r=document.getElementById('tvResult');fetch(API+'/api/buy-tv',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({serviceID:document.getElementById('tvService').value,iucNum:document.getElementById('tvIuc').value})}).then(r=>r.json()).then(d=>{if(d.success){r.innerHTML='<div class="result-msg success">✅ Subscribed!</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ Failed</div>';}}).catch(()=>{r.innerHTML='<div class="result-msg error">❌ Error</div>';});}
+
+function buyElectricity(e){e.preventDefault();var r=document.getElementById('elecResult');fetch(API+'/api/buy-electricity',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({serviceID:document.getElementById('elecService').value,meterNum:document.getElementById('elecMeter').value,meterType:1,amount:Number(document.getElementById('elecAmount').value)})}).then(r=>r.json()).then(d=>{if(d.success){r.innerHTML='<div class="result-msg success">✅ Paid!</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ Failed</div>';}}).catch(()=>{r.innerHTML='<div class="result-msg error">❌ Error</div>';});}
+
+function buyEducation(e){e.preventDefault();var r=document.getElementById('eduResult');fetch(API+'/api/buy-education',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({serviceID:document.getElementById('eduService').value,quantity:Number(document.getElementById('eduQuantity').value)})}).then(r=>r.json()).then(d=>{if(d.success){r.innerHTML='<div class="result-msg success">✅ Pin purchased!</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ Failed</div>';}}).catch(()=>{r.innerHTML='<div class="result-msg error">❌ Error</div>';});}
+
+function fundWallet(e){e.preventDefault();var r=document.getElementById('fundResult');fetch(API+'/api/fund-wallet-paystack',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:document.getElementById('fundEmail').value,amount:Number(document.getElementById('fundAmount').value),phone:phone})}).then(r=>r.json()).then(d=>{if(d.success){r.innerHTML='<div class="result-msg success">✅ Redirecting...</div>';window.open(d.authorization_url,'_blank');setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ Failed</div>';}}).catch(()=>{r.innerHTML='<div class="result-msg error">❌ Error</div>';});}
+
+function withdrawProfit(e){e.preventDefault();var r=document.getElementById('withdrawResult');fetch(API+'/api/withdraw-profit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:phone,amount:Number(document.getElementById('withdrawAmount').value),bankName:document.getElementById('withdrawBank').value,accountNumber:document.getElementById('withdrawAccount').value,accountName:document.getElementById('withdrawName').value})}).then(r=>r.json()).then(d=>{if(d.success){r.innerHTML='<div class="result-msg success">✅ Request submitted!</div>';setTimeout(function(){closeModal();loadData();},2000);}else{r.innerHTML='<div class="result-msg error">❌ Failed</div>';}}).catch(()=>{r.innerHTML='<div class="result-msg error">❌ Error</div>';});}
+
+document.getElementById('logoutBtn').addEventListener('click',function(){localStorage.clear();sessionStorage.clear();window.location='/';});
+
+if(!localStorage.getItem('user')){window.location='/';}
+loadData();
+</script>
+</body>
+</html>
