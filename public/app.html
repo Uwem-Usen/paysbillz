@@ -11,6 +11,7 @@ html,body{font-family:Arial,sans-serif;background:#f0f2f5;padding:12px;overflow-
 .header{background:linear-gradient(135deg,#1976d2,#0d47a1);color:#fff;padding:16px 20px;border-radius:12px;margin-bottom:16px}
 .header h1{font-size:22px;margin-bottom:4px}
 .header .phone{font-size:13px;opacity:.9}
+.header .name-display{font-size:12px;opacity:0.8;margin-top:2px}
 .balance-card{background:#fff;padding:16px;border-radius:12px;margin-bottom:16px;display:flex;justify-content:space-around;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.1)}
 .balance-item{text-align:center;padding:6px 8px;flex:1;min-width:80px}
 .balance-item .label{font-size:11px;color:#888}
@@ -60,7 +61,11 @@ html,body{font-family:Arial,sans-serif;background:#f0f2f5;padding:12px;overflow-
 </head>
 <body>
 <div class="container">
-<div class="header"><h1>💰 Paysbillz</h1><div class="phone" id="phoneDisplay">Loading...</div></div>
+<div class="header">
+    <h1>💰 Paysbillz</h1>
+    <div class="phone" id="phoneDisplay">Loading...</div>
+    <div class="name-display" id="nameDisplay"></div>
+</div>
 <div class="balance-card">
 <div class="balance-item"><div class="label">Wallet</div><div class="amount primary" id="balanceDisplay">₦0.00</div></div>
 <div class="balance-item"><div class="label">Profit</div><div class="amount profit" id="profitDisplay">₦0.00</div></div>
@@ -87,6 +92,10 @@ const phone=localStorage.getItem('userPhone')||'08027449527';
 let loading=false;
 let loaded=false;
 
+// Display user name from localStorage
+const userName = localStorage.getItem('userName') || 'Customer';
+document.getElementById('nameDisplay').textContent = '👤 ' + userName;
+
 document.getElementById('phoneDisplay').textContent='Phone: '+phone;
 
 async function loadData(){
@@ -98,6 +107,11 @@ async function loadData(){
   if(d.success){
    const u=d.user;
    document.getElementById('phoneDisplay').textContent='Phone: '+u.phone;
+   // Update name from server
+   if(u.name) {
+       document.getElementById('nameDisplay').textContent = '👤 ' + u.name;
+       localStorage.setItem('userName', u.name);
+   }
    document.getElementById('balanceDisplay').textContent='₦'+(u.balance||0).toLocaleString();
    document.getElementById('profitDisplay').textContent='₦'+(u.profitBalance||0).toLocaleString();
    document.getElementById('transactionCount').textContent=u.transactions?u.transactions.length:0;
