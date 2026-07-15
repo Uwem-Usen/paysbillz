@@ -1,25 +1,548 @@
 ﻿<!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"><title>Dashboard - Paysbillz</title>
-<style>body{font-family:Arial;background:#f0f2f5;margin:0;padding:20px}.container{max-width:800px;margin:0 auto}.card{background:white;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);margin-bottom:20px}h2{color:#1976d2;margin:0}.balance{font-size:24px;color:#2e7d32;font-weight:bold}.phone{color:#555}.menu{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.menu a{background:#1976d2;color:white;padding:10px 20px;border-radius:5px;text-decoration:none}.menu a:hover{background:#1565c0}.logout{background:#d32f2f !important}.logout:hover{background:#c62828 !important}.transactions{margin-top:20px}.transaction-item{border-bottom:1px solid #eee;padding:10px 0}.success{color:green}.failed{color:red}
-</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paysbillz Dashboard</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        
+        .header { background: linear-gradient(135deg, #1976d2, #0d47a1); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .header h1 { font-size: 24px; margin-bottom: 5px; }
+        .header .phone { font-size: 14px; opacity: 0.8; }
+        
+        .balance-card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; justify-content: space-between; flex-wrap: wrap; }
+        .balance-item { text-align: center; padding: 10px; }
+        .balance-item .label { font-size: 12px; color: #888; }
+        .balance-item .amount { font-size: 24px; font-weight: bold; }
+        .balance-item .amount.primary { color: #1976d2; }
+        .balance-item .amount.profit { color: #2e7d32; }
+        
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .menu-item { background: white; padding: 20px 10px; border-radius: 12px; text-align: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; text-decoration: none; color: #333; }
+        .menu-item:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .menu-item .icon { font-size: 30px; display: block; margin-bottom: 8px; }
+        .menu-item .name { font-size: 13px; font-weight: bold; }
+        
+        .card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .card h3 { margin-bottom: 15px; color: #333; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        
+        .transaction-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f5f5f5; align-items: center; flex-wrap: wrap; }
+        .transaction-item .left { display: flex; flex-direction: column; }
+        .transaction-item .type { font-weight: bold; font-size: 14px; }
+        .transaction-item .date { font-size: 11px; color: #888; }
+        .transaction-item .amount { font-weight: bold; }
+        .transaction-item .status { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+        .status.success { background: #e8f5e9; color: #2e7d32; }
+        .status.failed { background: #ffebee; color: #c62828; }
+        .status.pending { background: #fff3e0; color: #e65100; }
+        .profit-badge { background: #e8f5e9; color: #2e7d32; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+        
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn-primary { background: #1976d2; color: white; }
+        .btn-danger { background: #d32f2f; color: white; }
+        .btn-success { background: #2e7d32; color: white; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal.show { display: flex; }
+        .modal-content { background: white; padding: 30px; border-radius: 12px; max-width: 400px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .modal-content h2 { margin-bottom: 15px; color: #1976d2; }
+        .modal-content input, .modal-content select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        .modal-content .close { float: right; cursor: pointer; font-size: 24px; color: #888; }
+        .modal-content .close:hover { color: #333; }
+        
+        @media (max-width: 600px) {
+            .balance-card { flex-direction: column; }
+            .menu-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-<div class="card"><h2>💰 Paysbillz Dashboard</h2><p class="phone" id="phoneDisplay">Phone: Loading...</p><p>Balance: <span class="balance" id="balanceDisplay">₦0.00</span></p>
-<div class="menu"><a href="#">Buy Data</a><a href="#">Buy Airtime</a><a href="#" onclick="logout()" class="logout">Logout</a></div></div>
-<div class="card"><h3>Recent Transactions</h3><div id="transactions"><p>Loading transactions...</p></div></div>
-</div>
-<script>
-const API_URL='https://paysbillz-api.onrender.com';
-function getUser(){const u=localStorage.getItem('user');return u?JSON.parse(u):null}
-function getPhone(){return localStorage.getItem('userPhone')||'Not logged in'}
-function getBalance(){return localStorage.getItem('userBalance')||'0'}
-function displayUserInfo(){document.getElementById('phoneDisplay').textContent='Phone: '+getPhone();document.getElementById('balanceDisplay').textContent='₦'+parseFloat(getBalance()).toFixed(2)}
-async function loadTransactions(){const phone=getPhone();if(!phone||phone==='Not logged in')return;try{const r=await fetch(API_URL+'/api/transactions?phone='+phone);const d=await r.json();const c=document.getElementById('transactions');if(d.success&&d.transactions.length>0){let html='';d.transactions.slice(-5).reverse().forEach(t=>{const cls=t.status==='success'?'success':'failed';html+=`<div class="transaction-item"><strong>${t.type||'Transaction'}</strong><span>₦${t.amount||0}</span><span class="${cls}">${t.status||'pending'}</span><small style="color:#888;display:block;">${new Date(t.created_at).toLocaleString()}</small></div>`});c.innerHTML=html}else{c.innerHTML='<p>No transactions yet.</p>'}}catch(e){document.getElementById('transactions').innerHTML='<p>Error loading transactions.</p>'}}
-function logout(){localStorage.clear();window.location.href='/'}
-if(!getUser()){window.location.href='/'}
-displayUserInfo();loadTransactions();
-</script>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>💰 Paysbillz</h1>
+            <div class="phone" id="phoneDisplay">Phone: Loading...</div>
+        </div>
+
+        <!-- Balance -->
+        <div class="balance-card" id="balanceCard">
+            <div class="balance-item">
+                <div class="label">Wallet Balance</div>
+                <div class="amount primary" id="balanceDisplay">₦0.00</div>
+            </div>
+            <div class="balance-item">
+                <div class="label">Profit Balance</div>
+                <div class="amount profit" id="profitDisplay">₦0.00</div>
+            </div>
+            <div class="balance-item">
+                <div class="label">Total Transactions</div>
+                <div class="amount" id="transactionCount" style="font-size:20px;color:#555;">0</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="menu-grid">
+            <a href="#" class="menu-item" onclick="openModal('data')">
+                <span class="icon">📱</span>
+                <span class="name">Buy Data</span>
+            </a>
+            <a href="#" class="menu-item" onclick="openModal('airtime')">
+                <span class="icon">📞</span>
+                <span class="name">Buy Airtime</span>
+            </a>
+            <a href="#" class="menu-item" onclick="openModal('tv')">
+                <span class="icon">📺</span>
+                <span class="name">TV Subscription</span>
+            </a>
+            <a href="#" class="menu-item" onclick="openModal('electricity')">
+                <span class="icon">💡</span>
+                <span class="name">Electricity</span>
+            </a>
+            <a href="#" class="menu-item" onclick="openModal('education')">
+                <span class="icon">📚</span>
+                <span class="name">Exam Pins</span>
+            </a>
+            <a href="#" class="menu-item" onclick="openModal('fund')">
+                <span class="icon">💳</span>
+                <span class="name">Fund Wallet</span>
+            </a>
+            <a href="#" class="menu-item" onclick="logout()">
+                <span class="icon">🚪</span>
+                <span class="name">Logout</span>
+            </a>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="card">
+            <h3>📋 Recent Transactions</h3>
+            <div id="transactions">
+                <p style="color:#888;text-align:center;">No transactions yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Buy Service</h2>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://paysbillz-api.onrender.com';
+        let userPhone = localStorage.getItem('userPhone') || '08027449527';
+
+        // ============================================
+        // Load User Data
+        // ============================================
+        async function loadDashboard() {
+            try {
+                const response = await fetch(`${API_URL}/api/profile?phone=${userPhone}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const user = data.user;
+                    document.getElementById('phoneDisplay').textContent = 'Phone: ' + user.phone;
+                    document.getElementById('balanceDisplay').textContent = '₦' + Number(user.balance || 0).toLocaleString();
+                    document.getElementById('profitDisplay').textContent = '₦' + Number(user.profitBalance || 0).toLocaleString();
+                    document.getElementById('transactionCount').textContent = user.transactions ? user.transactions.length : 0;
+                    
+                    renderTransactions(user.transactions);
+                }
+            } catch (error) {
+                console.error('❌ Error loading dashboard:', error);
+            }
+        }
+
+        // ============================================
+        // Render Transactions
+        // ============================================
+        function renderTransactions(transactions) {
+            const container = document.getElementById('transactions');
+            
+            if (!transactions || transactions.length === 0) {
+                container.innerHTML = '<p style="color:#888;text-align:center;">No transactions yet.</p>';
+                return;
+            }
+            
+            let html = '';
+            transactions.slice().reverse().slice(0, 10).forEach(t => {
+                const statusClass = t.status || 'pending';
+                const amount = Number(t.amount || 0);
+                const profit = Number(t.profit || 0);
+                const date = t.created_at ? new Date(t.created_at).toLocaleDateString() : 'N/A';
+                
+                html += `
+                    <div class="transaction-item">
+                        <div class="left">
+                            <span class="type">${t.type || 'Transaction'}</span>
+                            <span class="date">${date}</span>
+                            ${t.plan ? `<span style="font-size:11px;color:#888;">${t.plan}</span>` : ''}
+                        </div>
+                        <div style="text-align:right;">
+                            <div class="amount">₦${amount.toFixed(2)}</div>
+                            ${profit > 0 ? `<span class="profit-badge">+₦${profit.toFixed(2)} profit</span>` : ''}
+                            <span class="status ${statusClass}">${statusClass.toUpperCase()}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // ============================================
+        // Modal Functions
+        // ============================================
+        function openModal(type) {
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+            
+            modal.classList.add('show');
+            
+            switch(type) {
+                case 'data':
+                    title.textContent = '📱 Buy Data';
+                    body.innerHTML = `
+                        <form onsubmit="buyData(event)">
+                            <input type="text" id="dataPhone" value="${userPhone}" placeholder="Phone Number">
+                            <select id="dataPlan">
+                                <option value="MTN_SME_500MB">MTN SME 500MB - ₦500</option>
+                                <option value="MTN_SME_1GB">MTN SME 1GB - ₦800</option>
+                                <option value="MTN_SME_2GB">MTN SME 2GB - ₦1200</option>
+                                <option value="MTN_SME_3GB">MTN SME 3GB - ₦1500</option>
+                                <option value="MTN_SME_5GB">MTN SME 5GB - ₦2000</option>
+                                <option value="AIRTEL_500MB">AIRTEL 500MB - ₦450</option>
+                                <option value="AIRTEL_1GB">AIRTEL 1GB - ₦750</option>
+                                <option value="GLO_500MB">GLO 500MB - ₦400</option>
+                                <option value="GLO_1GB">GLO 1GB - ₦700</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Buy Data</button>
+                        </form>
+                        <div id="dataResult"></div>
+                    `;
+                    break;
+                    
+                case 'airtime':
+                    title.textContent = '📞 Buy Airtime';
+                    body.innerHTML = `
+                        <form onsubmit="buyAirtime(event)">
+                            <input type="text" id="airtimePhone" value="${userPhone}" placeholder="Phone Number">
+                            <input type="number" id="airtimeAmount" placeholder="Amount (min ₦50)" min="50">
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Buy Airtime</button>
+                        </form>
+                        <div id="airtimeResult"></div>
+                    `;
+                    break;
+                    
+                case 'tv':
+                    title.textContent = '📺 TV Subscription';
+                    body.innerHTML = `
+                        <form onsubmit="buyTV(event)">
+                            <input type="text" id="tvIuc" placeholder="Smart Card Number (e.g., 7027914329)">
+                            <select id="tvService">
+                                <option value="90">DSTV Padi - ₦4,400</option>
+                                <option value="91">DSTV Yanga - ₦6,000</option>
+                                <option value="92">DSTV Confam - ₦11,000</option>
+                                <option value="93">DSTV Compact - ₦19,000</option>
+                                <option value="105">DSTV Compact Plus - ₦30,000</option>
+                                <option value="94">GOTV Smallie - ₦1,900</option>
+                                <option value="96">GOTV Jolli - ₦5,800</option>
+                                <option value="97">GOTV Jinja - ₦3,900</option>
+                                <option value="95">GOTV Max - ₦8,500</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Subscribe</button>
+                        </form>
+                        <div id="tvResult"></div>
+                    `;
+                    break;
+                    
+                case 'electricity':
+                    title.textContent = '💡 Pay Electricity';
+                    body.innerHTML = `
+                        <form onsubmit="buyElectricity(event)">
+                            <select id="elecService">
+                                <option value="1">IKEDC</option>
+                                <option value="2">EKEDC</option>
+                                <option value="3">KEDCO</option>
+                                <option value="4">PHED</option>
+                                <option value="5">JED</option>
+                                <option value="6">IBEDC</option>
+                                <option value="8">AEDC</option>
+                                <option value="9">EEDC</option>
+                            </select>
+                            <input type="text" id="elecMeter" placeholder="Meter Number">
+                            <select id="elecType">
+                                <option value="1">Prepaid</option>
+                                <option value="2">Postpaid</option>
+                            </select>
+                            <input type="number" id="elecAmount" placeholder="Amount">
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Pay</button>
+                        </form>
+                        <div id="elecResult"></div>
+                    `;
+                    break;
+                    
+                case 'education':
+                    title.textContent = '📚 Buy Exam Pins';
+                    body.innerHTML = `
+                        <form onsubmit="buyEducation(event)">
+                            <select id="eduService">
+                                <option value="1">WAEC - ₦5,250</option>
+                                <option value="2">NECO - ₦2,250</option>
+                                <option value="3">NABTEB - ₦900</option>
+                            </select>
+                            <input type="number" id="eduQuantity" value="1" min="1" placeholder="Quantity">
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Buy Pin</button>
+                        </form>
+                        <div id="eduResult"></div>
+                    `;
+                    break;
+                    
+                case 'fund':
+                    title.textContent = '💳 Fund Wallet';
+                    body.innerHTML = `
+                        <form onsubmit="fundWallet(event)">
+                            <input type="email" id="fundEmail" placeholder="Email Address" required>
+                            <input type="number" id="fundAmount" placeholder="Amount (min ₦100)" min="100" required>
+                            <button type="submit" class="btn btn-success" style="width:100%;">Pay with Paystack</button>
+                        </form>
+                        <div id="fundResult"></div>
+                    `;
+                    break;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+
+        // Click outside to close
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // ============================================
+        // Buy Functions
+        // ============================================
+        async function buyData(e) {
+            e.preventDefault();
+            const phone = document.getElementById('dataPhone').value;
+            const plan = document.getElementById('dataPlan').value;
+            const resultDiv = document.getElementById('dataResult');
+            
+            resultDiv.innerHTML = '⏳ Processing...';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/buy-data`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, plan })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    resultDiv.innerHTML = `✅ Success! Data purchased. Profit: ₦${data.result.profit || 0}`;
+                    setTimeout(() => { closeModal(); loadDashboard(); }, 2000);
+                } else {
+                    resultDiv.innerHTML = `❌ ${data.error || 'Purchase failed'}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '❌ Connection error: ' + error.message;
+            }
+        }
+
+        async function buyAirtime(e) {
+            e.preventDefault();
+            const phone = document.getElementById('airtimePhone').value;
+            const amount = document.getElementById('airtimeAmount').value;
+            const resultDiv = document.getElementById('airtimeResult');
+            
+            if (!amount || amount < 50) {
+                resultDiv.innerHTML = '❌ Amount must be at least ₦50';
+                return;
+            }
+            
+            resultDiv.innerHTML = '⏳ Processing...';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/buy-airtime`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, amount: Number(amount) })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    resultDiv.innerHTML = `✅ Success! Airtime purchased. Profit: ₦${data.result.profit || 0}`;
+                    setTimeout(() => { closeModal(); loadDashboard(); }, 2000);
+                } else {
+                    resultDiv.innerHTML = `❌ ${data.error || 'Purchase failed'}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '❌ Connection error: ' + error.message;
+            }
+        }
+
+        async function buyTV(e) {
+            e.preventDefault();
+            const serviceID = document.getElementById('tvService').value;
+            const iucNum = document.getElementById('tvIuc').value;
+            const resultDiv = document.getElementById('tvResult');
+            
+            if (!iucNum) {
+                resultDiv.innerHTML = '❌ Smart Card Number is required';
+                return;
+            }
+            
+            resultDiv.innerHTML = '⏳ Processing...';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/buy-tv`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ serviceID, iucNum })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    resultDiv.innerHTML = `✅ TV Subscription successful!`;
+                    setTimeout(() => { closeModal(); loadDashboard(); }, 2000);
+                } else {
+                    resultDiv.innerHTML = `❌ ${data.error || 'Subscription failed'}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '❌ Connection error: ' + error.message;
+            }
+        }
+
+        async function buyElectricity(e) {
+            e.preventDefault();
+            const serviceID = document.getElementById('elecService').value;
+            const meterNum = document.getElementById('elecMeter').value;
+            const meterType = document.getElementById('elecType').value;
+            const amount = document.getElementById('elecAmount').value;
+            const resultDiv = document.getElementById('elecResult');
+            
+            if (!meterNum || !amount) {
+                resultDiv.innerHTML = '❌ Meter Number and Amount are required';
+                return;
+            }
+            
+            resultDiv.innerHTML = '⏳ Processing...';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/buy-electricity`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ serviceID, meterNum, meterType: Number(meterType), amount: Number(amount) })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    resultDiv.innerHTML = `✅ Electricity payment successful!`;
+                    setTimeout(() => { closeModal(); loadDashboard(); }, 2000);
+                } else {
+                    resultDiv.innerHTML = `❌ ${data.error || 'Payment failed'}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '❌ Connection error: ' + error.message;
+            }
+        }
+
+        async function buyEducation(e) {
+            e.preventDefault();
+            const serviceID = document.getElementById('eduService').value;
+            const quantity = document.getElementById('eduQuantity').value;
+            const resultDiv = document.getElementById('eduResult');
+            
+            resultDiv.innerHTML = '⏳ Processing...';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/buy-education`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ serviceID, quantity: Number(quantity) })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    resultDiv.innerHTML = `✅ Exam pin purchased successfully!`;
+                    setTimeout(() => { closeModal(); loadDashboard(); }, 2000);
+                } else {
+                    resultDiv.innerHTML = `❌ ${data.error || 'Purchase failed'}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '❌ Connection error: ' + error.message;
+            }
+        }
+
+        async function fundWallet(e) {
+            e.preventDefault();
+            const email = document.getElementById('fundEmail').value;
+            const amount = document.getElementById('fundAmount').value;
+            const resultDiv = document.getElementById('fundResult');
+            
+            if (!email || !amount || amount < 100) {
+                resultDiv.innerHTML = '❌ Please enter valid email and amount (min ₦100)';
+                return;
+            }
+            
+            resultDiv.innerHTML = '⏳ Initializing payment...';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/initialize-payment`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email, 
+                        amount: Number(amount), 
+                        phone: userPhone 
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    resultDiv.innerHTML = `✅ Redirecting to payment...`;
+                    setTimeout(() => {
+                        window.open(data.authorization_url, '_blank');
+                    }, 1000);
+                } else {
+                    resultDiv.innerHTML = `❌ ${data.error || 'Payment initialization failed'}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '❌ Connection error: ' + error.message;
+            }
+        }
+
+        // ============================================
+        // Logout
+        // ============================================
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/';
+        }
+
+        // ============================================
+        // Check login
+        // ============================================
+        if (!localStorage.getItem('user')) {
+            window.location.href = '/';
+        }
+
+        // ============================================
+        // Load Dashboard
+        // ============================================
+        loadDashboard();
+
+        // Refresh every 30 seconds
+        setInterval(loadDashboard, 30000);
+    </script>
 </body>
 </html>
