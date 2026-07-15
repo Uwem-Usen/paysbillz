@@ -1,121 +1,25 @@
 ﻿<!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard - Paysbillz</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        h2 { color: #1976d2; margin: 0; }
-        .balance { font-size: 24px; color: #2e7d32; font-weight: bold; }
-        .phone { color: #555; }
-        .menu { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-        .menu a { background: #1976d2; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; }
-        .menu a:hover { background: #1565c0; }
-        .logout { background: #d32f2f !important; }
-        .logout:hover { background: #c62828 !important; }
-        .transactions { margin-top: 20px; }
-        .transaction-item { border-bottom: 1px solid #eee; padding: 10px 0; }
-        .success { color: green; }
-        .failed { color: red; }
-    </style>
+<head><meta charset="UTF-8"><title>Dashboard - Paysbillz</title>
+<style>body{font-family:Arial;background:#f0f2f5;margin:0;padding:20px}.container{max-width:800px;margin:0 auto}.card{background:white;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);margin-bottom:20px}h2{color:#1976d2;margin:0}.balance{font-size:24px;color:#2e7d32;font-weight:bold}.phone{color:#555}.menu{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.menu a{background:#1976d2;color:white;padding:10px 20px;border-radius:5px;text-decoration:none}.menu a:hover{background:#1565c0}.logout{background:#d32f2f !important}.logout:hover{background:#c62828 !important}.transactions{margin-top:20px}.transaction-item{border-bottom:1px solid #eee;padding:10px 0}.success{color:green}.failed{color:red}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <h2>💰 Paysbillz Dashboard</h2>
-            <p class="phone" id="phoneDisplay">Phone: Loading...</p>
-            <p>Balance: <span class="balance" id="balanceDisplay">₦0.00</span></p>
-            <div class="menu">
-                <a href="/buy-data.html">Buy Data</a>
-                <a href="/buy-airtime.html">Buy Airtime</a>
-                <a href="#" onclick="logout()" class="logout">Logout</a>
-            </div>
-        </div>
-        
-        <div class="card">
-            <h3>Quick Actions</h3>
-            <div class="menu">
-                <a href="#">MTN Data</a>
-                <a href="#">Airtel Data</a>
-                <a href="#">GLO Data</a>
-                <a href="#">TV Subscriptions</a>
-                <a href="#">Electricity</a>
-            </div>
-        </div>
-        
-        <div class="card">
-            <h3>Recent Transactions</h3>
-            <div id="transactions" class="transactions">
-                <p>Loading transactions...</p>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const API_URL = 'https://paysbillz-api.onrender.com';
-        
-        function getUser() {
-            const user = localStorage.getItem('user');
-            return user ? JSON.parse(user) : null;
-        }
-        
-        function getPhone() {
-            return localStorage.getItem('userPhone') || 'Not logged in';
-        }
-        
-        function getBalance() {
-            return localStorage.getItem('userBalance') || '0';
-        }
-        
-        function displayUserInfo() {
-            document.getElementById('phoneDisplay').textContent = 'Phone: ' + getPhone();
-            document.getElementById('balanceDisplay').textContent = '₦' + parseFloat(getBalance()).toFixed(2);
-        }
-        
-        async function loadTransactions() {
-            const phone = getPhone();
-            if (!phone || phone === 'Not logged in') return;
-            
-            try {
-                const response = await fetch(API_URL + '/api/transactions?phone=' + phone);
-                const data = await response.json();
-                
-                const container = document.getElementById('transactions');
-                if (data.success && data.transactions.length > 0) {
-                    let html = '';
-                    data.transactions.slice(-5).reverse().forEach(t => {
-                        const statusClass = t.status === 'success' ? 'success' : 'failed';
-                        html += `<div class="transaction-item">
-                            <strong>${t.type || 'Transaction'}</strong>
-                            <span>₦${t.amount || 0}</span>
-                            <span class="${statusClass}">${t.status || 'pending'}</span>
-                            <small style="color:#888;display:block;">${new Date(t.created_at).toLocaleString()}</small>
-                        </div>`;
-                    });
-                    container.innerHTML = html;
-                } else {
-                    container.innerHTML = '<p>No transactions yet.</p>';
-                }
-            } catch (error) {
-                document.getElementById('transactions').innerHTML = '<p>Error loading transactions.</p>';
-            }
-        }
-        
-        function logout() {
-            localStorage.clear();
-            window.location.href = '/';
-        }
-        
-        // Check if user is logged in
-        if (!getUser()) {
-            window.location.href = '/';
-        }
-        
-        // Display user info
-        displayUserInfo();
-        loadTransactions();
-    </script>
+<div class="container">
+<div class="card"><h2>💰 Paysbillz Dashboard</h2><p class="phone" id="phoneDisplay">Phone: Loading...</p><p>Balance: <span class="balance" id="balanceDisplay">₦0.00</span></p>
+<div class="menu"><a href="#">Buy Data</a><a href="#">Buy Airtime</a><a href="#" onclick="logout()" class="logout">Logout</a></div></div>
+<div class="card"><h3>Recent Transactions</h3><div id="transactions"><p>Loading transactions...</p></div></div>
+</div>
+<script>
+const API_URL='https://paysbillz-api.onrender.com';
+function getUser(){const u=localStorage.getItem('user');return u?JSON.parse(u):null}
+function getPhone(){return localStorage.getItem('userPhone')||'Not logged in'}
+function getBalance(){return localStorage.getItem('userBalance')||'0'}
+function displayUserInfo(){document.getElementById('phoneDisplay').textContent='Phone: '+getPhone();document.getElementById('balanceDisplay').textContent='₦'+parseFloat(getBalance()).toFixed(2)}
+async function loadTransactions(){const phone=getPhone();if(!phone||phone==='Not logged in')return;try{const r=await fetch(API_URL+'/api/transactions?phone='+phone);const d=await r.json();const c=document.getElementById('transactions');if(d.success&&d.transactions.length>0){let html='';d.transactions.slice(-5).reverse().forEach(t=>{const cls=t.status==='success'?'success':'failed';html+=`<div class="transaction-item"><strong>${t.type||'Transaction'}</strong><span>₦${t.amount||0}</span><span class="${cls}">${t.status||'pending'}</span><small style="color:#888;display:block;">${new Date(t.created_at).toLocaleString()}</small></div>`});c.innerHTML=html}else{c.innerHTML='<p>No transactions yet.</p>'}}catch(e){document.getElementById('transactions').innerHTML='<p>Error loading transactions.</p>'}}
+function logout(){localStorage.clear();window.location.href='/'}
+if(!getUser()){window.location.href='/'}
+displayUserInfo();loadTransactions();
+</script>
 </body>
 </html>
