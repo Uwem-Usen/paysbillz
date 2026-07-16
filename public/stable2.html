@@ -78,23 +78,27 @@ body{font-family:Arial,sans-serif;background:#f0f2f5;padding:12px;overflow-x:hid
 <button class="menu-item danger" id="logoutBtn"><span class="icon">🚪</span><span class="name">Logout</span></button>
 </div>
 <div class="card"><h3>📋 Recent</h3><div id="transactions"><p class="no-transactions">Loading...</p></div></div>
-<div class="version">v12 - Stable</div>
+<div class="version">v13 - Stable</div>
 </div>
 <div class="modal" id="modal"><div class="modal-content"><button class="close" onclick="closeModal()">&times;</button><h2 id="modalTitle">Service</h2><div id="modalBody"></div></div></div>
 <script>
 // ============================================
-// COMPLETELY STANDALONE - NO REDIRECTS
+// COMPLETELY STABLE - NO RELOADS EVER
 // ============================================
 
 // Get phone from localStorage or use default
 var phone = localStorage.getItem('userPhone') || '08027449527';
 var API = 'https://paysbillz-api.onrender.com';
+var dataLoaded = false;
 
 // Show phone immediately
 document.getElementById('phoneDisplay').textContent = 'Phone: ' + phone;
 
-// Load data - only once
+// Load data - ONLY ONCE
 function loadData() {
+    if (dataLoaded) return;
+    dataLoaded = true;
+    
     var url = API + '/api/profile?phone=' + phone;
     
     fetch(url)
@@ -379,25 +383,34 @@ function withdrawProfit(e) {
 }
 
 // ============================================
-// LOGOUT - NO REDIRECT, JUST CLEAR DATA
+// LOGOUT - NO REDIRECT, NO RELOAD
 // ============================================
-document.getElementById('logoutBtn').addEventListener('click', function() {
+document.getElementById('logoutBtn').addEventListener('click', function(e) {
+    e.preventDefault();
     // Clear all storage
     localStorage.clear();
     sessionStorage.clear();
     
-    // Show logged out message
-    document.getElementById('phoneDisplay').textContent = 'Logged out';
+    // Update UI to show logged out state
+    document.getElementById('phoneDisplay').textContent = 'Logged Out';
     document.getElementById('balanceDisplay').textContent = '₦0.00';
     document.getElementById('profitDisplay').textContent = '₦0.00';
     document.getElementById('transactionCount').textContent = '0';
-    document.getElementById('transactions').innerHTML = '<p class="no-transactions">Logged out successfully. <a href="/" style="color:#1976d2;text-decoration:underline;">Click here to login</a></p>';
+    document.getElementById('transactions').innerHTML = '<p class="no-transactions">Logged out. <a href="/" style="color:#1976d2;text-decoration:underline;">Click here to login</a></p>';
     
-    // Disable all buttons (optional)
-    document.querySelectorAll('.menu-item').forEach(function(btn) {
-        btn.style.opacity = '0.5';
+    // Disable all interactive buttons
+    document.querySelectorAll('.menu-item, .btn').forEach(function(btn) {
+        btn.style.opacity = '0.4';
         btn.style.pointerEvents = 'none';
+        btn.style.cursor = 'default';
     });
+    
+    // Show a toast message
+    var toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#2e7d32;color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;z-index:9999;text-align:center;max-width:90%';
+    toast.textContent = '✅ Logged out successfully!';
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 3000);
 });
 
 // ============================================
