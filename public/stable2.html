@@ -78,7 +78,7 @@ body{font-family:Arial,sans-serif;background:#f0f2f5;padding:12px;overflow-x:hid
 <button class="menu-item danger" id="logoutBtn"><span class="icon">🚪</span><span class="name">Logout</span></button>
 </div>
 <div class="card"><h3>📋 Recent</h3><div id="transactions"><p class="no-transactions">Loading...</p></div></div>
-<div class="version">v10 - Stable</div>
+<div class="version">v12 - Stable</div>
 </div>
 <div class="modal" id="modal"><div class="modal-content"><button class="close" onclick="closeModal()">&times;</button><h2 id="modalTitle">Service</h2><div id="modalBody"></div></div></div>
 <script>
@@ -379,12 +379,25 @@ function withdrawProfit(e) {
 }
 
 // ============================================
-// LOGOUT - SIMPLE
+// LOGOUT - NO REDIRECT, JUST CLEAR DATA
 // ============================================
 document.getElementById('logoutBtn').addEventListener('click', function() {
+    // Clear all storage
     localStorage.clear();
     sessionStorage.clear();
-    window.location.href = '/';
+    
+    // Show logged out message
+    document.getElementById('phoneDisplay').textContent = 'Logged out';
+    document.getElementById('balanceDisplay').textContent = '₦0.00';
+    document.getElementById('profitDisplay').textContent = '₦0.00';
+    document.getElementById('transactionCount').textContent = '0';
+    document.getElementById('transactions').innerHTML = '<p class="no-transactions">Logged out successfully. <a href="/" style="color:#1976d2;text-decoration:underline;">Click here to login</a></p>';
+    
+    // Disable all buttons (optional)
+    document.querySelectorAll('.menu-item').forEach(function(btn) {
+        btn.style.opacity = '0.5';
+        btn.style.pointerEvents = 'none';
+    });
 });
 
 // ============================================
