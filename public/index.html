@@ -6,49 +6,52 @@
 <title>Paysbillz - Login</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Arial,sans-serif;background:linear-gradient(135deg,#e3f2fd,#bbdefb);display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px}
-.login-box{background:#fff;padding:30px;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.12);width:100%;max-width:400px}
-.logo{text-align:center;margin-bottom:10px}
-.logo h1{color:#1976d2;font-size:28px}
-.logo .sub{color:#888;font-size:14px;margin-top:4px}
-.demo{background:#e3f2fd;padding:10px;border-radius:8px;margin:12px 0;text-align:center;font-size:13px;color:#555;border:1px dashed #90caf9}
-.demo strong{color:#1976d2}
-.features{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:12px 0;text-align:center}
-.features span{background:#f5f5f5;padding:5px;border-radius:6px;font-size:11px;color:#555}
-input{width:100%;padding:12px;margin:8px 0;border:2px solid #e0e0e0;border-radius:8px;font-size:15px;transition:border-color .3s}
-input:focus{border-color:#1976d2;outline:none}
-.btn{width:100%;padding:12px;border:none;border-radius:8px;cursor:pointer;font-size:16px;font-weight:bold;transition:transform .2s}
-.btn:active{transform:scale(.98)}
-.btn-primary{background:linear-gradient(135deg,#1976d2,#0d47a1);color:#fff}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 4px 15px rgba(25,118,210,.4)}
-.error{color:#d32f2f;text-align:center;margin-top:10px;font-size:14px;padding:8px;background:#ffebee;border-radius:6px;display:none}
-.error.show{display:block}
-.success{color:#2e7d32;text-align:center;margin-top:10px;font-size:14px;padding:8px;background:#e8f5e9;border-radius:6px;display:none}
-.success.show{display:block}
-.tab-container{display:flex;margin:12px 0 15px;border-radius:8px;overflow:hidden;border:2px solid #1976d2}
-.tab{flex:1;padding:10px;text-align:center;cursor:pointer;font-weight:bold;background:#fff;color:#1976d2;border:none;font-size:14px;transition:all .3s}
-.tab.active{background:#1976d2;color:#fff}
-.tab:hover{background:#1976d2;color:#fff}
-.form-container{display:none}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:linear-gradient(135deg,#e8f0fe,#d4e4f7);display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px}
+.login-box{background:#fff;padding:40px 32px;border-radius:20px;box-shadow:0 10px 40px rgba(0,0,0,0.08);width:100%;max-width:400px}
+.logo{text-align:center;margin-bottom:8px}
+.logo h1{color:#1a73e8;font-size:28px;font-weight:700}
+.logo .sub{color:#5f6368;font-size:14px;margin-top:4px}
+.welcome{text-align:center;margin:16px 0 8px}
+.welcome h2{font-size:20px;color:#202124;font-weight:600}
+.welcome p{color:#5f6368;font-size:14px;margin-top:4px}
+.tab-container{display:flex;margin:20px 0;border-radius:10px;background:#f1f3f4;padding:4px}
+.tab{flex:1;padding:10px;text-align:center;cursor:pointer;font-weight:600;background:transparent;color:#5f6368;border:none;border-radius:8px;font-size:14px;transition:all .3s}
+.tab.active{background:#fff;color:#1a73e8;box-shadow:0 1px 3px rgba(0,0,0,0.12)}
+.tab:hover{color:#1a73e8}
+.form-container{display:none;margin-top:16px}
 .form-container.active{display:block}
-.link{text-align:center;margin-top:12px;font-size:14px;color:#666}
-.link a{color:#1976d2;text-decoration:none;font-weight:bold;cursor:pointer}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:600;color:#202124;margin-bottom:6px}
+.form-group input{width:100%;padding:12px 14px;border:1.5px solid #dadce0;border-radius:10px;font-size:15px;transition:border-color .3s;background:#fafafa}
+.form-group input:focus{border-color:#1a73e8;outline:none;background:#fff}
+.form-group input::placeholder{color:#9aa0a6}
+.btn{width:100%;padding:14px;border:none;border-radius:10px;cursor:pointer;font-size:16px;font-weight:600;transition:all .3s}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:#1a73e8;color:#fff}
+.btn-primary:hover{background:#1557b0;box-shadow:0 2px 8px rgba(26,115,232,0.3)}
+.btn-secondary{background:#f1f3f4;color:#202124}
+.btn-secondary:hover{background:#e8eaed}
+.error{color:#d93025;text-align:center;margin-top:10px;font-size:14px;padding:10px;background:#fce8e6;border-radius:8px;display:none}
+.error.show{display:block}
+.success{color:#1e8e3e;text-align:center;margin-top:10px;font-size:14px;padding:10px;background:#e6f4ea;border-radius:8px;display:none}
+.success.show{display:block}
+.link{text-align:center;margin-top:16px;font-size:14px;color:#5f6368}
+.link a{color:#1a73e8;text-decoration:none;font-weight:600;cursor:pointer}
 .link a:hover{text-decoration:underline}
-.footer{text-align:center;margin-top:15px;font-size:12px;color:#aaa}
+.footer{text-align:center;margin-top:20px;font-size:12px;color:#9aa0a6;border-top:1px solid #dadce0;padding-top:16px}
+.helper{font-size:12px;color:#5f6368;margin-top:4px}
 </style>
 </head>
 <body>
 <div class="login-box">
     <div class="logo">
         <h1>💰 Paysbillz</h1>
-        <div class="sub">Airtime &amp; Bills Payment Platform</div>
+        <div class="sub">Fast, reliable bill payments.</div>
     </div>
     
-    <div class="demo">📱 <strong>Demo:</strong> 08027449527 <span style="color:#999;">|</span> Any password</div>
-    
-    <div class="features">
-        <span>📱 Airtime</span><span>📶 Data</span><span>📺 TV</span>
-        <span>💡 Electricity</span><span>📚 Exam Pins</span><span>💰 Earn Profit</span>
+    <div class="welcome">
+        <h2>Welcome</h2>
+        <p>Login or create an account to get started.</p>
     </div>
 
     <div class="tab-container">
@@ -58,20 +61,39 @@ input:focus{border-color:#1976d2;outline:none}
 
     <!-- Login Form -->
     <div class="form-container active" id="loginForm">
-        <input type="text" id="loginPhone" value="08027449527" placeholder="Phone Number">
-        <input type="password" id="loginPassword" value="test123" placeholder="Password">
-        <button class="btn btn-primary" onclick="login()">🔑 Login</button>
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="loginPhone" placeholder="08012345678">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="loginPassword" placeholder="Enter your password">
+        </div>
+        <button class="btn btn-primary" onclick="login()">Login</button>
         <div id="loginError" class="error"></div>
         <div class="link">Don't have an account? <a onclick="switchTab('register')">Register here</a></div>
     </div>
 
     <!-- Register Form -->
     <div class="form-container" id="registerForm">
-        <input type="text" id="registerPhone" placeholder="Phone Number (e.g., 08012345678)">
-        <input type="text" id="registerName" placeholder="Full Name (optional)">
-        <input type="password" id="registerPassword" placeholder="Password (min 6 chars)">
-        <input type="password" id="registerConfirm" placeholder="Confirm Password">
-        <button class="btn btn-primary" onclick="register()">📝 Create Account</button>
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="registerPhone" placeholder="08012345678">
+            <div class="helper">Enter your phone number (e.g., 08012345678)</div>
+        </div>
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="registerName" placeholder="John Doe">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="registerPassword" placeholder="Min 6 characters">
+        </div>
+        <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" id="registerConfirm" placeholder="Re-enter password">
+        </div>
+        <button class="btn btn-primary" onclick="register()">Create Account</button>
         <div id="registerError" class="error"></div>
         <div id="registerSuccess" class="success"></div>
         <div class="link">Already have an account? <a onclick="switchTab('login')">Login here</a></div>
@@ -124,6 +146,11 @@ function login() {
         errorDiv.classList.add('show');
         return;
     }
+    if (!password || password.length < 3) {
+        errorDiv.textContent = '⚠️ Please enter your password';
+        errorDiv.classList.add('show');
+        return;
+    }
     
     fetch(API + '/api/login', {
         method: 'POST',
@@ -138,8 +165,8 @@ function login() {
             localStorage.setItem('userBalance', d.user.balance || 0);
             localStorage.setItem('userName', d.user.name || 'Customer');
             
-            errorDiv.style.color = '#2e7d32';
-            errorDiv.style.background = '#e8f5e9';
+            errorDiv.style.color = '#1e8e3e';
+            errorDiv.style.background = '#e6f4ea';
             errorDiv.textContent = '✅ Login successful! Redirecting...';
             errorDiv.classList.add('show');
             
@@ -183,6 +210,11 @@ function register() {
         errorDiv.classList.add('show');
         return;
     }
+    if (!name || name.length < 2) {
+        errorDiv.textContent = '⚠️ Please enter your full name';
+        errorDiv.classList.add('show');
+        return;
+    }
     if (!password || password.length < 6) {
         errorDiv.textContent = '⚠️ Password must be at least 6 characters';
         errorDiv.classList.add('show');
@@ -197,7 +229,7 @@ function register() {
     fetch(API + '/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phone, name: name || 'Customer', password: password })
+        body: JSON.stringify({ phone: phone, name: name, password: password })
     })
     .then(function(r) { return r.json(); })
     .then(function(d) {
