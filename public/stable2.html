@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Paysbillz - Data & Airtime</title>
     <style>
         /* ===== CSS VARIABLES (THEME) ===== */
@@ -23,6 +23,10 @@
             --glass-bg: rgba(255, 255, 255, 0.04);
             --transaction-bg: rgba(255, 255, 255, 0.03);
             --transaction-hover: rgba(255, 255, 255, 0.06);
+            /* Validity colors */
+            --daily-color: #4ecdc4;
+            --weekly-color: #ffd93d;
+            --monthly-color: #6bcb77;
         }
 
         /* Light Theme */
@@ -41,6 +45,9 @@
             --glass-bg: rgba(255, 255, 255, 0.7);
             --transaction-bg: rgba(0, 0, 0, 0.02);
             --transaction-hover: rgba(0, 0, 0, 0.04);
+            --daily-color: #2ecc71;
+            --weekly-color: #f39c12;
+            --monthly-color: #3498db;
         }
 
         /* ===== RESET & BASE ===== */
@@ -142,25 +149,8 @@
             color: var(--text-secondary);
         }
 
-        /* Clear History Button */
-        .clear-history-btn {
-            background: rgba(255, 50, 50, 0.1);
-            border: 1px solid rgba(255, 50, 50, 0.15);
-            color: #ff6b6b;
-            padding: 6px 14px;
-            border-radius: 40px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            transition: 0.25s;
-        }
-
-        .clear-history-btn:hover {
-            background: rgba(255, 50, 50, 0.2);
-        }
-
-        /* ===== TABS ===== */
-        .tabs {
+        /* ===== VALIDITY FILTER TABS ===== */
+        .filter-tabs {
             display: flex;
             gap: 6px;
             flex-wrap: wrap;
@@ -168,7 +158,7 @@
             justify-content: center;
         }
 
-        .tab-btn {
+        .filter-btn {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             color: var(--text-secondary);
@@ -181,13 +171,13 @@
             letter-spacing: 0.3px;
         }
 
-        .tab-btn:hover {
+        .filter-btn:hover {
             background: rgba(255, 215, 0, 0.08);
             border-color: rgba(255, 215, 0, 0.25);
             color: var(--text-primary);
         }
 
-        .tab-btn.active {
+        .filter-btn.active {
             background: var(--gold-gradient);
             color: #0f0f1a;
             border-color: transparent;
@@ -227,9 +217,19 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: var(--gold-gradient);
-            opacity: 0;
             transition: 0.3s;
+        }
+
+        .plan-card.validity-daily::before {
+            background: var(--daily-color);
+        }
+
+        .plan-card.validity-weekly::before {
+            background: var(--weekly-color);
+        }
+
+        .plan-card.validity-monthly::before {
+            background: var(--monthly-color);
         }
 
         .plan-card:hover {
@@ -237,10 +237,6 @@
             border-color: rgba(255, 215, 0, 0.15);
             transform: translateY(-3px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .plan-card:hover::before {
-            opacity: 1;
         }
 
         .plan-top {
@@ -265,16 +261,31 @@
         }
 
         .plan-badge {
-            background: rgba(255, 215, 0, 0.1);
             padding: 2px 12px;
             border-radius: 30px;
             font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: var(--gold);
-            border: 1px solid rgba(255, 215, 0, 0.1);
             white-space: nowrap;
+        }
+
+        .plan-badge.daily {
+            background: rgba(78, 205, 196, 0.15);
+            color: var(--daily-color);
+            border: 1px solid rgba(78, 205, 196, 0.2);
+        }
+
+        .plan-badge.weekly {
+            background: rgba(255, 217, 61, 0.15);
+            color: var(--weekly-color);
+            border: 1px solid rgba(255, 217, 61, 0.2);
+        }
+
+        .plan-badge.monthly {
+            background: rgba(107, 203, 119, 0.15);
+            color: var(--monthly-color);
+            border: 1px solid rgba(107, 203, 119, 0.2);
         }
 
         .plan-bottom {
@@ -581,6 +592,37 @@
         .toast.error {
             border-left: 4px solid #ff6b6b;
         }
+
+        /* ===== NETWORK BADGE ===== */
+        .network-badge {
+            display: inline-block;
+            padding: 1px 10px;
+            border-radius: 20px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .network-badge.mtn {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+        }
+
+        .network-badge.airtel {
+            background: rgba(255, 0, 0, 0.15);
+            color: #ff4444;
+        }
+
+        .network-badge.glo {
+            background: rgba(0, 150, 255, 0.15);
+            color: #0096ff;
+        }
+
+        .network-badge.nine {
+            background: rgba(156, 39, 176, 0.15);
+            color: #9c27b0;
+        }
     </style>
 </head>
 <body>
@@ -597,28 +639,23 @@
             <div class="sub">
                 <span>💡 Data &amp; Airtime</span>
                 <span style="color:var(--text-dim);">•</span>
-                <span class="phone-badge">📞 08145542679</span>
+                <span class="phone-badge" id="phoneBadge">📞 Loading...</span>
             </div>
         </div>
         <div class="header-right">
-            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+            <button class="theme-toggle" onclick="toggleTheme()">
                 <span id="themeIcon">🌙</span>
                 <span class="toggle-label" id="themeLabel">Dark</span>
             </button>
-            <button class="clear-history-btn" onclick="clearHistory()">🗑️ Clear</button>
         </div>
     </div>
 
-    <!-- ===== TABS ===== -->
-    <div class="tabs" id="tabContainer">
-        <button class="tab-btn active" data-tab="all">🔥 All</button>
-        <button class="tab-btn" data-tab="sme">📦 SME</button>
-        <button class="tab-btn" data-tab="awoof">⚡ Awoof</button>
-        <button class="tab-btn" data-tab="share">🔁 Share</button>
-        <button class="tab-btn" data-tab="gifting">🎁 Gifting</button>
-        <button class="tab-btn" data-tab="pulse">💜 Pulse</button>
-        <button class="tab-btn" data-tab="smartshare">📡 SmartShare</button>
-        <button class="tab-btn" data-tab="others">🌐 Others</button>
+    <!-- ===== FILTER TABS (Daily / Weekly / Monthly / All) ===== -->
+    <div class="filter-tabs" id="filterContainer">
+        <button class="filter-btn active" data-filter="all">🔥 All</button>
+        <button class="filter-btn" data-filter="daily">📆 Daily</button>
+        <button class="filter-btn" data-filter="weekly">📅 Weekly</button>
+        <button class="filter-btn" data-filter="monthly">📊 Monthly</button>
     </div>
 
     <!-- ===== PLANS GRID ===== -->
@@ -668,62 +705,75 @@
 <!-- JAVASCRIPT -->
 <script>
     // ============================================================
-    // 1. DATA PLANS DATABASE (with new MTN Pulse & Airtel SmartShare)
+    // 1. DATA PLANS DATABASE (Properly Categorized)
     // ============================================================
     const allPlans = [
-        // ---- MTN SME ----
-        { id: 'sme1', name: 'MTN SME 500MB', validity: 'Monthly', price: 500, category: 'sme', network: 'MTN' },
-        { id: 'sme2', name: 'MTN SME 1GB', validity: 'Monthly', price: 800, category: 'sme', network: 'MTN' },
-        { id: 'sme3', name: 'MTN SME 2GB', validity: 'Monthly', price: 1200, category: 'sme', network: 'MTN' },
-        { id: 'sme4', name: 'MTN SME 3GB', validity: 'Monthly', price: 1500, category: 'sme', network: 'MTN' },
-        { id: 'sme5', name: 'MTN SME 5GB', validity: 'Monthly', price: 2000, category: 'sme', network: 'MTN' },
+        // ---- DAILY PLANS ----
+        { id: 'd1', name: 'MTN AWOOF 500MB', validity: 'Daily', price: 220, network: 'MTN' },
+        { id: 'd2', name: 'MTN AWOOF 1GB', validity: 'Daily', price: 260, network: 'MTN' },
+        { id: 'd3', name: 'MTN AWOOF 2.5GB', validity: 'Daily', price: 590, network: 'MTN' },
+        { id: 'd4', name: 'MTN AWOOF 5GB', validity: 'Daily', price: 1150, network: 'MTN' },
+        { id: 'd5', name: 'MTN AWOOF 10GB', validity: 'Daily', price: 3500, network: 'MTN' },
+        { id: 'd6', name: 'MTN PULSE 500MB', validity: 'Daily', price: 150, network: 'MTN' },
+        { id: 'd7', name: 'MTN PULSE 1GB', validity: 'Daily', price: 250, network: 'MTN' },
+        { id: 'd8', name: 'Airtel AWOOF 150MB', validity: 'Daily', price: 68, network: 'Airtel' },
+        { id: 'd9', name: 'Airtel AWOOF 300MB', validity: 'Daily', price: 125, network: 'Airtel' },
+        { id: 'd10', name: 'Airtel AWOOF 600MB', validity: 'Daily', price: 230, network: 'Airtel' },
+        { id: 'd11', name: 'Airtel AWOOF 10GB', validity: 'Daily', price: 3080, network: 'Airtel' },
+        { id: 'd12', name: 'Airtel SmartShare 500MB', validity: 'Daily', price: 180, network: 'Airtel' },
+        { id: 'd13', name: 'Airtel SmartShare 1GB', validity: 'Daily', price: 300, network: 'Airtel' },
+        { id: 'd14', name: 'GLO AWOOF 750MB', validity: 'Daily', price: 210, network: 'GLO' },
+        { id: 'd15', name: 'GLO AWOOF 1.5GB', validity: 'Daily', price: 315, network: 'GLO' },
+        { id: 'd16', name: 'GLO AWOOF 2.5GB', validity: 'Daily', price: 515, network: 'GLO' },
+        { id: 'd17', name: 'GLO AWOOF 10GB', validity: 'Daily', price: 1920, network: 'GLO' },
 
-        // ---- MTN AWOOF ----
-        { id: 'awoof1', name: 'MTN AWOOF 500MB', validity: 'Daily', price: 220, category: 'awoof', network: 'MTN' },
-        { id: 'awoof2', name: 'MTN AWOOF 1GB', validity: 'Daily', price: 260, category: 'awoof', network: 'MTN' },
-        { id: 'awoof3', name: 'MTN AWOOF 2.5GB', validity: 'Daily', price: 590, category: 'awoof', network: 'MTN' },
-        { id: 'awoof4', name: 'MTN AWOOF 5GB', validity: 'Daily', price: 1150, category: 'awoof', network: 'MTN' },
-        { id: 'awoof5', name: 'MTN AWOOF 10GB', validity: 'Daily', price: 3500, category: 'awoof', network: 'MTN' },
+        // ---- WEEKLY PLANS ----
+        { id: 'w1', name: 'MTN SHARE 500MB', validity: 'Weekly', price: 330, network: 'MTN' },
+        { id: 'w2', name: 'MTN SHARE 1GB', validity: 'Weekly', price: 435, network: 'MTN' },
+        { id: 'w3', name: 'MTN SHARE 2GB', validity: 'Weekly', price: 970, network: 'MTN' },
+        { id: 'w4', name: 'MTN SHARE 3GB', validity: 'Weekly', price: 1380, network: 'MTN' },
+        { id: 'w5', name: 'MTN PULSE 2GB', validity: 'Weekly', price: 700, network: 'MTN' },
+        { id: 'w6', name: 'MTN PULSE 3GB', validity: 'Weekly', price: 950, network: 'MTN' },
+        { id: 'w7', name: 'Airtel SmartShare 2GB', validity: 'Weekly', price: 800, network: 'Airtel' },
+        { id: 'w8', name: 'Airtel SmartShare 3GB', validity: 'Weekly', price: 1100, network: 'Airtel' },
+        { id: 'w9', name: 'MTN GIFT 500MB', validity: 'Weekly', price: 400, network: 'MTN' },
+        { id: 'w10', name: 'MTN GIFT 1GB', validity: 'Weekly', price: 700, network: 'MTN' },
 
-        // ---- MTN SHARE ----
-        { id: 'share1', name: 'MTN SHARE 500MB', validity: 'Weekly', price: 330, category: 'share', network: 'MTN' },
-        { id: 'share2', name: 'MTN SHARE 1GB', validity: 'Weekly', price: 435, category: 'share', network: 'MTN' },
-        { id: 'share3', name: 'MTN SHARE 2GB', validity: 'Weekly', price: 970, category: 'share', network: 'MTN' },
-        { id: 'share4', name: 'MTN SHARE 3GB', validity: 'Weekly', price: 1380, category: 'share', network: 'MTN' },
-
-        // ---- MTN GIFTING ----
-        { id: 'gift1', name: 'MTN GIFT 500MB', validity: '7 Days', price: 400, category: 'gifting', network: 'MTN' },
-        { id: 'gift2', name: 'MTN GIFT 1GB', validity: '7 Days', price: 700, category: 'gifting', network: 'MTN' },
-        { id: 'gift3', name: 'MTN GIFT 2GB', validity: '14 Days', price: 1300, category: 'gifting', network: 'MTN' },
-        { id: 'gift4', name: 'MTN GIFT 5GB', validity: '30 Days', price: 2800, category: 'gifting', network: 'MTN' },
-        { id: 'gift5', name: 'MTN GIFT 10GB', validity: '30 Days', price: 5000, category: 'gifting', network: 'MTN' },
-
-        // ---- MTN PULSE (NEW) ----
-        { id: 'pulse1', name: 'MTN PULSE 500MB', validity: 'Daily', price: 150, category: 'pulse', network: 'MTN' },
-        { id: 'pulse2', name: 'MTN PULSE 1GB', validity: 'Daily', price: 250, category: 'pulse', network: 'MTN' },
-        { id: 'pulse3', name: 'MTN PULSE 2GB', validity: 'Weekly', price: 700, category: 'pulse', network: 'MTN' },
-        { id: 'pulse4', name: 'MTN PULSE 3GB', validity: 'Weekly', price: 950, category: 'pulse', network: 'MTN' },
-        { id: 'pulse5', name: 'MTN PULSE 5GB', validity: 'Monthly', price: 1500, category: 'pulse', network: 'MTN' },
-        { id: 'pulse6', name: 'MTN PULSE 10GB', validity: 'Monthly', price: 2800, category: 'pulse', network: 'MTN' },
-
-        // ---- AIRTEL SMARTSHARE (NEW) ----
-        { id: 'smart1', name: 'Airtel SmartShare 500MB', validity: 'Daily', price: 180, category: 'smartshare', network: 'Airtel' },
-        { id: 'smart2', name: 'Airtel SmartShare 1GB', validity: 'Daily', price: 300, category: 'smartshare', network: 'Airtel' },
-        { id: 'smart3', name: 'Airtel SmartShare 2GB', validity: 'Weekly', price: 800, category: 'smartshare', network: 'Airtel' },
-        { id: 'smart4', name: 'Airtel SmartShare 3GB', validity: 'Weekly', price: 1100, category: 'smartshare', network: 'Airtel' },
-        { id: 'smart5', name: 'Airtel SmartShare 5GB', validity: 'Monthly', price: 1800, category: 'smartshare', network: 'Airtel' },
-        { id: 'smart6', name: 'Airtel SmartShare 10GB', validity: 'Monthly', price: 3200, category: 'smartshare', network: 'Airtel' },
-
-        // ---- OTHER NETWORKS ----
-        { id: 'airtel1', name: 'Airtel 1GB', validity: 'Monthly', price: 1000, category: 'others', network: 'Airtel' },
-        { id: 'airtel2', name: 'Airtel 2GB', validity: 'Monthly', price: 1800, category: 'others', network: 'Airtel' },
-        { id: 'airtel3', name: 'Airtel 5GB', validity: 'Monthly', price: 4000, category: 'others', network: 'Airtel' },
-        { id: 'glo1', name: 'GLO 1GB', validity: 'Monthly', price: 950, category: 'others', network: 'GLO' },
-        { id: 'glo2', name: 'GLO 2GB', validity: 'Monthly', price: 1700, category: 'others', network: 'GLO' },
-        { id: 'glo3', name: 'GLO 5GB', validity: 'Monthly', price: 3800, category: 'others', network: 'GLO' },
-        { id: 'nine1', name: '9mobile 1GB', validity: 'Monthly', price: 1100, category: 'others', network: '9mobile' },
-        { id: 'nine2', name: '9mobile 2GB', validity: 'Monthly', price: 2000, category: 'others', network: '9mobile' },
-        { id: 'nine3', name: '9mobile 5GB', validity: 'Monthly', price: 4500, category: 'others', network: '9mobile' },
+        // ---- MONTHLY PLANS ----
+        { id: 'm1', name: 'MTN SME 500MB', validity: 'Monthly', price: 500, network: 'MTN' },
+        { id: 'm2', name: 'MTN SME 1GB', validity: 'Monthly', price: 800, network: 'MTN' },
+        { id: 'm3', name: 'MTN SME 2GB', validity: 'Monthly', price: 1200, network: 'MTN' },
+        { id: 'm4', name: 'MTN SME 3GB', validity: 'Monthly', price: 1500, network: 'MTN' },
+        { id: 'm5', name: 'MTN SME 5GB', validity: 'Monthly', price: 2000, network: 'MTN' },
+        { id: 'm6', name: 'MTN 10GB', validity: 'Monthly', price: 4448, network: 'MTN' },
+        { id: 'm7', name: 'MTN 20GB', validity: 'Monthly', price: 4925, network: 'MTN' },
+        { id: 'm8', name: 'MTN 50GB', validity: 'Monthly', price: 17730, network: 'MTN' },
+        { id: 'm9', name: 'MTN 100GB', validity: 'Monthly', price: 24525, network: 'MTN' },
+        { id: 'm10', name: 'MTN PULSE 5GB', validity: 'Monthly', price: 1500, network: 'MTN' },
+        { id: 'm11', name: 'MTN PULSE 10GB', validity: 'Monthly', price: 2800, network: 'MTN' },
+        { id: 'm12', name: 'Airtel 500MB', validity: 'Monthly', price: 450, network: 'Airtel' },
+        { id: 'm13', name: 'Airtel 1GB', validity: 'Monthly', price: 750, network: 'Airtel' },
+        { id: 'm14', name: 'Airtel 2GB', validity: 'Monthly', price: 1200, network: 'Airtel' },
+        { id: 'm15', name: 'Airtel 3GB', validity: 'Monthly', price: 1500, network: 'Airtel' },
+        { id: 'm16', name: 'Airtel 5GB', validity: 'Monthly', price: 2000, network: 'Airtel' },
+        { id: 'm17', name: 'Airtel 10GB', validity: 'Monthly', price: 3944, network: 'Airtel' },
+        { id: 'm18', name: 'Airtel SmartShare 5GB', validity: 'Monthly', price: 1800, network: 'Airtel' },
+        { id: 'm19', name: 'Airtel SmartShare 10GB', validity: 'Monthly', price: 3200, network: 'Airtel' },
+        { id: 'm20', name: 'GLO 500MB', validity: 'Monthly', price: 400, network: 'GLO' },
+        { id: 'm21', name: 'GLO 1GB', validity: 'Monthly', price: 700, network: 'GLO' },
+        { id: 'm22', name: 'GLO 2GB', validity: 'Monthly', price: 1100, network: 'GLO' },
+        { id: 'm23', name: 'GLO 3GB', validity: 'Monthly', price: 1500, network: 'GLO' },
+        { id: 'm24', name: 'GLO 5GB', validity: 'Monthly', price: 2000, network: 'GLO' },
+        { id: 'm25', name: 'GLO 10GB', validity: 'Monthly', price: 2850, network: 'GLO' },
+        { id: 'm26', name: '9mobile 500MB', validity: 'Monthly', price: 350, network: '9mobile' },
+        { id: 'm27', name: '9mobile 1GB', validity: 'Monthly', price: 600, network: '9mobile' },
+        { id: 'm28', name: '9mobile 2GB', validity: 'Monthly', price: 1000, network: '9mobile' },
+        { id: 'm29', name: '9mobile 3GB', validity: 'Monthly', price: 1400, network: '9mobile' },
+        { id: 'm30', name: '9mobile 5GB', validity: 'Monthly', price: 2000, network: '9mobile' },
+        { id: 'm31', name: '9mobile 10GB', validity: 'Monthly', price: 5000, network: '9mobile' },
+        { id: 'm32', name: 'MTN GIFT 2GB', validity: 'Monthly', price: 1300, network: 'MTN' },
+        { id: 'm33', name: 'MTN GIFT 5GB', validity: 'Monthly', price: 2800, network: 'MTN' },
+        { id: 'm34', name: 'MTN GIFT 10GB', validity: 'Monthly', price: 5000, network: 'MTN' },
     ];
 
     // ============================================================
@@ -745,13 +795,12 @@
         const txs = getTransactions();
         txs.unshift({
             id: Date.now(),
-            type: type, // 'data' or 'airtime'
+            type: type,
             name: name,
             amount: amount,
             detail: detail,
             time: new Date().toLocaleString()
         });
-        // Keep last 50 transactions
         if (txs.length > 50) txs.pop();
         saveTransactions(txs);
         renderTransactions();
@@ -804,48 +853,74 @@
     }
 
     // ============================================================
-    // 4. RENDER PLANS
+    // 4. RENDER PLANS WITH VALIDITY FILTER
     // ============================================================
     const grid = document.getElementById('plansGrid');
 
-    function renderPlans(category = 'all') {
-        const filtered = category === 'all'
-            ? allPlans
-            : allPlans.filter(p => p.category === category);
+    function getValidityClass(validity) {
+        return validity.toLowerCase();
+    }
+
+    function getBadgeClass(validity) {
+        return validity.toLowerCase();
+    }
+
+    function getNetworkClass(network) {
+        const map = {
+            'MTN': 'mtn',
+            'Airtel': 'airtel',
+            'GLO': 'glo',
+            '9mobile': 'nine'
+        };
+        return map[network] || '';
+    }
+
+    function renderPlans(filter = 'all') {
+        let filtered = allPlans;
+        if (filter !== 'all') {
+            filtered = allPlans.filter(p => p.validity.toLowerCase() === filter);
+        }
 
         if (filtered.length === 0) {
             grid.innerHTML = `
                 <div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:40px 0;">
-                    No plans in this category yet.
+                    No ${filter} plans available yet.
                 </div>
             `;
             return;
         }
 
-        grid.innerHTML = filtered.map(p => `
-            <div class="plan-card" data-category="${p.category}">
-                <div class="plan-network-tag">${p.network}</div>
-                <div class="plan-top">
-                    <div class="plan-name">
-                        ${p.name}
-                        <small>${p.validity}</small>
+        grid.innerHTML = filtered.map(p => {
+            const vc = getValidityClass(p.validity);
+            const bc = getBadgeClass(p.validity);
+            const nc = getNetworkClass(p.network);
+            return `
+                <div class="plan-card validity-${vc}">
+                    <div class="plan-top">
+                        <div class="plan-name">
+                            ${p.name}
+                            <small>
+                                <span class="network-badge ${nc}">${p.network}</span>
+                                • ${p.validity}
+                            </small>
+                        </div>
+                        <span class="plan-badge ${bc}">${p.validity}</span>
                     </div>
-                    <span class="plan-badge">${p.validity}</span>
+                    <div class="plan-bottom">
+                        <span class="plan-price">₦${p.price.toLocaleString()}</span>
+                        <button class="buy-btn" onclick="buyPlan('${p.name}', ${p.price}, '${p.network}', '${p.validity}')">Buy</button>
+                    </div>
                 </div>
-                <div class="plan-bottom">
-                    <span class="plan-price">₦${p.price.toLocaleString()}</span>
-                    <button class="buy-btn" onclick="buyPlan('${p.name}', ${p.price}, '${p.network}')">Buy</button>
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     // ============================================================
     // 5. BUY FUNCTIONS
     // ============================================================
-    function buyPlan(name, price, network) {
-        if (confirm(`✅ Confirm purchase:\n📦 ${name}\n💰 ₦${price.toLocaleString()}\n📡 ${network}\n\nProceed?`)) {
-            addTransaction('data', name, price, `📡 ${network} · ${name.split(' ').slice(2).join(' ')}`);
+    function buyPlan(name, price, network, validity) {
+        if (confirm(`✅ Confirm purchase:\n📦 ${name}\n💰 ₦${price.toLocaleString()}\n📡 ${network}\n⏱ ${validity}\n\nProceed?`)) {
+            addTransaction('data', name, price, `📡 ${network} · ${validity}`);
             showToast(`✅ ${name} purchased for ₦${price.toLocaleString()}`, 'success');
         }
     }
@@ -882,7 +957,6 @@
         const toast = document.getElementById('toast');
         toast.textContent = message;
         toast.className = 'toast ' + type;
-        // Force reflow
         void toast.offsetWidth;
         toast.classList.add('show');
         clearTimeout(toastTimeout);
@@ -912,7 +986,6 @@
         localStorage.setItem('paysbillz_theme', newTheme);
     }
 
-    // Load saved theme
     function loadTheme() {
         const saved = localStorage.getItem('paysbillz_theme') || 'dark';
         document.documentElement.setAttribute('data-theme', saved);
@@ -928,27 +1001,36 @@
     }
 
     // ============================================================
-    // 8. TABS
+    // 8. FILTER TABS
     // ============================================================
-    const tabs = document.querySelectorAll('.tab-btn');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            tabs.forEach(t => t.classList.remove('active'));
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            filterBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            renderPlans(this.dataset.tab);
+            renderPlans(this.dataset.filter);
         });
     });
 
     // ============================================================
-    // 9. ENTER KEY SUPPORT
+    // 9. LOAD USER PHONE
+    // ============================================================
+    function loadUserPhone() {
+        const phone = localStorage.getItem('userPhone') || '08027449527';
+        document.getElementById('phoneBadge').textContent = '📞 ' + phone;
+    }
+
+    // ============================================================
+    // 10. ENTER KEY SUPPORT
     // ============================================================
     document.getElementById('airtimeAmount').addEventListener('keypress', e => { if (e.key === 'Enter') buyAirtime(); });
     document.getElementById('airtimePhone').addEventListener('keypress', e => { if (e.key === 'Enter') buyAirtime(); });
 
     // ============================================================
-    // 10. INIT
+    // 11. INIT
     // ============================================================
     loadTheme();
+    loadUserPhone();
     renderPlans('all');
     renderTransactions();
     updateTxCount();
