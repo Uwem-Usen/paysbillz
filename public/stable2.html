@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <title>Paysbillz - Data & Airtime</title>
+    <title>Paysbillz - Dashboard</title>
     <style>
-        /* ===== CSS VARIABLES (THEME) ===== */
+        /* ===== CSS VARIABLES ===== */
         :root {
             --bg-primary: #0f0f1a;
             --bg-secondary: #1a1a2e;
@@ -16,20 +16,17 @@
             --text-primary: #ecf3ff;
             --text-secondary: #b8c7e6;
             --text-muted: #5a6f8a;
-            --text-dim: #2a3f55;
             --gold: #ffd700;
             --gold-gradient: linear-gradient(135deg, #f7971e, #ffd200);
             --shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
             --glass-bg: rgba(255, 255, 255, 0.04);
             --transaction-bg: rgba(255, 255, 255, 0.03);
             --transaction-hover: rgba(255, 255, 255, 0.06);
-            /* Validity colors */
             --daily-color: #4ecdc4;
             --weekly-color: #ffd93d;
             --monthly-color: #6bcb77;
         }
 
-        /* Light Theme */
         [data-theme="light"] {
             --bg-primary: #f0f4fa;
             --bg-secondary: #ffffff;
@@ -40,23 +37,13 @@
             --text-primary: #1a1a2e;
             --text-secondary: #3a4a5e;
             --text-muted: #7a8a9e;
-            --text-dim: #c0d0e0;
             --shadow: 0 25px 60px rgba(0, 0, 0, 0.1);
             --glass-bg: rgba(255, 255, 255, 0.7);
             --transaction-bg: rgba(0, 0, 0, 0.02);
             --transaction-hover: rgba(0, 0, 0, 0.04);
-            --daily-color: #2ecc71;
-            --weekly-color: #f39c12;
-            --monthly-color: #3498db;
         }
 
-        /* ===== RESET & BASE ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; }
 
         body {
             background: var(--bg-primary);
@@ -64,7 +51,7 @@
             display: flex;
             justify-content: center;
             padding: 25px 12px;
-            transition: background 0.3s, color 0.3s;
+            transition: background 0.3s;
         }
 
         .container {
@@ -75,7 +62,7 @@
             padding: 28px 22px 38px;
             border: 1px solid var(--border-color);
             box-shadow: var(--shadow);
-            transition: background 0.3s, border 0.3s, box-shadow 0.3s;
+            transition: background 0.3s;
         }
 
         /* ===== HEADER ===== */
@@ -83,13 +70,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
             gap: 12px;
         }
 
         .header-left h1 {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 800;
             background: var(--gold-gradient);
             -webkit-background-clip: text;
@@ -102,59 +89,123 @@
             align-items: center;
             gap: 8px;
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 13px;
             flex-wrap: wrap;
         }
 
-        .header-left .sub .phone-badge {
+        .header-left .sub .badge {
             background: rgba(255, 215, 0, 0.12);
-            padding: 2px 16px;
+            padding: 2px 14px;
             border-radius: 40px;
             border: 1px solid rgba(255, 215, 0, 0.2);
             color: var(--gold);
             font-weight: 500;
-            font-size: 13px;
+            font-size: 12px;
             -webkit-text-fill-color: var(--gold);
         }
 
         .header-right {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
         }
 
-        /* Theme Toggle */
-        .theme-toggle {
+        .theme-toggle, .logout-btn {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
             padding: 8px 14px;
             border-radius: 40px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
             transition: 0.25s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
-        .theme-toggle:hover {
-            background: var(--bg-card-hover);
-            border-color: var(--gold);
+        .theme-toggle:hover { background: var(--bg-card-hover); border-color: var(--gold); }
+        .logout-btn:hover { background: rgba(255, 50, 50, 0.15); border-color: #ff6b6b; color: #ff6b6b; }
+
+        /* ===== BALANCE CARDS ===== */
+        .balance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 16px 0;
         }
 
-        .theme-toggle .toggle-label {
-            font-size: 12px;
-            font-weight: 600;
+        @media (max-width: 480px) {
+            .balance-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        .balance-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 14px;
+            text-align: center;
+            transition: 0.25s;
+        }
+
+        .balance-card:hover { background: var(--bg-card-hover); }
+
+        .balance-card .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .balance-card .amount {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-top: 4px;
+        }
+
+        .balance-card .amount.wallet { color: #4ecdc4; }
+        .balance-card .amount.profit { color: #ffd93d; }
+
+        /* ===== SERVICE BUTTONS ===== */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        @media (max-width: 480px) {
+            .services-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .service-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 14px 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.25s;
             color: var(--text-secondary);
         }
 
-        /* ===== VALIDITY FILTER TABS ===== */
+        .service-btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--gold);
+            transform: translateY(-2px);
+            color: var(--text-primary);
+        }
+
+        .service-btn .icon { font-size: 28px; display: block; margin-bottom: 4px; }
+        .service-btn .name { font-size: 10px; font-weight: 600; }
+
+        .service-btn.primary { background: var(--gold-gradient); color: #0f0f1a; border-color: transparent; }
+        .service-btn.primary:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(255, 215, 0, 0.25); }
+
+        /* ===== FILTER TABS ===== */
         .filter-tabs {
             display: flex;
             gap: 6px;
             flex-wrap: wrap;
-            margin: 20px 0 18px 0;
+            margin: 16px 0 14px;
             justify-content: center;
         }
 
@@ -162,50 +213,33 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             color: var(--text-secondary);
-            padding: 8px 18px;
+            padding: 6px 16px;
             border-radius: 40px;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
             transition: 0.25s;
-            letter-spacing: 0.3px;
         }
 
-        .filter-btn:hover {
-            background: rgba(255, 215, 0, 0.08);
-            border-color: rgba(255, 215, 0, 0.25);
-            color: var(--text-primary);
-        }
-
-        .filter-btn.active {
-            background: var(--gold-gradient);
-            color: #0f0f1a;
-            border-color: transparent;
-            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.25);
-        }
+        .filter-btn:hover { background: rgba(255, 215, 0, 0.08); border-color: rgba(255, 215, 0, 0.25); color: var(--text-primary); }
+        .filter-btn.active { background: var(--gold-gradient); color: #0f0f1a; border-color: transparent; box-shadow: 0 4px 20px rgba(255, 215, 0, 0.25); }
 
         /* ===== PLANS GRID ===== */
         .plans-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
             margin-top: 6px;
         }
 
-        @media (max-width: 540px) {
-            .plans-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        @media (max-width: 540px) { .plans-grid { grid-template-columns: 1fr; } }
 
         .plan-card {
             background: var(--bg-card);
-            border-radius: 18px;
-            padding: 16px 16px 14px;
+            border-radius: 16px;
+            padding: 14px;
             border: 1px solid var(--border-color);
             transition: 0.25s;
-            display: flex;
-            flex-direction: column;
             position: relative;
             overflow: hidden;
         }
@@ -219,347 +253,197 @@
             height: 3px;
             transition: 0.3s;
         }
-
-        .plan-card.validity-daily::before {
-            background: var(--daily-color);
-        }
-
-        .plan-card.validity-weekly::before {
-            background: var(--weekly-color);
-        }
-
-        .plan-card.validity-monthly::before {
-            background: var(--monthly-color);
-        }
+        .plan-card.validity-daily::before { background: var(--daily-color); }
+        .plan-card.validity-weekly::before { background: var(--weekly-color); }
+        .plan-card.validity-monthly::before { background: var(--monthly-color); }
 
         .plan-card:hover {
             background: var(--bg-card-hover);
             border-color: rgba(255, 215, 0, 0.15);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
         }
 
-        .plan-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .plan-name {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text-primary);
-            line-height: 1.3;
-        }
-
-        .plan-name small {
-            font-weight: 400;
-            font-size: 11px;
-            color: var(--text-muted);
-            display: block;
-            margin-top: 2px;
-        }
+        .plan-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .plan-name { font-weight: 600; font-size: 13px; color: var(--text-primary); line-height: 1.3; }
+        .plan-name small { font-weight: 400; font-size: 10px; color: var(--text-muted); display: block; margin-top: 2px; }
 
         .plan-badge {
-            padding: 2px 12px;
+            padding: 2px 10px;
             border-radius: 30px;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             white-space: nowrap;
         }
+        .plan-badge.daily { background: rgba(78, 205, 196, 0.15); color: var(--daily-color); border: 1px solid rgba(78, 205, 196, 0.2); }
+        .plan-badge.weekly { background: rgba(255, 217, 61, 0.15); color: var(--weekly-color); border: 1px solid rgba(255, 217, 61, 0.2); }
+        .plan-badge.monthly { background: rgba(107, 203, 119, 0.15); color: var(--monthly-color); border: 1px solid rgba(107, 203, 119, 0.2); }
 
-        .plan-badge.daily {
-            background: rgba(78, 205, 196, 0.15);
-            color: var(--daily-color);
-            border: 1px solid rgba(78, 205, 196, 0.2);
-        }
-
-        .plan-badge.weekly {
-            background: rgba(255, 217, 61, 0.15);
-            color: var(--weekly-color);
-            border: 1px solid rgba(255, 217, 61, 0.2);
-        }
-
-        .plan-badge.monthly {
-            background: rgba(107, 203, 119, 0.15);
-            color: var(--monthly-color);
-            border: 1px solid rgba(107, 203, 119, 0.2);
-        }
-
-        .plan-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 14px;
-        }
-
-        .plan-price {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--gold);
-        }
-
-        .plan-price small {
-            font-size: 13px;
-            font-weight: 400;
-            color: var(--text-muted);
-        }
+        .plan-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+        .plan-price { font-size: 18px; font-weight: 700; color: var(--gold); }
+        .plan-price small { font-size: 12px; font-weight: 400; color: var(--text-muted); }
 
         .buy-btn {
             background: var(--gold-gradient);
             border: none;
             color: #0f0f1a;
             font-weight: 700;
-            font-size: 13px;
-            padding: 8px 22px;
+            font-size: 12px;
+            padding: 6px 18px;
             border-radius: 40px;
             cursor: pointer;
             transition: 0.25s;
-            letter-spacing: 0.3px;
         }
+        .buy-btn:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3); }
 
-        .buy-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
-        }
-
-        .plan-network-tag {
-            font-size: 10px;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-bottom: 4px;
-        }
-
-        /* ===== AIRTIME SECTION ===== */
-        .airtime-section {
-            margin-top: 35px;
-            background: var(--glass-bg);
-            border-radius: 24px;
-            padding: 24px 20px;
-            border: 1px solid var(--border-color);
-            transition: background 0.3s, border 0.3s;
-        }
-
-        .airtime-section h2 {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 18px;
-            display: flex;
+        /* ===== MODAL ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
             align-items: center;
-            gap: 10px;
+            padding: 20px;
+        }
+        .modal.show { display: flex; }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 28px;
+            max-width: 460px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
         }
 
-        .airtime-section h2 span {
-            background: rgba(255, 215, 0, 0.1);
-            padding: 2px 14px;
-            border-radius: 40px;
-            font-size: 12px;
-            color: var(--gold);
-            font-weight: 500;
-        }
-
-        .airtime-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        @media (max-width: 480px) {
-            .airtime-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .airtime-group {
+        .modal-header {
             display: flex;
-            flex-direction: column;
-            gap: 6px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
         }
-
-        .airtime-group label {
-            font-size: 12px;
-            font-weight: 600;
+        .modal-header h2 { color: var(--text-primary); font-size: 20px; }
+        .modal-close {
+            background: none;
+            border: none;
             color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0 8px;
         }
+        .modal-close:hover { color: var(--text-primary); }
 
-        .airtime-group select,
-        .airtime-group input {
+        .modal-content input, .modal-content select {
+            width: 100%;
+            padding: 12px 16px;
+            margin: 6px 0;
             background: var(--bg-input);
             border: 1px solid var(--border-color);
-            padding: 12px 16px;
-            border-radius: 14px;
+            border-radius: 12px;
             color: var(--text-primary);
-            font-size: 15px;
+            font-size: 14px;
             outline: none;
             transition: 0.2s;
-            width: 100%;
         }
-
-        .airtime-group select:focus,
-        .airtime-group input:focus {
+        .modal-content input:focus, .modal-content select:focus {
             border-color: var(--gold);
             box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.08);
         }
+        .modal-content input::placeholder { color: var(--text-muted); }
 
-        .airtime-group select option {
-            background: var(--bg-secondary);
-        }
-
-        .airtime-group input::placeholder {
-            color: var(--text-muted);
-        }
-
-        .buy-airtime-btn {
-            grid-column: 1 / -1;
-            background: var(--gold-gradient);
-            border: none;
-            color: #0f0f1a;
-            font-weight: 700;
-            font-size: 17px;
+        .modal-btn {
+            width: 100%;
             padding: 14px;
-            border-radius: 16px;
+            border: none;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 16px;
             cursor: pointer;
             transition: 0.25s;
-            margin-top: 6px;
-            letter-spacing: 0.5px;
+            margin-top: 8px;
+            background: var(--gold-gradient);
+            color: #0f0f1a;
         }
+        .modal-btn:hover { transform: scale(1.02); box-shadow: 0 6px 30px rgba(255, 215, 0, 0.25); }
+        .modal-btn.success { background: #2e7d32; color: #fff; }
+        .modal-btn.danger { background: #d32f2f; color: #fff; }
 
-        .buy-airtime-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 6px 30px rgba(255, 215, 0, 0.25);
+        .result-msg {
+            margin-top: 10px;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 14px;
+            display: none;
         }
+        .result-msg.show { display: block; }
+        .result-msg.success { background: rgba(46, 125, 50, 0.15); color: #4caf50; border: 1px solid rgba(46, 125, 50, 0.2); }
+        .result-msg.error { background: rgba(211, 47, 47, 0.15); color: #ef5350; border: 1px solid rgba(211, 47, 47, 0.2); }
+        .result-msg.loading { background: rgba(255, 215, 0, 0.1); color: var(--gold); border: 1px solid rgba(255, 215, 0, 0.15); }
 
-        /* ===== RECENT / TRANSACTIONS ===== */
+        /* ===== TRANSACTIONS ===== */
         .recent-section {
-            margin-top: 30px;
+            margin-top: 24px;
             border-top: 1px solid var(--border-color);
-            padding-top: 22px;
+            padding-top: 18px;
         }
 
         .recent-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             flex-wrap: wrap;
             gap: 8px;
         }
+        .recent-header h3 { color: var(--text-primary); font-size: 15px; font-weight: 700; }
+        .recent-header h3 span { background: rgba(255, 215, 0, 0.1); padding: 0 12px; border-radius: 40px; font-size: 12px; color: var(--gold); }
 
-        .recent-header h3 {
-            color: var(--text-primary);
-            font-size: 16px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .recent-header h3 span {
-            background: rgba(255, 215, 0, 0.1);
-            padding: 0 12px;
-            border-radius: 40px;
-            font-size: 12px;
-            color: var(--gold);
-        }
-
-        .transaction-list {
-            max-height: 250px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: var(--gold) transparent;
-        }
-
-        .transaction-list::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .transaction-list::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .transaction-list::-webkit-scrollbar-thumb {
-            background: var(--gold);
-            border-radius: 10px;
-        }
+        .transaction-list { max-height: 250px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--gold) transparent; }
+        .transaction-list::-webkit-scrollbar { width: 4px; }
+        .transaction-list::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
 
         .transaction-item {
             background: var(--transaction-bg);
-            padding: 12px 16px;
+            padding: 10px 14px;
             border-radius: 12px;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-left: 3px solid transparent;
             transition: 0.2s;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: 4px;
         }
+        .transaction-item:hover { background: var(--transaction-hover); }
+        .transaction-item.data { border-left-color: #4ecdc4; }
+        .transaction-item.airtime { border-left-color: #ffd700; }
+        .transaction-item.tv { border-left-color: #9c27b0; }
+        .transaction-item.electricity { border-left-color: #ff9800; }
+        .transaction-item.education { border-left-color: #2196f3; }
+        .transaction-item.funding { border-left-color: #4caf50; }
+        .transaction-item.withdrawal { border-left-color: #f44336; }
 
-        .transaction-item:hover {
-            background: var(--transaction-hover);
-        }
+        .transaction-name { font-weight: 600; font-size: 13px; color: var(--text-primary); }
+        .transaction-detail { font-size: 11px; color: var(--text-muted); }
+        .transaction-amount { font-weight: 700; font-size: 15px; color: var(--gold); }
+        .transaction-time { font-size: 10px; color: var(--text-muted); }
+        .profit-badge { background: rgba(255, 215, 0, 0.1); color: var(--gold); padding: 1px 8px; border-radius: 8px; font-size: 9px; }
 
-        .transaction-item.data {
-            border-left-color: #4ecdc4;
-        }
+        .empty-transactions { text-align: center; color: var(--text-muted); padding: 30px 0; font-size: 14px; }
+        .empty-transactions .emoji { font-size: 32px; display: block; margin-bottom: 8px; }
 
-        .transaction-item.airtime {
-            border-left-color: #ffd700;
-        }
-
-        .transaction-left {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .transaction-name {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text-primary);
-        }
-
-        .transaction-detail {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        .transaction-right {
-            text-align: right;
-        }
-
-        .transaction-amount {
-            font-weight: 700;
-            font-size: 16px;
-            color: var(--gold);
-        }
-
-        .transaction-time {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        .empty-transactions {
-            text-align: center;
-            color: var(--text-muted);
-            padding: 30px 0;
-            font-size: 14px;
-        }
-
-        .empty-transactions .emoji {
-            font-size: 32px;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        /* ===== TOAST NOTIFICATION ===== */
+        /* ===== TOAST ===== */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -567,10 +451,10 @@
             transform: translateX(-50%) translateY(100px);
             background: var(--bg-secondary);
             color: var(--text-primary);
-            padding: 14px 28px;
+            padding: 12px 24px;
             border-radius: 16px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow);
             font-weight: 500;
             font-size: 14px;
             opacity: 0;
@@ -579,50 +463,9 @@
             max-width: 90%;
             text-align: center;
         }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .toast.success {
-            border-left: 4px solid #4ecdc4;
-        }
-
-        .toast.error {
-            border-left: 4px solid #ff6b6b;
-        }
-
-        /* ===== NETWORK BADGE ===== */
-        .network-badge {
-            display: inline-block;
-            padding: 1px 10px;
-            border-radius: 20px;
-            font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .network-badge.mtn {
-            background: rgba(255, 193, 7, 0.15);
-            color: #ffc107;
-        }
-
-        .network-badge.airtel {
-            background: rgba(255, 0, 0, 0.15);
-            color: #ff4444;
-        }
-
-        .network-badge.glo {
-            background: rgba(0, 150, 255, 0.15);
-            color: #0096ff;
-        }
-
-        .network-badge.nine {
-            background: rgba(156, 39, 176, 0.15);
-            color: #9c27b0;
-        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.success { border-left: 4px solid #4ecdc4; }
+        .toast.error { border-left: 4px solid #ff6b6b; }
     </style>
 </head>
 <body>
@@ -635,22 +478,50 @@
     <!-- ===== HEADER ===== -->
     <div class="header">
         <div class="header-left">
-            <h1>📶 Paysbillz</h1>
+            <h1>💰 Paysbillz</h1>
             <div class="sub">
-                <span>💡 Data &amp; Airtime</span>
+                <span>💡 All Services</span>
                 <span style="color:var(--text-dim);">•</span>
-                <span class="phone-badge" id="phoneBadge">📞 Loading...</span>
+                <span class="badge" id="phoneBadge">📞 Loading...</span>
             </div>
         </div>
         <div class="header-right">
             <button class="theme-toggle" onclick="toggleTheme()">
                 <span id="themeIcon">🌙</span>
-                <span class="toggle-label" id="themeLabel">Dark</span>
             </button>
+            <button class="logout-btn" onclick="logout()">🚪</button>
         </div>
     </div>
 
-    <!-- ===== FILTER TABS (Daily / Weekly / Monthly / All) ===== -->
+    <!-- ===== BALANCE ===== -->
+    <div class="balance-grid">
+        <div class="balance-card">
+            <div class="label">💰 Wallet</div>
+            <div class="amount wallet" id="balanceDisplay">₦0.00</div>
+        </div>
+        <div class="balance-card">
+            <div class="label">📊 Profit</div>
+            <div class="amount profit" id="profitDisplay">₦0.00</div>
+        </div>
+        <div class="balance-card">
+            <div class="label">📋 Txns</div>
+            <div class="amount" id="txnCount" style="color:var(--text-secondary);">0</div>
+        </div>
+    </div>
+
+    <!-- ===== SERVICES ===== -->
+    <div class="services-grid">
+        <button class="service-btn" onclick="openModal('data')"><span class="icon">📱</span><span class="name">Data</span></button>
+        <button class="service-btn" onclick="openModal('airtime')"><span class="icon">📞</span><span class="name">Airtime</span></button>
+        <button class="service-btn" onclick="openModal('tv')"><span class="icon">📺</span><span class="name">TV</span></button>
+        <button class="service-btn" onclick="openModal('electricity')"><span class="icon">💡</span><span class="name">Electricity</span></button>
+        <button class="service-btn" onclick="openModal('education')"><span class="icon">📚</span><span class="name">Exam Pins</span></button>
+        <button class="service-btn primary" onclick="openModal('fund')"><span class="icon">💳</span><span class="name">Fund Wallet</span></button>
+        <button class="service-btn" onclick="openModal('withdraw')"><span class="icon">💸</span><span class="name">Withdraw</span></button>
+        <button class="service-btn" onclick="window.location.href='/admin.html'" style="background:rgba(255,215,0,0.1);border-color:rgba(255,215,0,0.2);"><span class="icon">👑</span><span class="name">Admin</span></button>
+    </div>
+
+    <!-- ===== DATA PLANS (with filters) ===== -->
     <div class="filter-tabs" id="filterContainer">
         <button class="filter-btn active" data-filter="all">🔥 All</button>
         <button class="filter-btn" data-filter="daily">📆 Daily</button>
@@ -658,35 +529,9 @@
         <button class="filter-btn" data-filter="monthly">📊 Monthly</button>
     </div>
 
-    <!-- ===== PLANS GRID ===== -->
     <div class="plans-grid" id="plansGrid"></div>
 
-    <!-- ===== AIRTIME ===== -->
-    <div class="airtime-section">
-        <h2>📱 Buy Airtime <span>instant</span></h2>
-        <div class="airtime-grid">
-            <div class="airtime-group">
-                <label>Network</label>
-                <select id="networkSelect">
-                    <option value="MTN">📶 MTN</option>
-                    <option value="Airtel">📶 Airtel</option>
-                    <option value="GLO">📶 GLO</option>
-                    <option value="9mobile">📶 9mobile</option>
-                </select>
-            </div>
-            <div class="airtime-group">
-                <label>Amount (₦)</label>
-                <input type="number" id="airtimeAmount" placeholder="100, 500, 1000" min="50" step="50" />
-            </div>
-            <div class="airtime-group" style="grid-column: 1 / -1;">
-                <label>Phone Number</label>
-                <input type="tel" id="airtimePhone" placeholder="080xxxxxxxx" />
-            </div>
-            <button class="buy-airtime-btn" onclick="buyAirtime()">🚀 Purchase Airtime</button>
-        </div>
-    </div>
-
-    <!-- ===== RECENT / TRANSACTIONS ===== -->
+    <!-- ===== TRANSACTIONS ===== -->
     <div class="recent-section">
         <div class="recent-header">
             <h3>📋 Recent Transactions <span id="txCount">0</span></h3>
@@ -694,347 +539,812 @@
         <div class="transaction-list" id="transactionList">
             <div class="empty-transactions">
                 <span class="emoji">🛒</span>
-                No transactions yet.<br />Buy data or airtime to get started!
+                No transactions yet.<br />Buy a service to get started!
             </div>
         </div>
     </div>
 
 </div>
 
+<!-- ===== MODAL ===== -->
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Service</h2>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div id="modalBody"></div>
+        <div class="result-msg" id="resultMsg"></div>
+    </div>
+</div>
+
 <!-- ============================================================ -->
 <!-- JAVASCRIPT -->
 <script>
-    // ============================================================
-    // 1. DATA PLANS DATABASE (Properly Categorized)
-    // ============================================================
-    const allPlans = [
-        // ---- DAILY PLANS ----
-        { id: 'd1', name: 'MTN AWOOF 500MB', validity: 'Daily', price: 220, network: 'MTN' },
-        { id: 'd2', name: 'MTN AWOOF 1GB', validity: 'Daily', price: 260, network: 'MTN' },
-        { id: 'd3', name: 'MTN AWOOF 2.5GB', validity: 'Daily', price: 590, network: 'MTN' },
-        { id: 'd4', name: 'MTN AWOOF 5GB', validity: 'Daily', price: 1150, network: 'MTN' },
-        { id: 'd5', name: 'MTN AWOOF 10GB', validity: 'Daily', price: 3500, network: 'MTN' },
-        { id: 'd6', name: 'MTN PULSE 500MB', validity: 'Daily', price: 150, network: 'MTN' },
-        { id: 'd7', name: 'MTN PULSE 1GB', validity: 'Daily', price: 250, network: 'MTN' },
-        { id: 'd8', name: 'Airtel AWOOF 150MB', validity: 'Daily', price: 68, network: 'Airtel' },
-        { id: 'd9', name: 'Airtel AWOOF 300MB', validity: 'Daily', price: 125, network: 'Airtel' },
-        { id: 'd10', name: 'Airtel AWOOF 600MB', validity: 'Daily', price: 230, network: 'Airtel' },
-        { id: 'd11', name: 'Airtel AWOOF 10GB', validity: 'Daily', price: 3080, network: 'Airtel' },
-        { id: 'd12', name: 'Airtel SmartShare 500MB', validity: 'Daily', price: 180, network: 'Airtel' },
-        { id: 'd13', name: 'Airtel SmartShare 1GB', validity: 'Daily', price: 300, network: 'Airtel' },
-        { id: 'd14', name: 'GLO AWOOF 750MB', validity: 'Daily', price: 210, network: 'GLO' },
-        { id: 'd15', name: 'GLO AWOOF 1.5GB', validity: 'Daily', price: 315, network: 'GLO' },
-        { id: 'd16', name: 'GLO AWOOF 2.5GB', validity: 'Daily', price: 515, network: 'GLO' },
-        { id: 'd17', name: 'GLO AWOOF 10GB', validity: 'Daily', price: 1920, network: 'GLO' },
+// ============================================================
+// CONFIGURATION
+// ============================================================
+const API = 'https://paysbillz-api.onrender.com';
+const ADMIN_PHONE = '08027449527';
+let userPhone = localStorage.getItem('userPhone') || '08027449527';
+let isAdmin = userPhone === ADMIN_PHONE;
 
-        // ---- WEEKLY PLANS ----
-        { id: 'w1', name: 'MTN SHARE 500MB', validity: 'Weekly', price: 330, network: 'MTN' },
-        { id: 'w2', name: 'MTN SHARE 1GB', validity: 'Weekly', price: 435, network: 'MTN' },
-        { id: 'w3', name: 'MTN SHARE 2GB', validity: 'Weekly', price: 970, network: 'MTN' },
-        { id: 'w4', name: 'MTN SHARE 3GB', validity: 'Weekly', price: 1380, network: 'MTN' },
-        { id: 'w5', name: 'MTN PULSE 2GB', validity: 'Weekly', price: 700, network: 'MTN' },
-        { id: 'w6', name: 'MTN PULSE 3GB', validity: 'Weekly', price: 950, network: 'MTN' },
-        { id: 'w7', name: 'Airtel SmartShare 2GB', validity: 'Weekly', price: 800, network: 'Airtel' },
-        { id: 'w8', name: 'Airtel SmartShare 3GB', validity: 'Weekly', price: 1100, network: 'Airtel' },
-        { id: 'w9', name: 'MTN GIFT 500MB', validity: 'Weekly', price: 400, network: 'MTN' },
-        { id: 'w10', name: 'MTN GIFT 1GB', validity: 'Weekly', price: 700, network: 'MTN' },
+// ============================================================
+// DATA PLANS DATABASE (with profit margins)
+// ============================================================
+const allPlans = [
+    // ---- DAILY PLANS ----
+    { id: 'd1', name: 'MTN AWOOF 500MB', validity: 'Daily', price: 220, network: 'MTN', profit: 30 },
+    { id: 'd2', name: 'MTN AWOOF 1GB', validity: 'Daily', price: 260, network: 'MTN', profit: 40 },
+    { id: 'd3', name: 'MTN AWOOF 2.5GB', validity: 'Daily', price: 590, network: 'MTN', profit: 60 },
+    { id: 'd4', name: 'MTN AWOOF 5GB', validity: 'Daily', price: 1150, network: 'MTN', profit: 100 },
+    { id: 'd5', name: 'MTN AWOOF 10GB', validity: 'Daily', price: 3500, network: 'MTN', profit: 200 },
+    { id: 'd6', name: 'MTN PULSE 500MB', validity: 'Daily', price: 150, network: 'MTN', profit: 20 },
+    { id: 'd7', name: 'MTN PULSE 1GB', validity: 'Daily', price: 250, network: 'MTN', profit: 30 },
+    { id: 'd8', name: 'Airtel AWOOF 150MB', validity: 'Daily', price: 68, network: 'Airtel', profit: 10 },
+    { id: 'd9', name: 'Airtel AWOOF 300MB', validity: 'Daily', price: 125, network: 'Airtel', profit: 20 },
+    { id: 'd10', name: 'Airtel AWOOF 600MB', validity: 'Daily', price: 230, network: 'Airtel', profit: 35 },
+    { id: 'd11', name: 'Airtel SmartShare 500MB', validity: 'Daily', price: 180, network: 'Airtel', profit: 25 },
+    { id: 'd12', name: 'Airtel SmartShare 1GB', validity: 'Daily', price: 300, network: 'Airtel', profit: 40 },
+    { id: 'd13', name: 'GLO AWOOF 750MB', validity: 'Daily', price: 210, network: 'GLO', profit: 25 },
+    { id: 'd14', name: 'GLO AWOOF 1.5GB', validity: 'Daily', price: 315, network: 'GLO', profit: 40 },
+    { id: 'd15', name: 'GLO AWOOF 2.5GB', validity: 'Daily', price: 515, network: 'GLO', profit: 55 },
 
-        // ---- MONTHLY PLANS ----
-        { id: 'm1', name: 'MTN SME 500MB', validity: 'Monthly', price: 500, network: 'MTN' },
-        { id: 'm2', name: 'MTN SME 1GB', validity: 'Monthly', price: 800, network: 'MTN' },
-        { id: 'm3', name: 'MTN SME 2GB', validity: 'Monthly', price: 1200, network: 'MTN' },
-        { id: 'm4', name: 'MTN SME 3GB', validity: 'Monthly', price: 1500, network: 'MTN' },
-        { id: 'm5', name: 'MTN SME 5GB', validity: 'Monthly', price: 2000, network: 'MTN' },
-        { id: 'm6', name: 'MTN 10GB', validity: 'Monthly', price: 4448, network: 'MTN' },
-        { id: 'm7', name: 'MTN 20GB', validity: 'Monthly', price: 4925, network: 'MTN' },
-        { id: 'm8', name: 'MTN 50GB', validity: 'Monthly', price: 17730, network: 'MTN' },
-        { id: 'm9', name: 'MTN 100GB', validity: 'Monthly', price: 24525, network: 'MTN' },
-        { id: 'm10', name: 'MTN PULSE 5GB', validity: 'Monthly', price: 1500, network: 'MTN' },
-        { id: 'm11', name: 'MTN PULSE 10GB', validity: 'Monthly', price: 2800, network: 'MTN' },
-        { id: 'm12', name: 'Airtel 500MB', validity: 'Monthly', price: 450, network: 'Airtel' },
-        { id: 'm13', name: 'Airtel 1GB', validity: 'Monthly', price: 750, network: 'Airtel' },
-        { id: 'm14', name: 'Airtel 2GB', validity: 'Monthly', price: 1200, network: 'Airtel' },
-        { id: 'm15', name: 'Airtel 3GB', validity: 'Monthly', price: 1500, network: 'Airtel' },
-        { id: 'm16', name: 'Airtel 5GB', validity: 'Monthly', price: 2000, network: 'Airtel' },
-        { id: 'm17', name: 'Airtel 10GB', validity: 'Monthly', price: 3944, network: 'Airtel' },
-        { id: 'm18', name: 'Airtel SmartShare 5GB', validity: 'Monthly', price: 1800, network: 'Airtel' },
-        { id: 'm19', name: 'Airtel SmartShare 10GB', validity: 'Monthly', price: 3200, network: 'Airtel' },
-        { id: 'm20', name: 'GLO 500MB', validity: 'Monthly', price: 400, network: 'GLO' },
-        { id: 'm21', name: 'GLO 1GB', validity: 'Monthly', price: 700, network: 'GLO' },
-        { id: 'm22', name: 'GLO 2GB', validity: 'Monthly', price: 1100, network: 'GLO' },
-        { id: 'm23', name: 'GLO 3GB', validity: 'Monthly', price: 1500, network: 'GLO' },
-        { id: 'm24', name: 'GLO 5GB', validity: 'Monthly', price: 2000, network: 'GLO' },
-        { id: 'm25', name: 'GLO 10GB', validity: 'Monthly', price: 2850, network: 'GLO' },
-        { id: 'm26', name: '9mobile 500MB', validity: 'Monthly', price: 350, network: '9mobile' },
-        { id: 'm27', name: '9mobile 1GB', validity: 'Monthly', price: 600, network: '9mobile' },
-        { id: 'm28', name: '9mobile 2GB', validity: 'Monthly', price: 1000, network: '9mobile' },
-        { id: 'm29', name: '9mobile 3GB', validity: 'Monthly', price: 1400, network: '9mobile' },
-        { id: 'm30', name: '9mobile 5GB', validity: 'Monthly', price: 2000, network: '9mobile' },
-        { id: 'm31', name: '9mobile 10GB', validity: 'Monthly', price: 5000, network: '9mobile' },
-        { id: 'm32', name: 'MTN GIFT 2GB', validity: 'Monthly', price: 1300, network: 'MTN' },
-        { id: 'm33', name: 'MTN GIFT 5GB', validity: 'Monthly', price: 2800, network: 'MTN' },
-        { id: 'm34', name: 'MTN GIFT 10GB', validity: 'Monthly', price: 5000, network: 'MTN' },
-    ];
+    // ---- WEEKLY PLANS ----
+    { id: 'w1', name: 'MTN SHARE 500MB', validity: 'Weekly', price: 330, network: 'MTN', profit: 35 },
+    { id: 'w2', name: 'MTN SHARE 1GB', validity: 'Weekly', price: 435, network: 'MTN', profit: 55 },
+    { id: 'w3', name: 'MTN SHARE 2GB', validity: 'Weekly', price: 970, network: 'MTN', profit: 80 },
+    { id: 'w4', name: 'MTN SHARE 3GB', validity: 'Weekly', price: 1380, network: 'MTN', profit: 110 },
+    { id: 'w5', name: 'MTN PULSE 2GB', validity: 'Weekly', price: 700, network: 'MTN', profit: 60 },
+    { id: 'w6', name: 'MTN PULSE 3GB', validity: 'Weekly', price: 950, network: 'MTN', profit: 80 },
+    { id: 'w7', name: 'Airtel SmartShare 2GB', validity: 'Weekly', price: 800, network: 'Airtel', profit: 70 },
+    { id: 'w8', name: 'Airtel SmartShare 3GB', validity: 'Weekly', price: 1100, network: 'Airtel', profit: 90 },
+    { id: 'w9', name: 'MTN GIFT 500MB', validity: 'Weekly', price: 400, network: 'MTN', profit: 50 },
+    { id: 'w10', name: 'MTN GIFT 1GB', validity: 'Weekly', price: 700, network: 'MTN', profit: 70 },
 
-    // ============================================================
-    // 2. TRANSACTION HISTORY (localStorage)
-    // ============================================================
-    function getTransactions() {
-        try {
-            return JSON.parse(localStorage.getItem('paysbillz_transactions')) || [];
-        } catch {
-            return [];
-        }
-    }
+    // ---- MONTHLY PLANS ----
+    { id: 'm1', name: 'MTN SME 500MB', validity: 'Monthly', price: 500, network: 'MTN', profit: 50 },
+    { id: 'm2', name: 'MTN SME 1GB', validity: 'Monthly', price: 800, network: 'MTN', profit: 80 },
+    { id: 'm3', name: 'MTN SME 2GB', validity: 'Monthly', price: 1200, network: 'MTN', profit: 120 },
+    { id: 'm4', name: 'MTN SME 3GB', validity: 'Monthly', price: 1500, network: 'MTN', profit: 150 },
+    { id: 'm5', name: 'MTN SME 5GB', validity: 'Monthly', price: 2000, network: 'MTN', profit: 200 },
+    { id: 'm6', name: 'MTN 10GB', validity: 'Monthly', price: 4448, network: 'MTN', profit: 350 },
+    { id: 'm7', name: 'MTN 20GB', validity: 'Monthly', price: 4925, network: 'MTN', profit: 500 },
+    { id: 'm8', name: 'MTN 50GB', validity: 'Monthly', price: 17730, network: 'MTN', profit: 1000 },
+    { id: 'm9', name: 'MTN 100GB', validity: 'Monthly', price: 24525, network: 'MTN', profit: 1500 },
+    { id: 'm10', name: 'MTN PULSE 5GB', validity: 'Monthly', price: 1500, network: 'MTN', profit: 150 },
+    { id: 'm11', name: 'MTN PULSE 10GB', validity: 'Monthly', price: 2800, network: 'MTN', profit: 280 },
+    { id: 'm12', name: 'Airtel 500MB', validity: 'Monthly', price: 450, network: 'Airtel', profit: 40 },
+    { id: 'm13', name: 'Airtel 1GB', validity: 'Monthly', price: 750, network: 'Airtel', profit: 70 },
+    { id: 'm14', name: 'Airtel 2GB', validity: 'Monthly', price: 1200, network: 'Airtel', profit: 100 },
+    { id: 'm15', name: 'Airtel 3GB', validity: 'Monthly', price: 1500, network: 'Airtel', profit: 130 },
+    { id: 'm16', name: 'Airtel 5GB', validity: 'Monthly', price: 2000, network: 'Airtel', profit: 180 },
+    { id: 'm17', name: 'Airtel 10GB', validity: 'Monthly', price: 3944, network: 'Airtel', profit: 300 },
+    { id: 'm18', name: 'Airtel SmartShare 5GB', validity: 'Monthly', price: 1800, network: 'Airtel', profit: 150 },
+    { id: 'm19', name: 'Airtel SmartShare 10GB', validity: 'Monthly', price: 3200, network: 'Airtel', profit: 250 },
+    { id: 'm20', name: 'GLO 500MB', validity: 'Monthly', price: 400, network: 'GLO', profit: 35 },
+    { id: 'm21', name: 'GLO 1GB', validity: 'Monthly', price: 700, network: 'GLO', profit: 60 },
+    { id: 'm22', name: 'GLO 2GB', validity: 'Monthly', price: 1100, network: 'GLO', profit: 90 },
+    { id: 'm23', name: 'GLO 3GB', validity: 'Monthly', price: 1500, network: 'GLO', profit: 120 },
+    { id: 'm24', name: 'GLO 5GB', validity: 'Monthly', price: 2000, network: 'GLO', profit: 170 },
+    { id: 'm25', name: 'GLO 10GB', validity: 'Monthly', price: 2850, network: 'GLO', profit: 280 },
+    { id: 'm26', name: '9mobile 500MB', validity: 'Monthly', price: 350, network: '9mobile', profit: 30 },
+    { id: 'm27', name: '9mobile 1GB', validity: 'Monthly', price: 600, network: '9mobile', profit: 55 },
+    { id: 'm28', name: '9mobile 2GB', validity: 'Monthly', price: 1000, network: '9mobile', profit: 85 },
+    { id: 'm29', name: '9mobile 3GB', validity: 'Monthly', price: 1400, network: '9mobile', profit: 110 },
+    { id: 'm30', name: '9mobile 5GB', validity: 'Monthly', price: 2000, network: '9mobile', profit: 160 },
+    { id: 'm31', name: '9mobile 10GB', validity: 'Monthly', price: 5000, network: '9mobile', profit: 250 },
+    { id: 'm32', name: 'MTN GIFT 2GB', validity: 'Monthly', price: 1300, network: 'MTN', profit: 130 },
+    { id: 'm33', name: 'MTN GIFT 5GB', validity: 'Monthly', price: 2800, network: 'MTN', profit: 250 },
+    { id: 'm34', name: 'MTN GIFT 10GB', validity: 'Monthly', price: 5000, network: 'MTN', profit: 400 },
+];
 
-    function saveTransactions(txs) {
-        localStorage.setItem('paysbillz_transactions', JSON.stringify(txs));
-    }
+// ============================================================
+// TV PRICES (from server.js)
+// ============================================================
+const TV_PRICES = {
+    '90': { name: 'DSTV Padi', price: 4400, profit: 132 },
+    '91': { name: 'DSTV Yanga', price: 6000, profit: 180 },
+    '92': { name: 'DSTV Confam', price: 11000, profit: 330 },
+    '93': { name: 'DSTV Compact', price: 19000, profit: 570 },
+    '105': { name: 'DSTV Compact Plus', price: 30000, profit: 900 },
+    '106': { name: 'DSTV Premium', price: 44500, profit: 1335 },
+    '94': { name: 'GOTV Smallie', price: 1900, profit: 57 },
+    '96': { name: 'GOTV Jolli', price: 5800, profit: 174 },
+    '97': { name: 'GOTV Jinja', price: 3900, profit: 117 },
+    '95': { name: 'GOTV Max', price: 8500, profit: 255 },
+    '112': { name: 'GOTV Supa', price: 9000, profit: 270 },
+};
 
-    function addTransaction(type, name, amount, detail = '') {
-        const txs = getTransactions();
-        txs.unshift({
-            id: Date.now(),
-            type: type,
-            name: name,
-            amount: amount,
-            detail: detail,
-            time: new Date().toLocaleString()
-        });
-        if (txs.length > 50) txs.pop();
-        saveTransactions(txs);
-        renderTransactions();
-        updateTxCount();
-    }
+// ============================================================
+// EDUCATION PRICES (from server.js)
+// ============================================================
+const EDUCATION_PRICES = {
+    '1': { name: 'WAEC', price: 5250, profit: 263 },
+    '2': { name: 'NECO', price: 2250, profit: 113 },
+    '3': { name: 'NABTEB', price: 900, profit: 45 },
+};
 
-    function clearHistory() {
-        if (confirm('Clear all transaction history?')) {
-            saveTransactions([]);
-            renderTransactions();
-            updateTxCount();
-            showToast('🗑️ History cleared', 'success');
-        }
-    }
+// ============================================================
+// ELECTRICITY PROVIDERS
+// ============================================================
+const ELECTRICITY_PROVIDERS = {
+    '1': 'IKEDC',
+    '2': 'EKEDC',
+    '3': 'KEDCO',
+    '4': 'PHED',
+    '5': 'JED',
+    '6': 'IBEDC',
+    '7': 'KAEDCO',
+    '8': 'AEDC',
+    '9': 'EEDC',
+    '10': 'BEDC',
+};
 
-    function updateTxCount() {
-        const txs = getTransactions();
-        document.getElementById('txCount').textContent = txs.length;
-    }
+// ============================================================
+// TRANSACTION HISTORY
+// ============================================================
+function getTransactions() {
+    try { return JSON.parse(localStorage.getItem('paysbillz_transactions')) || []; }
+    catch { return []; }
+}
 
-    // ============================================================
-    // 3. RENDER TRANSACTIONS
-    // ============================================================
-    function renderTransactions() {
-        const txs = getTransactions();
-        const container = document.getElementById('transactionList');
+function saveTransactions(txs) {
+    localStorage.setItem('paysbillz_transactions', JSON.stringify(txs));
+}
 
-        if (txs.length === 0) {
-            container.innerHTML = `
-                <div class="empty-transactions">
-                    <span class="emoji">🛒</span>
-                    No transactions yet.<br />Buy data or airtime to get started!
-                </div>
-            `;
-            return;
-        }
-
-        container.innerHTML = txs.map(tx => `
-            <div class="transaction-item ${tx.type}">
-                <div class="transaction-left">
-                    <span class="transaction-name">${tx.name}</span>
-                    <span class="transaction-detail">${tx.detail || ''}</span>
-                </div>
-                <div class="transaction-right">
-                    <div class="transaction-amount">₦${tx.amount.toLocaleString()}</div>
-                    <div class="transaction-time">${tx.time}</div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // ============================================================
-    // 4. RENDER PLANS WITH VALIDITY FILTER
-    // ============================================================
-    const grid = document.getElementById('plansGrid');
-
-    function getValidityClass(validity) {
-        return validity.toLowerCase();
-    }
-
-    function getBadgeClass(validity) {
-        return validity.toLowerCase();
-    }
-
-    function getNetworkClass(network) {
-        const map = {
-            'MTN': 'mtn',
-            'Airtel': 'airtel',
-            'GLO': 'glo',
-            '9mobile': 'nine'
-        };
-        return map[network] || '';
-    }
-
-    function renderPlans(filter = 'all') {
-        let filtered = allPlans;
-        if (filter !== 'all') {
-            filtered = allPlans.filter(p => p.validity.toLowerCase() === filter);
-        }
-
-        if (filtered.length === 0) {
-            grid.innerHTML = `
-                <div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:40px 0;">
-                    No ${filter} plans available yet.
-                </div>
-            `;
-            return;
-        }
-
-        grid.innerHTML = filtered.map(p => {
-            const vc = getValidityClass(p.validity);
-            const bc = getBadgeClass(p.validity);
-            const nc = getNetworkClass(p.network);
-            return `
-                <div class="plan-card validity-${vc}">
-                    <div class="plan-top">
-                        <div class="plan-name">
-                            ${p.name}
-                            <small>
-                                <span class="network-badge ${nc}">${p.network}</span>
-                                • ${p.validity}
-                            </small>
-                        </div>
-                        <span class="plan-badge ${bc}">${p.validity}</span>
-                    </div>
-                    <div class="plan-bottom">
-                        <span class="plan-price">₦${p.price.toLocaleString()}</span>
-                        <button class="buy-btn" onclick="buyPlan('${p.name}', ${p.price}, '${p.network}', '${p.validity}')">Buy</button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-
-    // ============================================================
-    // 5. BUY FUNCTIONS
-    // ============================================================
-    function buyPlan(name, price, network, validity) {
-        if (confirm(`✅ Confirm purchase:\n📦 ${name}\n💰 ₦${price.toLocaleString()}\n📡 ${network}\n⏱ ${validity}\n\nProceed?`)) {
-            addTransaction('data', name, price, `📡 ${network} · ${validity}`);
-            showToast(`✅ ${name} purchased for ₦${price.toLocaleString()}`, 'success');
-        }
-    }
-
-    function buyAirtime() {
-        const network = document.getElementById('networkSelect').value;
-        const amount = document.getElementById('airtimeAmount').value.trim();
-        const phone = document.getElementById('airtimePhone').value.trim();
-
-        if (!amount || isNaN(amount) || Number(amount) < 50) {
-            showToast('⚠️ Please enter a valid amount (₦50 minimum).', 'error');
-            return;
-        }
-
-        if (!phone || phone.length < 10) {
-            showToast('⚠️ Please enter a valid phone number (e.g. 08012345678).', 'error');
-            return;
-        }
-
-        if (confirm(`✅ Confirm airtime purchase:\n📱 ${network}\n💰 ₦${amount}\n📞 ${phone}\n\nProceed?`)) {
-            addTransaction('airtime', `${network} Airtime`, Number(amount), `📞 ${phone}`);
-            showToast(`✅ ${network} airtime of ₦${amount} sent to ${phone}`, 'success');
-            document.getElementById('airtimeAmount').value = '';
-            document.getElementById('airtimePhone').value = '';
-        }
-    }
-
-    // ============================================================
-    // 6. TOAST NOTIFICATION
-    // ============================================================
-    let toastTimeout;
-
-    function showToast(message, type = 'success') {
-        const toast = document.getElementById('toast');
-        toast.textContent = message;
-        toast.className = 'toast ' + type;
-        void toast.offsetWidth;
-        toast.classList.add('show');
-        clearTimeout(toastTimeout);
-        toastTimeout = setTimeout(() => {
-            toast.classList.remove('show');
-        }, 3500);
-    }
-
-    // ============================================================
-    // 7. THEME TOGGLE
-    // ============================================================
-    function toggleTheme() {
-        const html = document.documentElement;
-        const current = html.getAttribute('data-theme');
-        const newTheme = current === 'light' ? 'dark' : 'light';
-        html.setAttribute('data-theme', newTheme);
-
-        const icon = document.getElementById('themeIcon');
-        const label = document.getElementById('themeLabel');
-        if (newTheme === 'light') {
-            icon.textContent = '☀️';
-            label.textContent = 'Light';
-        } else {
-            icon.textContent = '🌙';
-            label.textContent = 'Dark';
-        }
-        localStorage.setItem('paysbillz_theme', newTheme);
-    }
-
-    function loadTheme() {
-        const saved = localStorage.getItem('paysbillz_theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', saved);
-        const icon = document.getElementById('themeIcon');
-        const label = document.getElementById('themeLabel');
-        if (saved === 'light') {
-            icon.textContent = '☀️';
-            label.textContent = 'Light';
-        } else {
-            icon.textContent = '🌙';
-            label.textContent = 'Dark';
-        }
-    }
-
-    // ============================================================
-    // 8. FILTER TABS
-    // ============================================================
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            filterBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            renderPlans(this.dataset.filter);
-        });
+function addTransaction(type, name, amount, detail = '', profit = 0) {
+    const txs = getTransactions();
+    txs.unshift({
+        id: Date.now(),
+        type: type,
+        name: name,
+        amount: amount,
+        detail: detail,
+        profit: profit,
+        time: new Date().toLocaleString()
     });
-
-    // ============================================================
-    // 9. LOAD USER PHONE
-    // ============================================================
-    function loadUserPhone() {
-        const phone = localStorage.getItem('userPhone') || '08027449527';
-        document.getElementById('phoneBadge').textContent = '📞 ' + phone;
-    }
-
-    // ============================================================
-    // 10. ENTER KEY SUPPORT
-    // ============================================================
-    document.getElementById('airtimeAmount').addEventListener('keypress', e => { if (e.key === 'Enter') buyAirtime(); });
-    document.getElementById('airtimePhone').addEventListener('keypress', e => { if (e.key === 'Enter') buyAirtime(); });
-
-    // ============================================================
-    // 11. INIT
-    // ============================================================
-    loadTheme();
-    loadUserPhone();
-    renderPlans('all');
+    if (txs.length > 100) txs.pop();
+    saveTransactions(txs);
     renderTransactions();
     updateTxCount();
-</script>
+}
 
+// ============================================================
+// RENDER FUNCTIONS
+// ============================================================
+function renderTransactions() {
+    const txs = getTransactions();
+    const container = document.getElementById('transactionList');
+    if (txs.length === 0) {
+        container.innerHTML = `<div class="empty-transactions"><span class="emoji">🛒</span>No transactions yet.<br />Buy a service to get started!</div>`;
+        return;
+    }
+    container.innerHTML = txs.map(tx => `
+        <div class="transaction-item ${tx.type}">
+            <div>
+                <div class="transaction-name">${tx.name}</div>
+                <div class="transaction-detail">${tx.detail || ''}</div>
+            </div>
+            <div style="text-align:right;">
+                <div class="transaction-amount">₦${tx.amount.toLocaleString()}</div>
+                ${tx.profit > 0 ? `<div class="profit-badge">+₦${tx.profit.toFixed(2)}</div>` : ''}
+                <div class="transaction-time">${tx.time}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateTxCount() {
+    const txs = getTransactions();
+    document.getElementById('txCount').textContent = txs.length;
+    document.getElementById('txnCount').textContent = txs.length;
+}
+
+// ============================================================
+// RENDER PLANS
+// ============================================================
+function renderPlans(filter = 'all') {
+    const grid = document.getElementById('plansGrid');
+    let filtered = filter === 'all' ? allPlans : allPlans.filter(p => p.validity.toLowerCase() === filter);
+    
+    if (filtered.length === 0) {
+        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:40px 0;">No ${filter} plans available.</div>`;
+        return;
+    }
+
+    grid.innerHTML = filtered.map(p => {
+        const vc = p.validity.toLowerCase();
+        const badgeClass = vc;
+        return `
+            <div class="plan-card validity-${vc}">
+                <div class="plan-top">
+                    <div class="plan-name">
+                        ${p.name}
+                        <small>${p.network}</small>
+                    </div>
+                    <span class="plan-badge ${badgeClass}">${p.validity}</span>
+                </div>
+                <div class="plan-bottom">
+                    <span class="plan-price">₦${p.price.toLocaleString()}</span>
+                    <button class="buy-btn" onclick="buyDataPlan('${p.id}')">Buy</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ============================================================
+// BUY DATA PLAN
+// ============================================================
+async function buyDataPlan(planId) {
+    const plan = allPlans.find(p => p.id === planId);
+    if (!plan) return;
+    
+    if (!confirm(`✅ Confirm purchase:\n📦 ${plan.name}\n💰 ₦${plan.price.toLocaleString()}\n📡 ${plan.network}\n⏱ ${plan.validity}\n\nProceed?`)) return;
+    
+    showResult('loading', '⏳ Processing purchase...');
+    
+    try {
+        const res = await fetch(API + '/api/buy-data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: userPhone, plan: planId })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            const profit = data.result?.profit || plan.profit || 0;
+            addTransaction('data', plan.name, plan.price, `📡 ${plan.network} · ${plan.validity}`, profit);
+            showToast(`✅ ${plan.name} purchased! Profit: ₦${profit}`, 'success');
+            closeModal();
+            loadBalance();
+        } else {
+            showResult('error', '❌ ' + (data.error || 'Purchase failed'));
+        }
+    } catch (err) {
+        showResult('error', '❌ Connection error: ' + err.message);
+    }
+}
+
+// ============================================================
+// BUY AIRTIME
+// ============================================================
+async function buyAirtime() {
+    const network = document.getElementById('airtimeNetwork').value;
+    const amount = document.getElementById('airtimeAmount').value.trim();
+    const phone = document.getElementById('airtimePhone').value.trim();
+    
+    if (!amount || isNaN(amount) || Number(amount) < 50) {
+        showResult('error', '⚠️ Amount must be at least ₦50');
+        return;
+    }
+    if (!phone || phone.length < 10) {
+        showResult('error', '⚠️ Please enter a valid phone number');
+        return;
+    }
+    
+    if (!confirm(`✅ Confirm airtime:\n📱 ${network}\n💰 ₦${amount}\n📞 ${phone}\n\nProceed?`)) return;
+    
+    showResult('loading', '⏳ Processing...');
+    
+    try {
+        const res = await fetch(API + '/api/buy-airtime', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: phone, amount: Number(amount) })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            const profit = data.result?.profit || Math.round(Number(amount) * 0.05);
+            addTransaction('airtime', `${network} Airtime`, Number(amount), `📞 ${phone}`, profit);
+            showToast(`✅ ${network} airtime of ₦${amount} sent to ${phone}`, 'success');
+            closeModal();
+            loadBalance();
+        } else {
+            showResult('error', '❌ ' + (data.error || 'Purchase failed'));
+        }
+    } catch (err) {
+        showResult('error', '❌ Connection error: ' + err.message);
+    }
+}
+
+// ============================================================
+// BUY TV
+// ============================================================
+async function buyTV() {
+    const serviceID = document.getElementById('tvService').value;
+    const iucNum = document.getElementById('tvIuc').value.trim();
+    const tvInfo = TV_PRICES[serviceID];
+    
+    if (!iucNum || iucNum.length < 4) {
+        showResult('error', '⚠️ Please enter a valid Smart Card number');
+        return;
+    }
+    
+    if (!confirm(`✅ Confirm TV subscription:\n📺 ${tvInfo.name}\n💰 ₦${tvInfo.price.toLocaleString()}\n🆔 ${iucNum}\n\nProceed?`)) return;
+    
+    showResult('loading', '⏳ Processing subscription...');
+    
+    try {
+        const res = await fetch(API + '/api/buy-tv', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: userPhone, serviceID: serviceID, iucNum: iucNum })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            const profit = data.result?.profit || tvInfo.profit || 0;
+            addTransaction('tv', tvInfo.name, tvInfo.price, `🆔 ${iucNum}`, profit);
+            showToast(`✅ ${tvInfo.name} subscribed! Profit: ₦${profit}`, 'success');
+            closeModal();
+            loadBalance();
+        } else {
+            showResult('error', '❌ ' + (data.error || 'Subscription failed'));
+        }
+    } catch (err) {
+        showResult('error', '❌ Connection error: ' + err.message);
+    }
+}
+
+// ============================================================
+// BUY ELECTRICITY
+// ============================================================
+async function buyElectricity() {
+    const serviceID = document.getElementById('elecService').value;
+    const meterNum = document.getElementById('elecMeter').value.trim();
+    const meterType = document.getElementById('elecType').value;
+    const amount = document.getElementById('elecAmount').value.trim();
+    const provider = ELECTRICITY_PROVIDERS[serviceID] || 'Unknown';
+    
+    if (!meterNum || meterNum.length < 4) {
+        showResult('error', '⚠️ Please enter a valid Meter number');
+        return;
+    }
+    if (!amount || isNaN(amount) || Number(amount) < 100) {
+        showResult('error', '⚠️ Amount must be at least ₦100');
+        return;
+    }
+    
+    if (!confirm(`✅ Confirm electricity payment:\n💡 ${provider}\n💰 ₦${amount}\n🔢 ${meterNum}\n\nProceed?`)) return;
+    
+    showResult('loading', '⏳ Processing payment...');
+    
+    try {
+        const res = await fetch(API + '/api/buy-electricity', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                phone: userPhone, 
+                serviceID: serviceID, 
+                meterNum: meterNum, 
+                meterType: Number(meterType), 
+                amount: Number(amount) 
+            })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            const profit = data.result?.profit || Math.round(Number(amount) * 0.02);
+            addTransaction('electricity', `${provider} Electricity`, Number(amount), `🔢 ${meterNum}`, profit);
+            showToast(`✅ Electricity payment successful! Profit: ₦${profit}`, 'success');
+            closeModal();
+            loadBalance();
+        } else {
+            showResult('error', '❌ ' + (data.error || 'Payment failed'));
+        }
+    } catch (err) {
+        showResult('error', '❌ Connection error: ' + err.message);
+    }
+}
+
+// ============================================================
+// BUY EDUCATION (Exam Pins)
+// ============================================================
+async function buyEducation() {
+    const serviceID = document.getElementById('eduService').value;
+    const quantity = document.getElementById('eduQuantity').value || 1;
+    const eduInfo = EDUCATION_PRICES[serviceID];
+    const totalPrice = eduInfo.price * quantity;
+    
+    if (!confirm(`✅ Confirm exam pin purchase:\n📚 ${eduInfo.name}\n💰 ₦${totalPrice.toLocaleString()}\n📦 ${quantity} pin(s)\n\nProceed?`)) return;
+    
+    showResult('loading', '⏳ Processing purchase...');
+    
+    try {
+        const res = await fetch(API + '/api/buy-education', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: userPhone, serviceID: serviceID, quantity: Number(quantity) })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            const profit = data.result?.profit || (eduInfo.profit * quantity);
+            addTransaction('education', `${eduInfo.name} PIN`, totalPrice, `📦 ${quantity} pin(s)`, profit);
+            showToast(`✅ ${eduInfo.name} pin(s) purchased! Profit: ₦${profit}`, 'success');
+            closeModal();
+            loadBalance();
+        } else {
+            showResult('error', '❌ ' + (data.error || 'Purchase failed'));
+        }
+    } catch (err) {
+        showResult('error', '❌ Connection error: ' + err.message);
+    }
+}
+
+// ============================================================
+// FUND WALLET (Paystack)
+// ============================================================
+async function fundWallet() {
+    const email = document.getElementById('fundEmail').value.trim();
+    const amount = document.getElementById('fundAmount').value.trim();
+    
+    if (!email || !email.includes('@')) {
+        showResult('error', '⚠️ Please enter a valid email address');
+        return;
+    }
+    if (!amount || isNaN(amount) || Number(amount) < 100) {
+        showResult('error', '⚠️ Amount must be at least ₦100');
+        return;
+    }
+    
+    if (!confirm(`✅ Confirm wallet funding:\n💰 ₦${amount}\n📧 ${email}\n\nProceed to Paystack?`)) return;
+    
+    showResult('loading', '⏳ Initializing payment...');
+    
+    try {
+        const res = await fetch(API + '/api/fund-wallet-paystack', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, amount: Number(amount), phone: userPhone })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            showResult('success', '✅ Redirecting to Paystack...');
+            window.open(data.authorization_url, '_blank');
+            setTimeout(() => {
+                closeModal();
+                loadBalance();
+            }, 2000);
+        } else {
+            showResult('error', '❌ ' + (data.error || 'Payment initialization failed'));
+        }
+    } catch (err) {
+        showResult('error', '❌ Connection error: ' + err.message);
+    }
+}
+
+// ============================================================
+// WITHDRAW PROFIT
+// ============================================================
+async function withdrawProfit() {
+    const amount = document.getElementById('withdrawAmount').value.trim();
+    const bank = document.getElementById('withdrawBank').value.trim();
+    const account = document.getElementById('withdrawAccount').value.trim();
+    const name = document.getElementById('withdrawName').value.trim();
+    
+    if (!amount || isNaN(amount) || Number(amount) < 100) {
+        showResult('error', '⚠️ Amount must be at least ₦100');
+        return;
+    }
+    if (!bank || !account || !name) {
+        showResult('error', '⚠️ Please fill all bank details');
+        return;
+    }
+    
+    if (!confirm(`✅ Confirm withdrawal:\n💰 ₦${amount}\n🏦 ${bank}\n🔢 ${account}\n👤 ${name}\n\nProceed?`)) return;
+    
+    showResult('loading', '⏳ Processing withdrawal...');
+    
+    try {
+        const res = await fetch(API + '/api/withdraw-profit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                phone: userPhone, 
+                amount: Number(amount), 
+                bankName: bank, 
+                accountNumber: account, 
+                accountName: name 
+            })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            addTransaction('withdrawal', 'Profit Withdrawal', Number(amount), `🏦 ${bank} · ${account}`, 0);
+            showToast(`✅ Withdrawal of ₦${amount} submitted!`, 'success');
+            closeModal();
+            loadBalance();
+        } else {
+            showResult('error', '❌ ' + (data.error || 'Withdrawal failed'));
+        }
+    } catch (err) {
+        showResult('error', '❌ Connection error: ' + err.message);
+    }
+}
+
+// ============================================================
+// MODAL FUNCTIONS
+// ============================================================
+function openModal(type) {
+    const modal = document.getElementById('modal');
+    const title = document.getElementById('modalTitle');
+    const body = document.getElementById('modalBody');
+    const result = document.getElementById('resultMsg');
+    result.className = 'result-msg';
+    result.textContent = '';
+    
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    
+    const forms = {
+        data: `
+            <p style="color:var(--text-secondary);margin-bottom:12px;font-size:13px;">Select a data plan below and click Buy.</p>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+                <button class="filter-btn active" onclick="renderPlans('all')">All</button>
+                <button class="filter-btn" onclick="renderPlans('daily')">Daily</button>
+                <button class="filter-btn" onclick="renderPlans('weekly')">Weekly</button>
+                <button class="filter-btn" onclick="renderPlans('monthly')">Monthly</button>
+            </div>
+            <div id="modalPlansGrid" style="max-height:300px;overflow-y:auto;"></div>
+            <div id="modalDataResult" class="result-msg"></div>
+        `,
+        airtime: `
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Network</label>
+            <select id="airtimeNetwork">
+                <option value="MTN">📶 MTN</option>
+                <option value="Airtel">📶 Airtel</option>
+                <option value="GLO">📶 GLO</option>
+                <option value="9mobile">📶 9mobile</option>
+            </select>
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Amount (₦)</label>
+            <input type="number" id="airtimeAmount" placeholder="Enter amount (min ₦50)" min="50" />
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Phone Number</label>
+            <input type="tel" id="airtimePhone" placeholder="080xxxxxxxx" />
+            <button class="modal-btn" onclick="buyAirtime()">🚀 Purchase Airtime</button>
+        `,
+        tv: `
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">TV Package</label>
+            <select id="tvService">
+                ${Object.entries(TV_PRICES).map(([id, info]) => 
+                    `<option value="${id}">${info.name} - ₦${info.price.toLocaleString()}</option>`
+                ).join('')}
+            </select>
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Smart Card Number</label>
+            <input type="text" id="tvIuc" placeholder="Enter Smart Card number" />
+            <button class="modal-btn" onclick="buyTV()">📺 Subscribe</button>
+        `,
+        electricity: `
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Provider</label>
+            <select id="elecService">
+                ${Object.entries(ELECTRICITY_PROVIDERS).map(([id, name]) => 
+                    `<option value="${id}">${name}</option>`
+                ).join('')}
+            </select>
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Meter Number</label>
+            <input type="text" id="elecMeter" placeholder="Enter meter number" />
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Meter Type</label>
+            <select id="elecType">
+                <option value="1">Prepaid</option>
+                <option value="2">Postpaid</option>
+            </select>
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Amount (₦)</label>
+            <input type="number" id="elecAmount" placeholder="Enter amount" min="100" />
+            <button class="modal-btn" onclick="buyElectricity()">💡 Pay</button>
+        `,
+        education: `
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Exam Type</label>
+            <select id="eduService">
+                ${Object.entries(EDUCATION_PRICES).map(([id, info]) => 
+                    `<option value="${id}">${info.name} - ₦${info.price.toLocaleString()}</option>`
+                ).join('')}
+            </select>
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Quantity</label>
+            <input type="number" id="eduQuantity" value="1" min="1" />
+            <button class="modal-btn" onclick="buyEducation()">📚 Buy Pin</button>
+        `,
+        fund: `
+            <p style="color:var(--text-secondary);margin-bottom:12px;font-size:13px;">Fund your wallet using Paystack. Minimum ₦100.</p>
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Email Address</label>
+            <input type="email" id="fundEmail" placeholder="youremail@example.com" />
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Amount (₦)</label>
+            <input type="number" id="fundAmount" placeholder="Enter amount" min="100" />
+            <button class="modal-btn success" onclick="fundWallet()">💳 Pay with Paystack</button>
+        `,
+        withdraw: `
+            <p style="color:var(--text-secondary);margin-bottom:12px;font-size:13px;">Withdraw your profit balance to your bank account.</p>
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Amount (₦)</label>
+            <input type="number" id="withdrawAmount" placeholder="Enter amount" min="100" />
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Bank Name</label>
+            <input type="text" id="withdrawBank" placeholder="e.g., GTBank" />
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Account Number</label>
+            <input type="text" id="withdrawAccount" placeholder="Enter account number" />
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Account Name</label>
+            <input type="text" id="withdrawName" placeholder="Full name on account" />
+            <button class="modal-btn danger" onclick="withdrawProfit()">💸 Request Withdrawal</button>
+        `
+    };
+    
+    const titles = {
+        data: '📱 Buy Data',
+        airtime: '📞 Buy Airtime',
+        tv: '📺 TV Subscription',
+        electricity: '💡 Pay Electricity',
+        education: '📚 Buy Exam Pins',
+        fund: '💰 Fund Wallet',
+        withdraw: '💸 Withdraw Profit'
+    };
+    
+    title.textContent = titles[type] || 'Service';
+    body.innerHTML = forms[type] || '<p style="color:var(--text-muted);">Invalid option</p>';
+    
+    // If data modal, render plans
+    if (type === 'data') {
+        renderModalPlans('all');
+    }
+    
+    // Set the result message element reference
+    window.currentResultId = type + 'Result';
+}
+
+function renderModalPlans(filter = 'all') {
+    const container = document.getElementById('modalPlansGrid');
+    if (!container) return;
+    
+    let filtered = filter === 'all' ? allPlans : allPlans.filter(p => p.validity.toLowerCase() === filter);
+    
+    if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:20px;">No plans found</div>`;
+        return;
+    }
+    
+    container.innerHTML = filtered.map(p => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg-card);border-radius:12px;margin-bottom:6px;border:1px solid var(--border-color);">
+            <div>
+                <div style="font-weight:600;color:var(--text-primary);font-size:13px;">${p.name}</div>
+                <div style="font-size:11px;color:var(--text-muted);">${p.network} · ${p.validity}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-weight:700;color:var(--gold);font-size:14px;">₦${p.price.toLocaleString()}</span>
+                <button class="buy-btn" onclick="buyDataPlan('${p.id}')" style="padding:4px 14px;font-size:11px;">Buy</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Override renderPlans for the main page
+const originalRenderPlans = renderPlans;
+renderPlans = function(filter = 'all') {
+    const grid = document.getElementById('plansGrid');
+    let filtered = filter === 'all' ? allPlans : allPlans.filter(p => p.validity.toLowerCase() === filter);
+    
+    if (filtered.length === 0) {
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;">No ${filter} plans available.</div>`;
+        return;
+    }
+
+    grid.innerHTML = filtered.map(p => {
+        const vc = p.validity.toLowerCase();
+        return `
+            <div class="plan-card validity-${vc}">
+                <div class="plan-top">
+                    <div class="plan-name">
+                        ${p.name}
+                        <small>${p.network}</small>
+                    </div>
+                    <span class="plan-badge ${vc}">${p.validity}</span>
+                </div>
+                <div class="plan-bottom">
+                    <span class="plan-price">₦${p.price.toLocaleString()}</span>
+                    <button class="buy-btn" onclick="buyDataPlan('${p.id}')">Buy</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+};
+
+function closeModal() {
+    document.getElementById('modal').classList.remove('show');
+    document.body.style.overflow = 'auto';
+}
+
+function showResult(type, message) {
+    const result = document.getElementById('resultMsg');
+    result.className = 'result-msg show ' + type;
+    result.textContent = message;
+}
+
+// ============================================================
+// LOAD BALANCE
+// ============================================================
+async function loadBalance() {
+    try {
+        const res = await fetch(API + '/api/profile?phone=' + userPhone);
+        const data = await res.json();
+        if (data.success) {
+            const user = data.user;
+            document.getElementById('balanceDisplay').textContent = '₦' + (user.balance || 0).toLocaleString();
+            document.getElementById('profitDisplay').textContent = '₦' + (user.profitBalance || 0).toLocaleString();
+            document.getElementById('phoneBadge').textContent = '📞 ' + user.phone;
+            if (user.name) {
+                localStorage.setItem('userName', user.name);
+            }
+        }
+    } catch (err) {
+        console.error('Balance load error:', err);
+    }
+}
+
+// ============================================================
+// TOAST NOTIFICATION
+// ============================================================
+let toastTimeout;
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = 'toast ' + type;
+    void toast.offsetWidth;
+    toast.classList.add('show');
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => toast.classList.remove('show'), 4000);
+}
+
+// ============================================================
+// THEME TOGGLE
+// ============================================================
+function toggleTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    const newTheme = current === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-theme', newTheme);
+    document.getElementById('themeIcon').textContent = newTheme === 'light' ? '☀️' : '🌙';
+    localStorage.setItem('paysbillz_theme', newTheme);
+}
+
+function loadTheme() {
+    const saved = localStorage.getItem('paysbillz_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('themeIcon').textContent = saved === 'light' ? '☀️' : '🌙';
+}
+
+// ============================================================
+// LOGOUT
+// ============================================================
+function logout() {
+    if (confirm('Logout from Paysbillz?')) {
+        localStorage.clear();
+        window.location.href = '/';
+    }
+}
+
+// ============================================================
+// FILTER TABS
+// ============================================================
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        renderPlans(this.dataset.filter);
+    });
+});
+
+// ============================================================
+// INIT
+// ============================================================
+if (!localStorage.getItem('userPhone')) {
+    window.location.href = '/';
+}
+
+loadTheme();
+loadBalance();
+renderPlans('all');
+renderTransactions();
+updateTxCount();
+</script>
 </body>
 </html>
