@@ -25,6 +25,7 @@
             --daily-color: #4ecdc4;
             --weekly-color: #ffd93d;
             --monthly-color: #6bcb77;
+            --accent: #4ecdc4;
         }
 
         [data-theme="light"] {
@@ -164,6 +165,87 @@
         .balance-card .amount.wallet { color: #4ecdc4; }
         .balance-card .amount.profit { color: #ffd93d; }
 
+        /* ===== VIRTUAL ACCOUNT CARD ===== */
+        .virtual-account-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.25s;
+            border-left: 3px solid var(--gold);
+        }
+
+        .virtual-account-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--gold);
+        }
+
+        .virtual-account-card .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .virtual-account-card .account-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 2px;
+        }
+
+        .virtual-account-card .copy-btn {
+            background: var(--gold-gradient);
+            border: none;
+            color: #0f0f1a;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .virtual-account-card .copy-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* ===== KYC STATUS ===== */
+        .kyc-status {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin: 12px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .kyc-status .tier-badge {
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .kyc-status .tier-badge.tier1 { background: rgba(158, 158, 158, 0.2); color: #9e9e9e; }
+        .kyc-status .tier-badge.tier2 { background: rgba(33, 150, 243, 0.2); color: #2196f3; }
+        .kyc-status .tier-badge.tier3 { background: rgba(255, 215, 0, 0.2); color: var(--gold); }
+
+        .kyc-status .status-badge.verified { color: #4caf50; }
+        .kyc-status .status-badge.pending { color: #ff9800; }
+        .kyc-status .status-badge.not_submitted { color: #f44336; }
+
         /* ===== SERVICE BUTTONS ===== */
         .services-grid {
             display: grid;
@@ -199,6 +281,8 @@
 
         .service-btn.primary { background: var(--gold-gradient); color: #0f0f1a; border-color: transparent; }
         .service-btn.primary:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(255, 215, 0, 0.25); }
+        .service-btn.fingerprint { background: rgba(78, 205, 196, 0.15); border-color: rgba(78, 205, 196, 0.2); }
+        .service-btn.kyc-btn { background: rgba(255, 215, 0, 0.08); border-color: rgba(255, 215, 0, 0.15); }
 
         /* ===== FILTER TABS ===== */
         .filter-tabs {
@@ -376,6 +460,7 @@
         .modal-btn:hover { transform: scale(1.02); box-shadow: 0 6px 30px rgba(255, 215, 0, 0.25); }
         .modal-btn.success { background: #2e7d32; color: #fff; }
         .modal-btn.danger { background: #d32f2f; color: #fff; }
+        .modal-btn.fingerprint-btn { background: #4ecdc4; color: #fff; }
 
         .result-msg {
             margin-top: 10px;
@@ -433,6 +518,7 @@
         .transaction-item.education { border-left-color: #2196f3; }
         .transaction-item.funding { border-left-color: #4caf50; }
         .transaction-item.withdrawal { border-left-color: #f44336; }
+        .transaction-item.virtual_account_funding { border-left-color: #9c27b0; }
 
         .transaction-name { font-weight: 600; font-size: 13px; color: var(--text-primary); }
         .transaction-detail { font-size: 11px; color: var(--text-muted); }
@@ -466,6 +552,66 @@
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         .toast.success { border-left: 4px solid #4ecdc4; }
         .toast.error { border-left: 4px solid #ff6b6b; }
+
+        /* ===== FUND WALLET INSTRUCTIONS ===== */
+        .fund-instructions {
+            background: rgba(78, 205, 196, 0.05);
+            border: 1px solid rgba(78, 205, 196, 0.15);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 12px 0;
+        }
+
+        .fund-instructions .step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 0;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .fund-instructions .step .num {
+            background: var(--gold-gradient);
+            color: #0f0f1a;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .fund-account-display {
+            background: var(--bg-card);
+            border: 2px dashed var(--gold);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            margin: 12px 0;
+        }
+
+        .fund-account-display .account-number {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--gold);
+            letter-spacing: 4px;
+        }
+
+        .fund-account-display .bank-name {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .fund-account-display .account-name {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
     </style>
 </head>
 <body>
@@ -509,6 +655,23 @@
         </div>
     </div>
 
+    <!-- ===== VIRTUAL ACCOUNT ===== -->
+    <div class="virtual-account-card" onclick="copyAccountNumber()">
+        <div>
+            <div class="label">🏦 Your Virtual Account</div>
+            <div class="account-number" id="virtualAccountDisplay">Loading...</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Paysbillz Digital Bank</div>
+        </div>
+        <button class="copy-btn" onclick="event.stopPropagation();copyAccountNumber();">📋 Copy</button>
+    </div>
+
+    <!-- ===== KYC STATUS ===== -->
+    <div class="kyc-status" id="kycStatusDisplay">
+        <span>🪪 KYC: <span id="kycTierDisplay">Loading...</span></span>
+        <span>Status: <span id="kycStatusText" class="status-badge">Loading...</span></span>
+        <span>Daily Limit: <span id="kycDailyLimitDisplay">₦0</span></span>
+    </div>
+
     <!-- ===== SERVICES ===== -->
     <div class="services-grid">
         <button class="service-btn" onclick="openModal('data')"><span class="icon">📱</span><span class="name">Data</span></button>
@@ -518,10 +681,11 @@
         <button class="service-btn" onclick="openModal('education')"><span class="icon">📚</span><span class="name">Exam Pins</span></button>
         <button class="service-btn primary" onclick="openModal('fund')"><span class="icon">💳</span><span class="name">Fund Wallet</span></button>
         <button class="service-btn" onclick="openModal('withdraw')"><span class="icon">💸</span><span class="name">Withdraw</span></button>
-        <button class="service-btn" onclick="window.location.href='/admin.html'" style="background:rgba(255,215,0,0.1);border-color:rgba(255,215,0,0.2);"><span class="icon">👑</span><span class="name">Admin</span></button>
+        <button class="service-btn kyc-btn" onclick="openModal('kyc')"><span class="icon">🪪</span><span class="name">KYC</span></button>
+        <button class="service-btn fingerprint" onclick="openModal('fingerprint')" style="grid-column: span 2;"><span class="icon">🔐</span><span class="name">Fingerprint Login</span></button>
     </div>
 
-    <!-- ===== DATA PLANS (with filters) ===== -->
+    <!-- ===== DATA PLANS ===== -->
     <div class="filter-tabs" id="filterContainer">
         <button class="filter-btn active" data-filter="all">🔥 All</button>
         <button class="filter-btn" data-filter="daily">📆 Daily</button>
@@ -564,16 +728,17 @@
 // ============================================================
 // CONFIGURATION
 // ============================================================
-const API = 'https://paysbillz-api.onrender.com';
+const API = window.location.origin || 'https://paysbillz-api.onrender.com';
 const ADMIN_PHONE = '08027449527';
 let userPhone = localStorage.getItem('userPhone') || '08027449527';
 let isAdmin = userPhone === ADMIN_PHONE;
+let fingerprintRegistered = false;
 
 // ============================================================
-// DATA PLANS DATABASE (with profit margins)
+// DATA PLANS
 // ============================================================
 const allPlans = [
-    // ---- DAILY PLANS ----
+    // Daily Plans
     { id: 'd1', name: 'MTN AWOOF 500MB', validity: 'Daily', price: 220, network: 'MTN', profit: 30 },
     { id: 'd2', name: 'MTN AWOOF 1GB', validity: 'Daily', price: 260, network: 'MTN', profit: 40 },
     { id: 'd3', name: 'MTN AWOOF 2.5GB', validity: 'Daily', price: 590, network: 'MTN', profit: 60 },
@@ -589,8 +754,7 @@ const allPlans = [
     { id: 'd13', name: 'GLO AWOOF 750MB', validity: 'Daily', price: 210, network: 'GLO', profit: 25 },
     { id: 'd14', name: 'GLO AWOOF 1.5GB', validity: 'Daily', price: 315, network: 'GLO', profit: 40 },
     { id: 'd15', name: 'GLO AWOOF 2.5GB', validity: 'Daily', price: 515, network: 'GLO', profit: 55 },
-
-    // ---- WEEKLY PLANS ----
+    // Weekly Plans
     { id: 'w1', name: 'MTN SHARE 500MB', validity: 'Weekly', price: 330, network: 'MTN', profit: 35 },
     { id: 'w2', name: 'MTN SHARE 1GB', validity: 'Weekly', price: 435, network: 'MTN', profit: 55 },
     { id: 'w3', name: 'MTN SHARE 2GB', validity: 'Weekly', price: 970, network: 'MTN', profit: 80 },
@@ -601,8 +765,7 @@ const allPlans = [
     { id: 'w8', name: 'Airtel SmartShare 3GB', validity: 'Weekly', price: 1100, network: 'Airtel', profit: 90 },
     { id: 'w9', name: 'MTN GIFT 500MB', validity: 'Weekly', price: 400, network: 'MTN', profit: 50 },
     { id: 'w10', name: 'MTN GIFT 1GB', validity: 'Weekly', price: 700, network: 'MTN', profit: 70 },
-
-    // ---- MONTHLY PLANS ----
+    // Monthly Plans
     { id: 'm1', name: 'MTN SME 500MB', validity: 'Monthly', price: 500, network: 'MTN', profit: 50 },
     { id: 'm2', name: 'MTN SME 1GB', validity: 'Monthly', price: 800, network: 'MTN', profit: 80 },
     { id: 'm3', name: 'MTN SME 2GB', validity: 'Monthly', price: 1200, network: 'MTN', profit: 120 },
@@ -640,7 +803,7 @@ const allPlans = [
 ];
 
 // ============================================================
-// TV PRICES (from server.js)
+// TV PRICES
 // ============================================================
 const TV_PRICES = {
     '90': { name: 'DSTV Padi', price: 4400, profit: 132 },
@@ -657,7 +820,7 @@ const TV_PRICES = {
 };
 
 // ============================================================
-// EDUCATION PRICES (from server.js)
+// EDUCATION PRICES
 // ============================================================
 const EDUCATION_PRICES = {
     '1': { name: 'WAEC', price: 5250, profit: 263 },
@@ -669,20 +832,13 @@ const EDUCATION_PRICES = {
 // ELECTRICITY PROVIDERS
 // ============================================================
 const ELECTRICITY_PROVIDERS = {
-    '1': 'IKEDC',
-    '2': 'EKEDC',
-    '3': 'KEDCO',
-    '4': 'PHED',
-    '5': 'JED',
-    '6': 'IBEDC',
-    '7': 'KAEDCO',
-    '8': 'AEDC',
-    '9': 'EEDC',
-    '10': 'BEDC',
+    '1': 'IKEDC', '2': 'EKEDC', '3': 'KEDCO', '4': 'PHED',
+    '5': 'JED', '6': 'IBEDC', '7': 'KAEDCO', '8': 'AEDC',
+    '9': 'EEDC', '10': 'BEDC'
 };
 
 // ============================================================
-// TRANSACTION HISTORY
+// TRANSACTIONS
 // ============================================================
 function getTransactions() {
     try { return JSON.parse(localStorage.getItem('paysbillz_transactions')) || []; }
@@ -695,15 +851,7 @@ function saveTransactions(txs) {
 
 function addTransaction(type, name, amount, detail = '', profit = 0) {
     const txs = getTransactions();
-    txs.unshift({
-        id: Date.now(),
-        type: type,
-        name: name,
-        amount: amount,
-        detail: detail,
-        profit: profit,
-        time: new Date().toLocaleString()
-    });
+    txs.unshift({ id: Date.now(), type, name, amount, detail, profit, time: new Date().toLocaleString() });
     if (txs.length > 100) txs.pop();
     saveTransactions(txs);
     renderTransactions();
@@ -717,7 +865,7 @@ function renderTransactions() {
     const txs = getTransactions();
     const container = document.getElementById('transactionList');
     if (txs.length === 0) {
-        container.innerHTML = `<div class="empty-transactions"><span class="emoji">🛒</span>No transactions yet.<br />Buy a service to get started!</div>`;
+        container.innerHTML = `<div class="empty-transactions"><span class="emoji">🛒</span>No transactions yet.</div>`;
         return;
     }
     container.innerHTML = txs.map(tx => `
@@ -747,44 +895,32 @@ function updateTxCount() {
 function renderPlans(filter = 'all') {
     const grid = document.getElementById('plansGrid');
     let filtered = filter === 'all' ? allPlans : allPlans.filter(p => p.validity.toLowerCase() === filter);
-    
     if (filtered.length === 0) {
-        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:40px 0;">No ${filter} plans available.</div>`;
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;">No ${filter} plans available.</div>`;
         return;
     }
-
-    grid.innerHTML = filtered.map(p => {
-        const vc = p.validity.toLowerCase();
-        const badgeClass = vc;
-        return `
-            <div class="plan-card validity-${vc}">
-                <div class="plan-top">
-                    <div class="plan-name">
-                        ${p.name}
-                        <small>${p.network}</small>
-                    </div>
-                    <span class="plan-badge ${badgeClass}">${p.validity}</span>
-                </div>
-                <div class="plan-bottom">
-                    <span class="plan-price">₦${p.price.toLocaleString()}</span>
-                    <button class="buy-btn" onclick="buyDataPlan('${p.id}')">Buy</button>
-                </div>
+    grid.innerHTML = filtered.map(p => `
+        <div class="plan-card validity-${p.validity.toLowerCase()}">
+            <div class="plan-top">
+                <div class="plan-name">${p.name}<small>${p.network}</small></div>
+                <span class="plan-badge ${p.validity.toLowerCase()}">${p.validity}</span>
             </div>
-        `;
-    }).join('');
+            <div class="plan-bottom">
+                <span class="plan-price">₦${p.price.toLocaleString()}</span>
+                <button class="buy-btn" onclick="buyDataPlan('${p.id}')">Buy</button>
+            </div>
+        </div>
+    `).join('');
 }
 
 // ============================================================
-// BUY DATA PLAN
+// BUY FUNCTIONS
 // ============================================================
 async function buyDataPlan(planId) {
     const plan = allPlans.find(p => p.id === planId);
     if (!plan) return;
-    
-    if (!confirm(`✅ Confirm purchase:\n📦 ${plan.name}\n💰 ₦${plan.price.toLocaleString()}\n📡 ${plan.network}\n⏱ ${plan.validity}\n\nProceed?`)) return;
-    
-    showResult('loading', '⏳ Processing purchase...');
-    
+    if (!confirm(`Confirm purchase: ${plan.name} - ₦${plan.price}?`)) return;
+    showResult('loading', '⏳ Processing...');
     try {
         const res = await fetch(API + '/api/buy-data', {
             method: 'POST',
@@ -792,226 +928,168 @@ async function buyDataPlan(planId) {
             body: JSON.stringify({ phone: userPhone, plan: planId })
         });
         const data = await res.json();
-        
         if (data.success) {
             const profit = data.result?.profit || plan.profit || 0;
-            addTransaction('data', plan.name, plan.price, `📡 ${plan.network} · ${plan.validity}`, profit);
-            showToast(`✅ ${plan.name} purchased! Profit: ₦${profit}`, 'success');
+            addTransaction('data', plan.name, plan.price, `📡 ${plan.network}`, profit);
+            showToast(`✅ ${plan.name} purchased!`, 'success');
             closeModal();
             loadBalance();
         } else {
             showResult('error', '❌ ' + (data.error || 'Purchase failed'));
         }
     } catch (err) {
-        showResult('error', '❌ Connection error: ' + err.message);
+        showResult('error', '❌ ' + err.message);
     }
 }
 
-// ============================================================
-// BUY AIRTIME
-// ============================================================
 async function buyAirtime() {
     const network = document.getElementById('airtimeNetwork').value;
     const amount = document.getElementById('airtimeAmount').value.trim();
     const phone = document.getElementById('airtimePhone').value.trim();
-    
-    if (!amount || isNaN(amount) || Number(amount) < 50) {
-        showResult('error', '⚠️ Amount must be at least ₦50');
-        return;
-    }
-    if (!phone || phone.length < 10) {
-        showResult('error', '⚠️ Please enter a valid phone number');
-        return;
-    }
-    
-    if (!confirm(`✅ Confirm airtime:\n📱 ${network}\n💰 ₦${amount}\n📞 ${phone}\n\nProceed?`)) return;
-    
+    if (!amount || amount < 50) { showResult('error', '⚠️ Min ₦50'); return; }
+    if (!phone || phone.length < 10) { showResult('error', '⚠️ Valid phone required'); return; }
+    if (!confirm(`Buy ${network} airtime ₦${amount} for ${phone}?`)) return;
     showResult('loading', '⏳ Processing...');
-    
     try {
         const res = await fetch(API + '/api/buy-airtime', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone: phone, amount: Number(amount) })
+            body: JSON.stringify({ phone, amount: Number(amount) })
         });
         const data = await res.json();
-        
         if (data.success) {
             const profit = data.result?.profit || Math.round(Number(amount) * 0.05);
             addTransaction('airtime', `${network} Airtime`, Number(amount), `📞 ${phone}`, profit);
-            showToast(`✅ ${network} airtime of ₦${amount} sent to ${phone}`, 'success');
+            showToast(`✅ ₦${amount} airtime sent!`, 'success');
             closeModal();
             loadBalance();
         } else {
             showResult('error', '❌ ' + (data.error || 'Purchase failed'));
         }
     } catch (err) {
-        showResult('error', '❌ Connection error: ' + err.message);
+        showResult('error', '❌ ' + err.message);
     }
 }
 
-// ============================================================
-// BUY TV
-// ============================================================
 async function buyTV() {
     const serviceID = document.getElementById('tvService').value;
     const iucNum = document.getElementById('tvIuc').value.trim();
     const tvInfo = TV_PRICES[serviceID];
-    
-    if (!iucNum || iucNum.length < 4) {
-        showResult('error', '⚠️ Please enter a valid Smart Card number');
-        return;
-    }
-    
-    if (!confirm(`✅ Confirm TV subscription:\n📺 ${tvInfo.name}\n💰 ₦${tvInfo.price.toLocaleString()}\n🆔 ${iucNum}\n\nProceed?`)) return;
-    
-    showResult('loading', '⏳ Processing subscription...');
-    
+    if (!iucNum || iucNum.length < 4) { showResult('error', '⚠️ Valid Smart Card required'); return; }
+    if (!confirm(`Subscribe to ${tvInfo.name} - ₦${tvInfo.price}?`)) return;
+    showResult('loading', '⏳ Processing...');
     try {
         const res = await fetch(API + '/api/buy-tv', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone: userPhone, serviceID: serviceID, iucNum: iucNum })
+            body: JSON.stringify({ phone: userPhone, serviceID, iucNum })
         });
         const data = await res.json();
-        
         if (data.success) {
             const profit = data.result?.profit || tvInfo.profit || 0;
             addTransaction('tv', tvInfo.name, tvInfo.price, `🆔 ${iucNum}`, profit);
-            showToast(`✅ ${tvInfo.name} subscribed! Profit: ₦${profit}`, 'success');
+            showToast(`✅ ${tvInfo.name} subscribed!`, 'success');
             closeModal();
             loadBalance();
         } else {
             showResult('error', '❌ ' + (data.error || 'Subscription failed'));
         }
     } catch (err) {
-        showResult('error', '❌ Connection error: ' + err.message);
+        showResult('error', '❌ ' + err.message);
     }
 }
 
-// ============================================================
-// BUY ELECTRICITY
-// ============================================================
 async function buyElectricity() {
     const serviceID = document.getElementById('elecService').value;
     const meterNum = document.getElementById('elecMeter').value.trim();
     const meterType = document.getElementById('elecType').value;
     const amount = document.getElementById('elecAmount').value.trim();
     const provider = ELECTRICITY_PROVIDERS[serviceID] || 'Unknown';
-    
-    if (!meterNum || meterNum.length < 4) {
-        showResult('error', '⚠️ Please enter a valid Meter number');
-        return;
-    }
-    if (!amount || isNaN(amount) || Number(amount) < 100) {
-        showResult('error', '⚠️ Amount must be at least ₦100');
-        return;
-    }
-    
-    if (!confirm(`✅ Confirm electricity payment:\n💡 ${provider}\n💰 ₦${amount}\n🔢 ${meterNum}\n\nProceed?`)) return;
-    
-    showResult('loading', '⏳ Processing payment...');
-    
+    if (!meterNum || meterNum.length < 4) { showResult('error', '⚠️ Valid meter required'); return; }
+    if (!amount || amount < 100) { showResult('error', '⚠️ Min ₦100'); return; }
+    if (!confirm(`Pay electricity ₦${amount} for ${provider}?`)) return;
+    showResult('loading', '⏳ Processing...');
     try {
         const res = await fetch(API + '/api/buy-electricity', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                phone: userPhone, 
-                serviceID: serviceID, 
-                meterNum: meterNum, 
-                meterType: Number(meterType), 
-                amount: Number(amount) 
-            })
+            body: JSON.stringify({ phone: userPhone, serviceID, meterNum, meterType: Number(meterType), amount: Number(amount) })
         });
         const data = await res.json();
-        
         if (data.success) {
             const profit = data.result?.profit || Math.round(Number(amount) * 0.02);
             addTransaction('electricity', `${provider} Electricity`, Number(amount), `🔢 ${meterNum}`, profit);
-            showToast(`✅ Electricity payment successful! Profit: ₦${profit}`, 'success');
+            showToast(`✅ Electricity payment successful!`, 'success');
             closeModal();
             loadBalance();
         } else {
             showResult('error', '❌ ' + (data.error || 'Payment failed'));
         }
     } catch (err) {
-        showResult('error', '❌ Connection error: ' + err.message);
+        showResult('error', '❌ ' + err.message);
     }
 }
 
-// ============================================================
-// BUY EDUCATION (Exam Pins)
-// ============================================================
 async function buyEducation() {
     const serviceID = document.getElementById('eduService').value;
     const quantity = document.getElementById('eduQuantity').value || 1;
     const eduInfo = EDUCATION_PRICES[serviceID];
     const totalPrice = eduInfo.price * quantity;
-    
-    if (!confirm(`✅ Confirm exam pin purchase:\n📚 ${eduInfo.name}\n💰 ₦${totalPrice.toLocaleString()}\n📦 ${quantity} pin(s)\n\nProceed?`)) return;
-    
-    showResult('loading', '⏳ Processing purchase...');
-    
+    if (!confirm(`Buy ${quantity}x ${eduInfo.name} pin(s) - ₦${totalPrice}?`)) return;
+    showResult('loading', '⏳ Processing...');
     try {
         const res = await fetch(API + '/api/buy-education', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone: userPhone, serviceID: serviceID, quantity: Number(quantity) })
+            body: JSON.stringify({ phone: userPhone, serviceID, quantity: Number(quantity) })
         });
         const data = await res.json();
-        
         if (data.success) {
             const profit = data.result?.profit || (eduInfo.profit * quantity);
             addTransaction('education', `${eduInfo.name} PIN`, totalPrice, `📦 ${quantity} pin(s)`, profit);
-            showToast(`✅ ${eduInfo.name} pin(s) purchased! Profit: ₦${profit}`, 'success');
+            showToast(`✅ ${eduInfo.name} pin(s) purchased!`, 'success');
             closeModal();
             loadBalance();
         } else {
             showResult('error', '❌ ' + (data.error || 'Purchase failed'));
         }
     } catch (err) {
-        showResult('error', '❌ Connection error: ' + err.message);
+        showResult('error', '❌ ' + err.message);
     }
 }
 
 // ============================================================
-// FUND WALLET (Paystack)
+// VIRTUAL ACCOUNT FUNDING (NEW - Fixed)
 // ============================================================
-async function fundWallet() {
-    const email = document.getElementById('fundEmail').value.trim();
+async function fundViaVirtualAccount() {
     const amount = document.getElementById('fundAmount').value.trim();
+    const accountNumber = document.getElementById('virtualAccountDisplay').textContent.trim();
     
-    if (!email || !email.includes('@')) {
-        showResult('error', '⚠️ Please enter a valid email address');
-        return;
-    }
     if (!amount || isNaN(amount) || Number(amount) < 100) {
         showResult('error', '⚠️ Amount must be at least ₦100');
         return;
     }
     
-    if (!confirm(`✅ Confirm wallet funding:\n💰 ₦${amount}\n📧 ${email}\n\nProceed to Paystack?`)) return;
+    // Show confirmation with account details
+    if (!confirm(`💰 Confirm funding:\n💳 Account: ${accountNumber}\n💰 Amount: ₦${amount}\n\nTransfer this amount to the account above and click OK.`)) return;
     
-    showResult('loading', '⏳ Initializing payment...');
+    showResult('loading', '⏳ Processing your funding...');
     
     try {
-        const res = await fetch(API + '/api/fund-wallet-paystack', {
+        const res = await fetch(API + '/api/virtual-account/fund', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: email, amount: Number(amount), phone: userPhone })
+            body: JSON.stringify({ accountNumber: accountNumber, amount: Number(amount) })
         });
         const data = await res.json();
         
         if (data.success) {
-            showResult('success', '✅ Redirecting to Paystack...');
-            window.open(data.authorization_url, '_blank');
-            setTimeout(() => {
-                closeModal();
-                loadBalance();
-            }, 2000);
+            addTransaction('virtual_account_funding', 'Wallet Funding', Number(amount), `🏦 ${accountNumber}`, 0);
+            showToast(`✅ ₦${amount} added to your wallet!`, 'success');
+            showResult('success', `✅ ₦${amount} added to wallet! New balance: ₦${data.newBalance.toLocaleString()}`);
+            setTimeout(() => { closeModal(); loadBalance(); }, 2000);
         } else {
-            showResult('error', '❌ ' + (data.error || 'Payment initialization failed'));
+            showResult('error', '❌ ' + (data.error || 'Funding failed'));
         }
     } catch (err) {
         showResult('error', '❌ Connection error: ' + err.message);
@@ -1027,35 +1105,19 @@ async function withdrawProfit() {
     const account = document.getElementById('withdrawAccount').value.trim();
     const name = document.getElementById('withdrawName').value.trim();
     
-    if (!amount || isNaN(amount) || Number(amount) < 100) {
-        showResult('error', '⚠️ Amount must be at least ₦100');
-        return;
-    }
-    if (!bank || !account || !name) {
-        showResult('error', '⚠️ Please fill all bank details');
-        return;
-    }
-    
-    if (!confirm(`✅ Confirm withdrawal:\n💰 ₦${amount}\n🏦 ${bank}\n🔢 ${account}\n👤 ${name}\n\nProceed?`)) return;
-    
-    showResult('loading', '⏳ Processing withdrawal...');
-    
+    if (!amount || amount < 100) { showResult('error', '⚠️ Min ₦100'); return; }
+    if (!bank || !account || !name) { showResult('error', '⚠️ All bank details required'); return; }
+    if (!confirm(`Withdraw ₦${amount} to ${bank}?`)) return;
+    showResult('loading', '⏳ Processing...');
     try {
         const res = await fetch(API + '/api/withdraw-profit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                phone: userPhone, 
-                amount: Number(amount), 
-                bankName: bank, 
-                accountNumber: account, 
-                accountName: name 
-            })
+            body: JSON.stringify({ phone: userPhone, amount: Number(amount), bankName: bank, accountNumber: account, accountName: name })
         });
         const data = await res.json();
-        
         if (data.success) {
-            addTransaction('withdrawal', 'Profit Withdrawal', Number(amount), `🏦 ${bank} · ${account}`, 0);
+            addTransaction('withdrawal', 'Profit Withdrawal', Number(amount), `🏦 ${bank}`, 0);
             showToast(`✅ Withdrawal of ₦${amount} submitted!`, 'success');
             closeModal();
             loadBalance();
@@ -1063,7 +1125,155 @@ async function withdrawProfit() {
             showResult('error', '❌ ' + (data.error || 'Withdrawal failed'));
         }
     } catch (err) {
-        showResult('error', '❌ Connection error: ' + err.message);
+        showResult('error', '❌ ' + err.message);
+    }
+}
+
+// ============================================================
+// KYC FUNCTIONS
+// ============================================================
+async function submitKYC() {
+    const name = document.getElementById('kycName').value.trim();
+    const email = document.getElementById('kycEmail').value.trim();
+    const dob = document.getElementById('kycDob').value;
+    const bvn = document.getElementById('kycBvn').value.trim();
+    const nin = document.getElementById('kycNin').value.trim();
+    const address = document.getElementById('kycAddress').value.trim();
+    
+    if (!name) { showResult('error', '⚠️ Full name required'); return; }
+    if (!email || !email.includes('@')) { showResult('error', '⚠️ Valid email required'); return; }
+    if (!address) { showResult('error', '⚠️ Address required'); return; }
+    if (bvn && bvn.length !== 11) { showResult('error', '⚠️ BVN must be 11 digits'); return; }
+    if (nin && nin.length !== 11) { showResult('error', '⚠️ NIN must be 11 digits'); return; }
+    
+    showResult('loading', '⏳ Submitting KYC...');
+    try {
+        const res = await fetch(API + '/api/kyc/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: userPhone, fullName: name, email, dateOfBirth: dob, bvn, nin, address })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showToast(`✅ KYC submitted! Tier ${data.tier} activated.`, 'success');
+            showResult('success', `✅ KYC submitted! You are now ${data.limits.name}. Daily limit: ₦${data.limits.dailyLimit.toLocaleString()}`);
+            setTimeout(() => { loadKYCStatus(); loadBalance(); }, 1000);
+        } else {
+            showResult('error', '❌ ' + (data.error || 'KYC submission failed'));
+        }
+    } catch (err) {
+        showResult('error', '❌ ' + err.message);
+    }
+}
+
+async function loadKYCStatus() {
+    try {
+        const res = await fetch(API + '/api/kyc/status?phone=' + userPhone);
+        const data = await res.json();
+        if (data.success) {
+            const kyc = data.kyc;
+            document.getElementById('kycTierDisplay').textContent = `${kyc.tierName} (${kyc.tier})`;
+            document.getElementById('kycStatusText').textContent = kyc.status;
+            document.getElementById('kycStatusText').className = `status-badge ${kyc.status}`;
+            document.getElementById('kycDailyLimitDisplay').textContent = `₦${kyc.dailyLimit.toLocaleString()}`;
+            
+            if (kyc.virtualAccount) {
+                document.getElementById('virtualAccountDisplay').textContent = kyc.virtualAccount;
+            }
+        }
+    } catch (err) {
+        console.error('KYC status error:', err);
+    }
+}
+
+// ============================================================
+// FINGERPRINT LOGIN
+// ============================================================
+function setupFingerprint() {
+    if (!window.PublicKeyCredential) {
+        showToast('⚠️ Fingerprint not supported on this device', 'error');
+        return;
+    }
+    
+    showResult('loading', '🔐 Place your finger on the sensor...');
+    
+    const fingerprintId = 'FP_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    fetch(API + '/api/fingerprint/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: userPhone, fingerprintData: fingerprintId })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            fingerprintRegistered = true;
+            localStorage.setItem('fingerprintRegistered', 'true');
+            localStorage.setItem('fingerprintData', fingerprintId);
+            showToast('✅ Fingerprint registered successfully!', 'success');
+            showResult('success', '✅ Fingerprint registered! You can now login with your fingerprint.');
+        } else {
+            showResult('error', '❌ ' + (data.error || 'Registration failed'));
+        }
+    })
+    .catch(err => {
+        showResult('error', '❌ ' + err.message);
+    });
+}
+
+function loginWithFingerprint() {
+    if (!window.PublicKeyCredential) {
+        showToast('⚠️ Fingerprint not supported', 'error');
+        return;
+    }
+    
+    showResult('loading', '🔐 Scanning fingerprint...');
+    
+    const storedFingerprint = localStorage.getItem('fingerprintData');
+    if (!storedFingerprint) {
+        showResult('error', '❌ No fingerprint registered. Please register first.');
+        return;
+    }
+    
+    fetch(API + '/api/fingerprint/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fingerprintData: storedFingerprint })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            showToast('✅ Fingerprint login successful!', 'success');
+            showResult('success', '✅ Welcome back, ' + data.user.name + '!');
+            localStorage.setItem('userPhone', data.user.phone);
+            localStorage.setItem('userName', data.user.name);
+            setTimeout(() => { loadBalance(); closeModal(); }, 1500);
+        } else {
+            showResult('error', '❌ ' + (data.error || 'Login failed'));
+        }
+    })
+    .catch(err => {
+        showResult('error', '❌ ' + err.message);
+    });
+}
+
+// ============================================================
+// COPY ACCOUNT NUMBER
+// ============================================================
+function copyAccountNumber() {
+    const accountNumber = document.getElementById('virtualAccountDisplay').textContent;
+    if (accountNumber && accountNumber !== 'Loading...') {
+        navigator.clipboard.writeText(accountNumber).then(() => {
+            showToast('✅ Account number copied!', 'success');
+        }).catch(() => {
+            const input = document.createElement('input');
+            input.value = accountNumber;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+            showToast('✅ Account number copied!', 'success');
+        });
     }
 }
 
@@ -1077,95 +1287,133 @@ function openModal(type) {
     const result = document.getElementById('resultMsg');
     result.className = 'result-msg';
     result.textContent = '';
-    
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
     
+    const fundAccountNumber = document.getElementById('virtualAccountDisplay').textContent || 'Loading...';
+    const fundAccountName = localStorage.getItem('userName') || 'Customer';
+    
     const forms = {
         data: `
-            <p style="color:var(--text-secondary);margin-bottom:12px;font-size:13px;">Select a data plan below and click Buy.</p>
-            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-                <button class="filter-btn active" onclick="renderPlans('all')">All</button>
-                <button class="filter-btn" onclick="renderPlans('daily')">Daily</button>
-                <button class="filter-btn" onclick="renderPlans('weekly')">Weekly</button>
-                <button class="filter-btn" onclick="renderPlans('monthly')">Monthly</button>
-            </div>
+            <p style="color:var(--text-secondary);margin-bottom:12px;">Select a data plan:</p>
             <div id="modalPlansGrid" style="max-height:300px;overflow-y:auto;"></div>
-            <div id="modalDataResult" class="result-msg"></div>
         `,
         airtime: `
             <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Network</label>
-            <select id="airtimeNetwork">
-                <option value="MTN">📶 MTN</option>
-                <option value="Airtel">📶 Airtel</option>
-                <option value="GLO">📶 GLO</option>
-                <option value="9mobile">📶 9mobile</option>
-            </select>
+            <select id="airtimeNetwork"><option value="MTN">MTN</option><option value="Airtel">Airtel</option><option value="GLO">GLO</option><option value="9mobile">9mobile</option></select>
             <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Amount (₦)</label>
-            <input type="number" id="airtimeAmount" placeholder="Enter amount (min ₦50)" min="50" />
+            <input type="number" id="airtimeAmount" placeholder="Min ₦50" min="50" />
             <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Phone Number</label>
             <input type="tel" id="airtimePhone" placeholder="080xxxxxxxx" />
-            <button class="modal-btn" onclick="buyAirtime()">🚀 Purchase Airtime</button>
+            <button class="modal-btn" onclick="buyAirtime()">🚀 Purchase</button>
         `,
         tv: `
             <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">TV Package</label>
-            <select id="tvService">
-                ${Object.entries(TV_PRICES).map(([id, info]) => 
-                    `<option value="${id}">${info.name} - ₦${info.price.toLocaleString()}</option>`
-                ).join('')}
-            </select>
-            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Smart Card Number</label>
+            <select id="tvService">${Object.entries(TV_PRICES).map(([id, info]) => `<option value="${id}">${info.name} - ₦${info.price.toLocaleString()}</option>`).join('')}</select>
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Smart Card</label>
             <input type="text" id="tvIuc" placeholder="Enter Smart Card number" />
             <button class="modal-btn" onclick="buyTV()">📺 Subscribe</button>
         `,
         electricity: `
             <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Provider</label>
-            <select id="elecService">
-                ${Object.entries(ELECTRICITY_PROVIDERS).map(([id, name]) => 
-                    `<option value="${id}">${name}</option>`
-                ).join('')}
-            </select>
+            <select id="elecService">${Object.entries(ELECTRICITY_PROVIDERS).map(([id, name]) => `<option value="${id}">${name}</option>`).join('')}</select>
             <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Meter Number</label>
             <input type="text" id="elecMeter" placeholder="Enter meter number" />
             <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Meter Type</label>
-            <select id="elecType">
-                <option value="1">Prepaid</option>
-                <option value="2">Postpaid</option>
-            </select>
+            <select id="elecType"><option value="1">Prepaid</option><option value="2">Postpaid</option></select>
             <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Amount (₦)</label>
-            <input type="number" id="elecAmount" placeholder="Enter amount" min="100" />
+            <input type="number" id="elecAmount" placeholder="Min ₦100" min="100" />
             <button class="modal-btn" onclick="buyElectricity()">💡 Pay</button>
         `,
         education: `
             <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Exam Type</label>
-            <select id="eduService">
-                ${Object.entries(EDUCATION_PRICES).map(([id, info]) => 
-                    `<option value="${id}">${info.name} - ₦${info.price.toLocaleString()}</option>`
-                ).join('')}
-            </select>
+            <select id="eduService">${Object.entries(EDUCATION_PRICES).map(([id, info]) => `<option value="${id}">${info.name} - ₦${info.price.toLocaleString()}</option>`).join('')}</select>
             <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Quantity</label>
             <input type="number" id="eduQuantity" value="1" min="1" />
-            <button class="modal-btn" onclick="buyEducation()">📚 Buy Pin</button>
+            <button class="modal-btn" onclick="buyEducation()">📚 Buy</button>
         `,
         fund: `
-            <p style="color:var(--text-secondary);margin-bottom:12px;font-size:13px;">Fund your wallet using Paystack. Minimum ₦100.</p>
-            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Email Address</label>
-            <input type="email" id="fundEmail" placeholder="youremail@example.com" />
-            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Amount (₦)</label>
+            <h3 style="color:var(--gold);margin-bottom:12px;">💰 Fund Your Wallet</h3>
+            
+            <div class="fund-account-display">
+                <div style="font-size:11px;color:var(--text-muted);">Account Number</div>
+                <div class="account-number" id="fundAccountDisplay">${fundAccountNumber}</div>
+                <div class="bank-name">Paysbillz Digital Bank</div>
+                <div class="account-name">${fundAccountName}</div>
+            </div>
+            
+            <div class="fund-instructions">
+                <div class="step">
+                    <span class="num">1</span>
+                    <span>Transfer the amount to the account above</span>
+                </div>
+                <div class="step">
+                    <span class="num">2</span>
+                    <span>Enter the amount you transferred below</span>
+                </div>
+                <div class="step">
+                    <span class="num">3</span>
+                    <span>Click "Confirm Funding" to credit your wallet</span>
+                </div>
+            </div>
+            
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Amount Transferred (₦)</label>
             <input type="number" id="fundAmount" placeholder="Enter amount" min="100" />
-            <button class="modal-btn success" onclick="fundWallet()">💳 Pay with Paystack</button>
+            
+            <button class="modal-btn success" onclick="fundViaVirtualAccount()">✅ Confirm Funding</button>
+            
+            <p style="color:var(--text-muted);font-size:11px;margin-top:8px;text-align:center;">
+                💡 Your wallet will be credited instantly after confirmation
+            </p>
         `,
         withdraw: `
-            <p style="color:var(--text-secondary);margin-bottom:12px;font-size:13px;">Withdraw your profit balance to your bank account.</p>
+            <p style="color:var(--text-secondary);margin-bottom:12px;font-size:13px;">Withdraw your profit balance.</p>
             <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Amount (₦)</label>
-            <input type="number" id="withdrawAmount" placeholder="Enter amount" min="100" />
+            <input type="number" id="withdrawAmount" placeholder="Min ₦100" min="100" />
             <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Bank Name</label>
             <input type="text" id="withdrawBank" placeholder="e.g., GTBank" />
             <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Account Number</label>
             <input type="text" id="withdrawAccount" placeholder="Enter account number" />
             <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Account Name</label>
-            <input type="text" id="withdrawName" placeholder="Full name on account" />
-            <button class="modal-btn danger" onclick="withdrawProfit()">💸 Request Withdrawal</button>
+            <input type="text" id="withdrawName" placeholder="Full name" />
+            <button class="modal-btn danger" onclick="withdrawProfit()">💸 Withdraw</button>
+        `,
+        kyc: `
+            <p style="color:var(--text-secondary);margin-bottom:12px;font-size:13px;">Complete KYC to increase your limits.</p>
+            <div style="background:var(--bg-card);padding:12px;border-radius:12px;margin-bottom:12px;border:1px solid var(--border-color);">
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);">
+                    <span>Current: <strong id="kycCurrentTier">Loading...</strong></span>
+                    <span>Daily Limit: <strong id="kycCurrentLimit">₦0</strong></span>
+                </div>
+            </div>
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Full Name *</label>
+            <input type="text" id="kycName" placeholder="Enter full name" />
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Email *</label>
+            <input type="email" id="kycEmail" placeholder="youremail@example.com" />
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Date of Birth</label>
+            <input type="date" id="kycDob" />
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">BVN (11 digits) *</label>
+            <input type="password" id="kycBvn" placeholder="Enter 11-digit BVN" maxlength="11" />
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">NIN (11 digits) *</label>
+            <input type="password" id="kycNin" placeholder="Enter 11-digit NIN" maxlength="11" />
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Address *</label>
+            <input type="text" id="kycAddress" placeholder="Enter residential address" />
+            <button class="modal-btn" onclick="submitKYC()">🪪 Submit KYC</button>
+        `,
+        fingerprint: `
+            <div style="text-align:center;padding:10px 0;">
+                <div style="font-size:64px;margin-bottom:10px;">🔐</div>
+                <h3 style="color:var(--text-primary);margin-bottom:8px;">Fingerprint Login</h3>
+                <p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Register your fingerprint for quick and secure login</p>
+                
+                <button class="fingerprint-btn" onclick="setupFingerprint()" style="width:100%;padding:14px;border-radius:14px;border:2px solid var(--accent);background:var(--bg-card);color:var(--text-primary);font-size:16px;font-weight:600;cursor:pointer;transition:0.25s;">
+                    📱 Register Fingerprint
+                </button>
+                
+                <div style="margin-top:12px;text-align:center;color:var(--text-muted);font-size:12px;">
+                    Already registered? <a style="color:var(--gold);cursor:pointer;font-weight:600;" onclick="loginWithFingerprint()">Login with fingerprint</a>
+                </div>
+            </div>
         `
     };
     
@@ -1176,32 +1424,39 @@ function openModal(type) {
         electricity: '💡 Pay Electricity',
         education: '📚 Buy Exam Pins',
         fund: '💰 Fund Wallet',
-        withdraw: '💸 Withdraw Profit'
+        withdraw: '💸 Withdraw Profit',
+        kyc: '🪪 KYC Verification',
+        fingerprint: '🔐 Fingerprint Login'
     };
     
     title.textContent = titles[type] || 'Service';
     body.innerHTML = forms[type] || '<p style="color:var(--text-muted);">Invalid option</p>';
     
-    // If data modal, render plans
     if (type === 'data') {
         renderModalPlans('all');
     }
     
-    // Set the result message element reference
-    window.currentResultId = type + 'Result';
+    if (type === 'fund') {
+        // Update account display
+        const accountDisplay = document.getElementById('fundAccountDisplay');
+        if (accountDisplay) {
+            accountDisplay.textContent = document.getElementById('virtualAccountDisplay').textContent || 'Loading...';
+        }
+    }
+    
+    if (type === 'kyc') {
+        loadKYCStatusForModal();
+    }
 }
 
 function renderModalPlans(filter = 'all') {
     const container = document.getElementById('modalPlansGrid');
     if (!container) return;
-    
     let filtered = filter === 'all' ? allPlans : allPlans.filter(p => p.validity.toLowerCase() === filter);
-    
     if (filtered.length === 0) {
         container.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:20px;">No plans found</div>`;
         return;
     }
-    
     container.innerHTML = filtered.map(p => `
         <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg-card);border-radius:12px;margin-bottom:6px;border:1px solid var(--border-color);">
             <div>
@@ -1216,36 +1471,18 @@ function renderModalPlans(filter = 'all') {
     `).join('');
 }
 
-// Override renderPlans for the main page
-const originalRenderPlans = renderPlans;
-renderPlans = function(filter = 'all') {
-    const grid = document.getElementById('plansGrid');
-    let filtered = filter === 'all' ? allPlans : allPlans.filter(p => p.validity.toLowerCase() === filter);
-    
-    if (filtered.length === 0) {
-        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;">No ${filter} plans available.</div>`;
-        return;
+async function loadKYCStatusForModal() {
+    try {
+        const res = await fetch(API + '/api/kyc/status?phone=' + userPhone);
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('kycCurrentTier').textContent = data.kyc.tierName;
+            document.getElementById('kycCurrentLimit').textContent = '₦' + data.kyc.dailyLimit.toLocaleString();
+        }
+    } catch (err) {
+        console.error('Error:', err);
     }
-
-    grid.innerHTML = filtered.map(p => {
-        const vc = p.validity.toLowerCase();
-        return `
-            <div class="plan-card validity-${vc}">
-                <div class="plan-top">
-                    <div class="plan-name">
-                        ${p.name}
-                        <small>${p.network}</small>
-                    </div>
-                    <span class="plan-badge ${vc}">${p.validity}</span>
-                </div>
-                <div class="plan-bottom">
-                    <span class="plan-price">₦${p.price.toLocaleString()}</span>
-                    <button class="buy-btn" onclick="buyDataPlan('${p.id}')">Buy</button>
-                </div>
-            </div>
-        `;
-    }).join('');
-};
+}
 
 function closeModal() {
     document.getElementById('modal').classList.remove('show');
@@ -1270,6 +1507,9 @@ async function loadBalance() {
             document.getElementById('balanceDisplay').textContent = '₦' + (user.balance || 0).toLocaleString();
             document.getElementById('profitDisplay').textContent = '₦' + (user.profitBalance || 0).toLocaleString();
             document.getElementById('phoneBadge').textContent = '📞 ' + user.phone;
+            if (user.virtualAccount) {
+                document.getElementById('virtualAccountDisplay').textContent = user.virtualAccount;
+            }
             if (user.name) {
                 localStorage.setItem('userName', user.name);
             }
@@ -1323,17 +1563,6 @@ function logout() {
 }
 
 // ============================================================
-// FILTER TABS
-// ============================================================
-document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        renderPlans(this.dataset.filter);
-    });
-});
-
-// ============================================================
 // INIT
 // ============================================================
 if (!localStorage.getItem('userPhone')) {
@@ -1342,9 +1571,24 @@ if (!localStorage.getItem('userPhone')) {
 
 loadTheme();
 loadBalance();
+loadKYCStatus();
 renderPlans('all');
 renderTransactions();
 updateTxCount();
+
+// Check if fingerprint was previously registered
+if (localStorage.getItem('fingerprintRegistered')) {
+    fingerprintRegistered = true;
+}
+
+// Filter tabs
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        renderPlans(this.dataset.filter);
+    });
+});
 </script>
 </body>
 </html>
