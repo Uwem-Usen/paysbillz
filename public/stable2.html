@@ -26,7 +26,6 @@
             --weekly-color: #ffd93d;
             --monthly-color: #6bcb77;
             --accent: #4ecdc4;
-            --support-color: #25D366;
         }
 
         [data-theme="light"] {
@@ -68,224 +67,51 @@
         }
 
         /* ===== HEADER ===== */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .header-left h1 {
-            font-size: 28px;
-            font-weight: 800;
-            background: var(--gold-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
-        }
-
-        .header-left .sub {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-secondary);
-            font-size: 13px;
-            flex-wrap: wrap;
-        }
-
-        .header-left .sub .badge {
-            background: rgba(255, 215, 0, 0.12);
-            padding: 2px 14px;
-            border-radius: 40px;
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            color: var(--gold);
-            font-weight: 500;
-            font-size: 12px;
-            -webkit-text-fill-color: var(--gold);
-        }
-
-        .header-right {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .theme-toggle, .logout-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 8px 14px;
-            border-radius: 40px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: 0.25s;
-        }
-
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+        .header-left h1 { font-size: 28px; font-weight: 800; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px; }
+        .header-left .sub { display: flex; align-items: center; gap: 8px; color: var(--text-secondary); font-size: 13px; flex-wrap: wrap; }
+        .header-left .sub .badge { background: rgba(255, 215, 0, 0.12); padding: 2px 14px; border-radius: 40px; border: 1px solid rgba(255, 215, 0, 0.2); color: var(--gold); font-weight: 500; font-size: 12px; -webkit-text-fill-color: var(--gold); }
+        .header-right { display: flex; gap: 8px; align-items: center; }
+        .theme-toggle, .logout-btn { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 14px; border-radius: 40px; cursor: pointer; font-size: 16px; transition: 0.25s; }
         .theme-toggle:hover { background: var(--bg-card-hover); border-color: var(--gold); }
         .logout-btn:hover { background: rgba(255, 50, 50, 0.15); border-color: #ff6b6b; color: #ff6b6b; }
 
         /* ===== BALANCE CARDS ===== */
-        .balance-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin: 16px 0;
-        }
-
-        @media (max-width: 480px) {
-            .balance-grid { grid-template-columns: 1fr 1fr; }
-        }
-
-        .balance-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 14px;
-            text-align: center;
-            transition: 0.25s;
-        }
-
+        .balance-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 16px 0; }
+        @media (max-width: 480px) { .balance-grid { grid-template-columns: 1fr 1fr; } }
+        .balance-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 14px; text-align: center; transition: 0.25s; }
         .balance-card:hover { background: var(--bg-card-hover); }
-
-        .balance-card .label {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .balance-card .amount {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--gold);
-            margin-top: 4px;
-        }
-
+        .balance-card .label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .balance-card .amount { font-size: 22px; font-weight: 700; color: var(--gold); margin-top: 4px; }
         .balance-card .amount.wallet { color: #4ecdc4; }
         .balance-card .amount.profit { color: #ffd93d; }
 
         /* ===== VIRTUAL ACCOUNT CARD ===== */
-        .virtual-account-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px 20px;
-            margin: 16px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            cursor: pointer;
-            transition: 0.25s;
-            border-left: 3px solid var(--gold);
-        }
-
-        .virtual-account-card:hover {
-            background: var(--bg-card-hover);
-            border-color: var(--gold);
-        }
-
-        .virtual-account-card .label {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .virtual-account-card .account-number {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--gold);
-            letter-spacing: 2px;
-        }
-
-        .virtual-account-card .bank-name {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        .virtual-account-card .copy-btn {
-            background: var(--gold-gradient);
-            border: none;
-            color: #0f0f1a;
-            padding: 6px 16px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-            transition: 0.25s;
-        }
-
-        .virtual-account-card .copy-btn:hover {
-            transform: scale(1.05);
-        }
+        .virtual-account-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px 20px; margin: 16px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; cursor: pointer; transition: 0.25s; border-left: 3px solid var(--gold); }
+        .virtual-account-card:hover { background: var(--bg-card-hover); border-color: var(--gold); }
+        .virtual-account-card .label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .virtual-account-card .account-number { font-size: 20px; font-weight: 700; color: var(--gold); letter-spacing: 2px; }
+        .virtual-account-card .bank-name { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .virtual-account-card .copy-btn { background: var(--gold-gradient); border: none; color: #0f0f1a; padding: 6px 16px; border-radius: 40px; font-weight: 600; font-size: 12px; cursor: pointer; transition: 0.25s; }
+        .virtual-account-card .copy-btn:hover { transform: scale(1.05); }
 
         /* ===== KYC STATUS ===== */
-        .kyc-status {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin: 12px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .kyc-status .tier-badge {
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
+        .kyc-status { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 16px; margin: 12px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .kyc-status .tier-badge { padding: 4px 14px; border-radius: 40px; font-size: 12px; font-weight: 600; }
         .kyc-status .tier-badge.tier1 { background: rgba(158, 158, 158, 0.2); color: #9e9e9e; }
         .kyc-status .tier-badge.tier2 { background: rgba(33, 150, 243, 0.2); color: #2196f3; }
         .kyc-status .tier-badge.tier3 { background: rgba(255, 215, 0, 0.2); color: var(--gold); }
-
         .kyc-status .status-badge.verified { color: #4caf50; }
         .kyc-status .status-badge.pending { color: #ff9800; }
         .kyc-status .status-badge.not_submitted { color: #f44336; }
 
         /* ===== SERVICE BUTTONS ===== */
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin: 16px 0;
-        }
-
-        @media (max-width: 480px) {
-            .services-grid { grid-template-columns: repeat(3, 1fr); }
-        }
-
-        .service-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 14px 6px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.25s;
-            color: var(--text-secondary);
-        }
-
-        .service-btn:hover {
-            background: var(--bg-card-hover);
-            border-color: var(--gold);
-            transform: translateY(-2px);
-            color: var(--text-primary);
-        }
-
+        .services-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0; }
+        @media (max-width: 480px) { .services-grid { grid-template-columns: repeat(3, 1fr); } }
+        .service-btn { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px 6px; text-align: center; cursor: pointer; transition: 0.25s; color: var(--text-secondary); }
+        .service-btn:hover { background: var(--bg-card-hover); border-color: var(--gold); transform: translateY(-2px); color: var(--text-primary); }
         .service-btn .icon { font-size: 28px; display: block; margin-bottom: 4px; }
         .service-btn .name { font-size: 10px; font-weight: 600; }
-
         .service-btn.primary { background: var(--gold-gradient); color: #0f0f1a; border-color: transparent; }
         .service-btn.primary:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(255, 215, 0, 0.25); }
         .service-btn.fingerprint { background: rgba(78, 205, 196, 0.15); border-color: rgba(78, 205, 196, 0.2); }
@@ -294,232 +120,64 @@
         .service-btn.support-btn { background: rgba(78, 205, 196, 0.15); border-color: rgba(78, 205, 196, 0.3); }
 
         /* ===== FILTER TABS ===== */
-        .filter-tabs {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin: 16px 0 14px;
-            justify-content: center;
-        }
-
-        .filter-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 6px 16px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 11px;
-            cursor: pointer;
-            transition: 0.25s;
-        }
-
+        .filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 16px 0 14px; justify-content: center; }
+        .filter-btn { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-secondary); padding: 6px 16px; border-radius: 40px; font-weight: 600; font-size: 11px; cursor: pointer; transition: 0.25s; }
         .filter-btn:hover { background: rgba(255, 215, 0, 0.08); border-color: rgba(255, 215, 0, 0.25); color: var(--text-primary); }
         .filter-btn.active { background: var(--gold-gradient); color: #0f0f1a; border-color: transparent; box-shadow: 0 4px 20px rgba(255, 215, 0, 0.25); }
 
         /* ===== PLANS GRID ===== */
-        .plans-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 6px;
-        }
-
+        .plans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
         @media (max-width: 540px) { .plans-grid { grid-template-columns: 1fr; } }
-
-        .plan-card {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 14px;
-            border: 1px solid var(--border-color);
-            transition: 0.25s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .plan-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            transition: 0.3s;
-        }
+        .plan-card { background: var(--bg-card); border-radius: 16px; padding: 14px; border: 1px solid var(--border-color); transition: 0.25s; position: relative; overflow: hidden; }
+        .plan-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; transition: 0.3s; }
         .plan-card.validity-daily::before { background: var(--daily-color); }
         .plan-card.validity-weekly::before { background: var(--weekly-color); }
         .plan-card.validity-monthly::before { background: var(--monthly-color); }
-
-        .plan-card:hover {
-            background: var(--bg-card-hover);
-            border-color: rgba(255, 215, 0, 0.15);
-            transform: translateY(-2px);
-        }
-
+        .plan-card:hover { background: var(--bg-card-hover); border-color: rgba(255, 215, 0, 0.15); transform: translateY(-2px); }
         .plan-top { display: flex; justify-content: space-between; align-items: flex-start; }
         .plan-name { font-weight: 600; font-size: 13px; color: var(--text-primary); line-height: 1.3; }
         .plan-name small { font-weight: 400; font-size: 10px; color: var(--text-muted); display: block; margin-top: 2px; }
-
-        .plan-badge {
-            padding: 2px 10px;
-            border-radius: 30px;
-            font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-        }
+        .plan-badge { padding: 2px 10px; border-radius: 30px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
         .plan-badge.daily { background: rgba(78, 205, 196, 0.15); color: var(--daily-color); border: 1px solid rgba(78, 205, 196, 0.2); }
         .plan-badge.weekly { background: rgba(255, 217, 61, 0.15); color: var(--weekly-color); border: 1px solid rgba(255, 217, 61, 0.2); }
         .plan-badge.monthly { background: rgba(107, 203, 119, 0.15); color: var(--monthly-color); border: 1px solid rgba(107, 203, 119, 0.2); }
-
         .plan-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
         .plan-price { font-size: 18px; font-weight: 700; color: var(--gold); }
         .plan-price small { font-size: 12px; font-weight: 400; color: var(--text-muted); }
-
-        .buy-btn {
-            background: var(--gold-gradient);
-            border: none;
-            color: #0f0f1a;
-            font-weight: 700;
-            font-size: 12px;
-            padding: 6px 18px;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: 0.25s;
-        }
+        .buy-btn { background: var(--gold-gradient); border: none; color: #0f0f1a; font-weight: 700; font-size: 12px; padding: 6px 18px; border-radius: 40px; cursor: pointer; transition: 0.25s; }
         .buy-btn:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3); }
 
         /* ===== MODAL ===== */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
         .modal.show { display: flex; }
-
-        .modal-content {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 28px;
-            max-width: 460px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: var(--shadow);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
+        .modal-content { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 24px; padding: 28px; max-width: 460px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .modal-header h2 { color: var(--text-primary); font-size: 20px; }
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 28px;
-            cursor: pointer;
-            padding: 0 8px;
-        }
+        .modal-close { background: none; border: none; color: var(--text-muted); font-size: 28px; cursor: pointer; padding: 0 8px; }
         .modal-close:hover { color: var(--text-primary); }
-
-        .modal-content input, .modal-content select {
-            width: 100%;
-            padding: 12px 16px;
-            margin: 6px 0;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            color: var(--text-primary);
-            font-size: 14px;
-            outline: none;
-            transition: 0.2s;
-        }
-        .modal-content input:focus, .modal-content select:focus {
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.08);
-        }
+        .modal-content input, .modal-content select { width: 100%; padding: 12px 16px; margin: 6px 0; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-primary); font-size: 14px; outline: none; transition: 0.2s; }
+        .modal-content input:focus, .modal-content select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.08); }
         .modal-content input::placeholder { color: var(--text-muted); }
-
-        .modal-btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 14px;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.25s;
-            margin-top: 8px;
-            background: var(--gold-gradient);
-            color: #0f0f1a;
-        }
+        .modal-btn { width: 100%; padding: 14px; border: none; border-radius: 14px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.25s; margin-top: 8px; background: var(--gold-gradient); color: #0f0f1a; }
         .modal-btn:hover { transform: scale(1.02); box-shadow: 0 6px 30px rgba(255, 215, 0, 0.25); }
         .modal-btn.success { background: #2e7d32; color: #fff; }
         .modal-btn.danger { background: #d32f2f; color: #fff; }
-        .modal-btn.support { background: #25D366; color: #fff; }
-        .modal-btn.support:hover { background: #1da851; }
 
-        .result-msg {
-            margin-top: 10px;
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            font-size: 14px;
-            display: none;
-        }
+        .result-msg { margin-top: 10px; padding: 12px; border-radius: 12px; text-align: center; font-size: 14px; display: none; }
         .result-msg.show { display: block; }
         .result-msg.success { background: rgba(46, 125, 50, 0.15); color: #4caf50; border: 1px solid rgba(46, 125, 50, 0.2); }
         .result-msg.error { background: rgba(211, 47, 47, 0.15); color: #ef5350; border: 1px solid rgba(211, 47, 47, 0.2); }
         .result-msg.loading { background: rgba(255, 215, 0, 0.1); color: var(--gold); border: 1px solid rgba(255, 215, 0, 0.15); }
 
         /* ===== TRANSACTIONS ===== */
-        .recent-section {
-            margin-top: 24px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 18px;
-        }
-
-        .recent-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
+        .recent-section { margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 18px; }
+        .recent-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
         .recent-header h3 { color: var(--text-primary); font-size: 15px; font-weight: 700; }
         .recent-header h3 span { background: rgba(255, 215, 0, 0.1); padding: 0 12px; border-radius: 40px; font-size: 12px; color: var(--gold); }
-
         .transaction-list { max-height: 250px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--gold) transparent; }
         .transaction-list::-webkit-scrollbar { width: 4px; }
         .transaction-list::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
-
-        .transaction-item {
-            background: var(--transaction-bg);
-            padding: 10px 14px;
-            border-radius: 12px;
-            margin-bottom: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 3px solid transparent;
-            transition: 0.2s;
-            flex-wrap: wrap;
-            gap: 4px;
-        }
+        .transaction-item { background: var(--transaction-bg); padding: 10px 14px; border-radius: 12px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid transparent; transition: 0.2s; flex-wrap: wrap; gap: 4px; }
         .transaction-item:hover { background: var(--transaction-hover); }
         .transaction-item.data { border-left-color: #4ecdc4; }
         .transaction-item.airtime { border-left-color: #ffd700; }
@@ -529,222 +187,48 @@
         .transaction-item.funding { border-left-color: #4caf50; }
         .transaction-item.withdrawal { border-left-color: #f44336; }
         .transaction-item.virtual_account_funding { border-left-color: #9c27b0; }
-
         .transaction-name { font-weight: 600; font-size: 13px; color: var(--text-primary); }
         .transaction-detail { font-size: 11px; color: var(--text-muted); }
         .transaction-amount { font-weight: 700; font-size: 15px; color: var(--gold); }
         .transaction-time { font-size: 10px; color: var(--text-muted); }
         .profit-badge { background: rgba(255, 215, 0, 0.1); color: var(--gold); padding: 1px 8px; border-radius: 8px; font-size: 9px; }
-
         .empty-transactions { text-align: center; color: var(--text-muted); padding: 30px 0; font-size: 14px; }
         .empty-transactions .emoji { font-size: 32px; display: block; margin-bottom: 8px; }
 
         /* ===== TOAST ===== */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            padding: 12px 24px;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow);
-            font-weight: 500;
-            font-size: 14px;
-            opacity: 0;
-            transition: 0.4s ease;
-            z-index: 999;
-            max-width: 90%;
-            text-align: center;
-        }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--bg-secondary); color: var(--text-primary); padding: 12px 24px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow); font-weight: 500; font-size: 14px; opacity: 0; transition: 0.4s ease; z-index: 999; max-width: 90%; text-align: center; }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         .toast.success { border-left: 4px solid #4ecdc4; }
         .toast.error { border-left: 4px solid #ff6b6b; }
 
         /* ===== PAYSTACK FUNDING ===== */
-        .paystack-info {
-            background: rgba(78, 205, 196, 0.05);
-            border: 1px solid rgba(78, 205, 196, 0.15);
-            border-radius: 12px;
-            padding: 16px;
-            margin: 12px 0;
-        }
+        .paystack-info { background: rgba(78, 205, 196, 0.05); border: 1px solid rgba(78, 205, 196, 0.15); border-radius: 12px; padding: 16px; margin: 12px 0; }
+        .paystack-info .step { display: flex; align-items: center; gap: 12px; padding: 6px 0; color: var(--text-secondary); font-size: 13px; }
+        .paystack-info .step .num { background: var(--gold-gradient); color: #0f0f1a; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; flex-shrink: 0; }
+        .paystack-badge { display: inline-block; background: #4ecdc4; color: #0f0f1a; padding: 2px 12px; border-radius: 40px; font-size: 11px; font-weight: 700; }
 
-        .paystack-info .step {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 6px 0;
-            color: var(--text-secondary);
-            font-size: 13px;
-        }
-
-        .paystack-info .step .num {
-            background: var(--gold-gradient);
-            color: #0f0f1a;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 12px;
-            flex-shrink: 0;
-        }
-
-        .paystack-badge {
-            display: inline-block;
-            background: #4ecdc4;
-            color: #0f0f1a;
-            padding: 2px 12px;
-            border-radius: 40px;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        .fingerprint-btn {
-            background: var(--bg-card);
-            border: 2px solid var(--accent);
-            color: var(--text-primary);
-            padding: 14px;
-            border-radius: 14px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            width: 100%;
-            transition: 0.25s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .fingerprint-btn:hover {
-            background: rgba(78, 205, 196, 0.1);
-            border-color: var(--gold);
-        }
-
-        .fingerprint-btn .icon-large {
-            font-size: 32px;
-        }
-
-        .fingerprint-btn.scanning {
-            animation: pulse 1s infinite;
-            border-color: var(--gold);
-            background: rgba(255, 215, 0, 0.1);
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
+        .fingerprint-btn { background: var(--bg-card); border: 2px solid var(--accent); color: var(--text-primary); padding: 14px; border-radius: 14px; cursor: pointer; font-size: 16px; font-weight: 600; width: 100%; transition: 0.25s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .fingerprint-btn:hover { background: rgba(78, 205, 196, 0.1); border-color: var(--gold); }
+        .fingerprint-btn .icon-large { font-size: 32px; }
+        .fingerprint-btn.scanning { animation: pulse 1s infinite; border-color: var(--gold); background: rgba(255, 215, 0, 0.1); }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
         /* ===== SUPPORT CHAT ===== */
-        .chat-messages {
-            background: var(--bg-card);
-            border-radius: 12px;
-            padding: 12px;
-            height: 160px;
-            overflow-y: auto;
-            margin-bottom: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .chat-message {
-            margin-bottom: 8px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            max-width: 90%;
-        }
-
-        .chat-message.bot {
-            background: rgba(78, 205, 196, 0.1);
-            color: var(--text-primary);
-            border-left: 3px solid var(--accent);
-        }
-
-        .chat-message.user {
-            background: rgba(255, 215, 0, 0.1);
-            color: var(--text-primary);
-            border-left: 3px solid var(--gold);
-            margin-left: auto;
-        }
-
-        .chat-suggestion {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            cursor: pointer;
-            transition: 0.25s;
-        }
-
-        .chat-suggestion:hover {
-            background: rgba(78, 205, 196, 0.1);
-            border-color: var(--accent);
-            color: var(--text-primary);
-        }
-
-        .support-contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 12px;
-        }
-
-        .support-contact-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 14px;
-            text-align: center;
-            transition: 0.25s;
-        }
-
-        .support-contact-item:hover {
-            background: var(--bg-card-hover);
-            border-color: var(--gold);
-        }
-
-        .support-contact-item .icon-large {
-            font-size: 28px;
-            margin-bottom: 4px;
-        }
-
-        .support-contact-item .label {
-            font-weight: 600;
-            color: var(--text-primary);
-            font-size: 13px;
-        }
-
-        .support-contact-item .value {
-            color: var(--gold);
-            font-size: 12px;
-            text-decoration: none;
-            display: block;
-            margin-top: 2px;
-        }
-
-        .support-contact-item .value:hover {
-            text-decoration: underline;
-        }
-
-        .support-contact-item .sub {
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        .support-contact-item.full-width {
-            grid-column: span 2;
-        }
+        .chat-messages { background: var(--bg-card); border-radius: 12px; padding: 12px; height: 160px; overflow-y: auto; margin-bottom: 8px; border: 1px solid var(--border-color); }
+        .chat-message { margin-bottom: 8px; padding: 8px 12px; border-radius: 8px; font-size: 13px; max-width: 90%; }
+        .chat-message.bot { background: rgba(78, 205, 196, 0.1); color: var(--text-primary); border-left: 3px solid var(--accent); }
+        .chat-message.user { background: rgba(255, 215, 0, 0.1); color: var(--text-primary); border-left: 3px solid var(--gold); margin-left: auto; }
+        .chat-suggestion { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-secondary); padding: 4px 12px; border-radius: 20px; font-size: 11px; cursor: pointer; transition: 0.25s; }
+        .chat-suggestion:hover { background: rgba(78, 205, 196, 0.1); border-color: var(--accent); color: var(--text-primary); }
+        .support-contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+        .support-contact-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; text-align: center; transition: 0.25s; }
+        .support-contact-item:hover { background: var(--bg-card-hover); border-color: var(--gold); }
+        .support-contact-item .icon-large { font-size: 28px; margin-bottom: 4px; }
+        .support-contact-item .label { font-weight: 600; color: var(--text-primary); font-size: 13px; }
+        .support-contact-item .value { color: var(--gold); font-size: 12px; text-decoration: none; display: block; margin-top: 2px; }
+        .support-contact-item .value:hover { text-decoration: underline; }
+        .support-contact-item .sub { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+        .support-contact-item.full-width { grid-column: span 2; }
     </style>
 </head>
 <body>
@@ -871,7 +355,7 @@ var isAdmin = userPhone === ADMIN_PHONE;
 var fingerprintRegistered = false;
 
 // ============================================================
-// SUPPORT CHATBOT - AI Responses (FIXED)
+// SUPPORT CHATBOT
 // ============================================================
 var botResponses = {
     hello: 'Hello! 👋 Welcome to Paysbillz! How can I help you today?',
@@ -880,7 +364,7 @@ var botResponses = {
     data: '📱 To buy data: Click the "Data" button, select your plan, confirm, and you\'re done!',
     airtime: '📞 To buy airtime: Click "Airtime", select network, enter amount and phone number, then confirm.',
     fund: '💰 To fund your wallet: Click "Fund Wallet", enter your email and amount, then pay with Paystack.',
-    kyc: '🪪 KYC (Know Your Customer) helps us verify your identity. Complete it to increase your transaction limits!',
+    kyc: '🪪 KYC helps us verify your identity. Complete it to increase your transaction limits!',
     withdraw: '💸 To withdraw profits: Click "Withdraw", enter your bank details and amount, then submit.',
     tv: '📺 To subscribe to TV: Click "TV", select your package, enter your Smart Card number, and confirm.',
     electricity: '💡 To pay electricity: Click "Electricity", select your provider, enter meter number and amount.',
@@ -896,7 +380,6 @@ var botResponses = {
 
 function getBotResponse(message) {
     var lower = message.toLowerCase().trim();
-    
     if (lower.includes('data') && !lower.includes('how')) return botResponses.data;
     if (lower.includes('airtime') && !lower.includes('how')) return botResponses.airtime;
     if (lower.includes('fund') || lower.includes('wallet')) return botResponses.fund;
@@ -912,7 +395,6 @@ function getBotResponse(message) {
     if (lower.includes('bye') || lower.includes('goodbye')) return botResponses.bye;
     if (lower.includes('thank')) return botResponses.thanks;
     if (lower.includes('help')) return botResponses.help;
-    
     if (lower.includes('how do i') || lower.includes('how can i') || lower.includes('how to')) {
         if (lower.includes('fund') || lower.includes('wallet')) return botResponses.fund;
         if (lower.includes('data')) return botResponses.data;
@@ -921,27 +403,20 @@ function getBotResponse(message) {
         if (lower.includes('kyc')) return botResponses.kyc;
         return '📖 Check our quick guide: Click the service button you need help with, and follow the steps!';
     }
-    
     return botResponses.default;
 }
 
 function sendChatMessage(message) {
     var input = document.getElementById('chatInput');
     var msg = message || input.value.trim();
-    
     if (!msg) return;
-    
     var chatContainer = document.getElementById('chatMessages');
-    
     var userMsg = document.createElement('div');
     userMsg.className = 'chat-message user';
     userMsg.textContent = '👤 ' + msg;
     chatContainer.appendChild(userMsg);
-    
     if (input) input.value = '';
-    
     var response = getBotResponse(msg);
-    
     setTimeout(function() {
         var botMsg = document.createElement('div');
         botMsg.className = 'chat-message bot';
@@ -949,7 +424,6 @@ function sendChatMessage(message) {
         chatContainer.appendChild(botMsg);
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }, 500);
-    
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
@@ -957,7 +431,6 @@ function sendChatMessage(message) {
 // DATA PLANS
 // ============================================================
 var allPlans = [
-    // ---- SMALL PLANS (Under ₦100) ----
     { id: 's1', name: 'MTN 50MB (1 Day)', validity: 'Daily', price: 50, network: 'MTN', profit: 15 },
     { id: 's2', name: 'MTN 100MB (1 Day)', validity: 'Daily', price: 80, network: 'MTN', profit: 20 },
     { id: 's3', name: 'MTN 150MB (2 Days)', validity: 'Daily', price: 100, network: 'MTN', profit: 25 },
@@ -967,37 +440,27 @@ var allPlans = [
     { id: 's7', name: 'GLO 50MB (1 Day)', validity: 'Daily', price: 50, network: 'GLO', profit: 15 },
     { id: 's8', name: 'GLO 100MB (1 Day)', validity: 'Daily', price: 80, network: 'GLO', profit: 20 },
     { id: 's9', name: '9mobile 50MB (1 Day)', validity: 'Daily', price: 55, network: '9mobile', profit: 15 },
-    
-    // ---- DAILY PLANS (AWOOF) ----
     { id: 'd1', name: 'MTN AWOOF 500MB', validity: 'Daily', price: 300, network: 'MTN', profit: 80 },
     { id: 'd2', name: 'MTN AWOOF 1GB', validity: 'Daily', price: 350, network: 'MTN', profit: 90 },
     { id: 'd3', name: 'MTN AWOOF 2.5GB', validity: 'Daily', price: 750, network: 'MTN', profit: 160 },
     { id: 'd4', name: 'MTN AWOOF 5GB', validity: 'Daily', price: 1800, network: 'MTN', profit: 650 },
     { id: 'd5', name: 'MTN AWOOF 10GB', validity: 'Daily', price: 4500, network: 'MTN', profit: 1000 },
-    
-    // ---- PULSE PLANS ----
     { id: 'd6', name: 'MTN PULSE 500MB', validity: 'Daily', price: 250, network: 'MTN', profit: 100 },
     { id: 'd7', name: 'MTN PULSE 1GB', validity: 'Daily', price: 400, network: 'MTN', profit: 150 },
     { id: 'd8', name: 'MTN PULSE 2GB', validity: 'Weekly', price: 900, network: 'MTN', profit: 200 },
     { id: 'd9', name: 'MTN PULSE 3GB', validity: 'Weekly', price: 1200, network: 'MTN', profit: 250 },
     { id: 'd10', name: 'MTN PULSE 5GB', validity: 'Monthly', price: 2000, network: 'MTN', profit: 500 },
     { id: 'd11', name: 'MTN PULSE 10GB', validity: 'Monthly', price: 3500, network: 'MTN', profit: 700 },
-    
-    // ---- SHARE PLANS (Weekly) ----
     { id: 'w1', name: 'MTN SHARE 500MB', validity: 'Weekly', price: 450, network: 'MTN', profit: 120 },
     { id: 'w2', name: 'MTN SHARE 1GB', validity: 'Weekly', price: 600, network: 'MTN', profit: 165 },
     { id: 'w3', name: 'MTN SHARE 2GB', validity: 'Weekly', price: 1200, network: 'MTN', profit: 230 },
     { id: 'w4', name: 'MTN SHARE 3GB', validity: 'Weekly', price: 1600, network: 'MTN', profit: 220 },
     { id: 'w5', name: 'MTN SHARE 5GB', validity: 'Weekly', price: 2200, network: 'MTN', profit: 500 },
-    
-    // ---- GIFTING PLANS (14 Days) ----
     { id: 'g1', name: 'MTN GIFT 500MB', validity: '14 Days', price: 500, network: 'MTN', profit: 100 },
     { id: 'g2', name: 'MTN GIFT 1GB', validity: '14 Days', price: 850, network: 'MTN', profit: 150 },
     { id: 'g3', name: 'MTN GIFT 2GB', validity: '14 Days', price: 1500, network: 'MTN', profit: 200 },
     { id: 'g4', name: 'MTN GIFT 5GB', validity: '14 Days', price: 3200, network: 'MTN', profit: 400 },
     { id: 'g5', name: 'MTN GIFT 10GB', validity: '14 Days', price: 5500, network: 'MTN', profit: 500 },
-    
-    // ---- MONTHLY SME PLANS ----
     { id: 'm1', name: 'MTN SME 500MB', validity: 'Monthly', price: 600, network: 'MTN', profit: 100 },
     { id: 'm2', name: 'MTN SME 1GB', validity: 'Monthly', price: 1000, network: 'MTN', profit: 200 },
     { id: 'm3', name: 'MTN SME 2GB', validity: 'Monthly', price: 1500, network: 'MTN', profit: 300 },
@@ -1007,8 +470,6 @@ var allPlans = [
     { id: 'm7', name: 'MTN 20GB', validity: 'Monthly', price: 5500, network: 'MTN', profit: 575 },
     { id: 'm8', name: 'MTN 50GB', validity: 'Monthly', price: 19000, network: 'MTN', profit: 1270 },
     { id: 'm9', name: 'MTN 100GB', validity: 'Monthly', price: 26000, network: 'MTN', profit: 1475 },
-    
-    // ---- AIRTEL PLANS ----
     { id: 'a1', name: 'Airtel AWOOF 150MB', validity: 'Daily', price: 150, network: 'Airtel', profit: 82 },
     { id: 'a2', name: 'Airtel AWOOF 300MB', validity: 'Daily', price: 200, network: 'Airtel', profit: 75 },
     { id: 'a3', name: 'Airtel AWOOF 600MB', validity: 'Daily', price: 350, network: 'Airtel', profit: 120 },
@@ -1025,8 +486,6 @@ var allPlans = [
     { id: 'a14', name: 'Airtel 10GB', validity: 'Monthly', price: 4500, network: 'Airtel', profit: 556 },
     { id: 'a15', name: 'Airtel SmartShare 5GB', validity: 'Monthly', price: 2200, network: 'Airtel', profit: 400 },
     { id: 'a16', name: 'Airtel SmartShare 10GB', validity: 'Monthly', price: 3800, network: 'Airtel', profit: 600 },
-    
-    // ---- GLO PLANS ----
     { id: 'glo1', name: 'GLO AWOOF 750MB', validity: 'Daily', price: 350, network: 'GLO', profit: 140 },
     { id: 'glo2', name: 'GLO AWOOF 1.5GB', validity: 'Daily', price: 450, network: 'GLO', profit: 135 },
     { id: 'glo3', name: 'GLO AWOOF 2.5GB', validity: 'Daily', price: 700, network: 'GLO', profit: 185 },
@@ -1037,8 +496,6 @@ var allPlans = [
     { id: 'glo8', name: 'GLO 3GB', validity: 'Monthly', price: 1700, network: 'GLO', profit: 200 },
     { id: 'glo9', name: 'GLO 5GB', validity: 'Monthly', price: 2400, network: 'GLO', profit: 400 },
     { id: 'glo10', name: 'GLO 10GB', validity: 'Monthly', price: 3300, network: 'GLO', profit: 450 },
-    
-    // ---- 9MOBILE PLANS ----
     { id: 'n1', name: '9mobile 500MB', validity: 'Monthly', price: 450, network: '9mobile', profit: 100 },
     { id: 'n2', name: '9mobile 1GB', validity: 'Monthly', price: 750, network: '9mobile', profit: 150 },
     { id: 'n3', name: '9mobile 2GB', validity: 'Monthly', price: 1200, network: '9mobile', profit: 200 },
@@ -1083,7 +540,7 @@ var ELECTRICITY_PROVIDERS = {
 };
 
 // ============================================================
-// TRANSACTIONS - FIXED with safe fallbacks
+// TRANSACTIONS
 // ============================================================
 function getTransactions() {
     try { 
@@ -1101,7 +558,6 @@ function saveTransactions(txs) {
 function addTransaction(type, name, amount, detail, profit) {
     if (amount === undefined || amount === null) amount = 0;
     if (profit === undefined || profit === null) profit = 0;
-    
     var txs = getTransactions();
     txs.unshift({ 
         id: Date.now(), 
@@ -1118,9 +574,6 @@ function addTransaction(type, name, amount, detail, profit) {
     updateTxCount();
 }
 
-// ============================================================
-// RENDER FUNCTIONS - FIXED with safe fallbacks
-// ============================================================
 function renderTransactions() {
     var txs = getTransactions();
     var container = document.getElementById('transactionList');
@@ -1161,7 +614,6 @@ function renderPlans(filter) {
     if (filter === undefined) filter = 'all';
     var grid = document.getElementById('plansGrid');
     var filtered = [];
-    
     if (filter === 'small') {
         for (var i = 0; i < allPlans.length; i++) {
             if (allPlans[i].price <= 100) filtered.push(allPlans[i]);
@@ -1173,12 +625,10 @@ function renderPlans(filter) {
             if (allPlans[j].validity.toLowerCase() === filter) filtered.push(allPlans[j]);
         }
     }
-    
     if (!filtered || filtered.length === 0) {
         grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;">No ' + filter + ' plans available.</div>';
         return;
     }
-    
     var html = '';
     for (var k = 0; k < filtered.length; k++) {
         var p = filtered[k];
@@ -1196,22 +646,255 @@ function renderPlans(filter) {
 }
 
 // ============================================================
-// TRANSACTION PIN FUNCTIONS
+// BUY FUNCTIONS
 // ============================================================
+function requireTransactionPin() {
+    var storedPin = localStorage.getItem('transactionPin');
+    if (!storedPin) return true;
+    var enteredPin = prompt('🔐 Enter your transaction PIN:');
+    if (!enteredPin) return false;
+    if (enteredPin === storedPin) {
+        return true;
+    } else {
+        showToast('❌ Incorrect PIN. Transaction cancelled.', 'error');
+        return false;
+    }
+}
+
+function buyDataPlan(planId) {
+    var plan = null;
+    for (var i = 0; i < allPlans.length; i++) {
+        if (allPlans[i].id === planId) {
+            plan = allPlans[i];
+            break;
+        }
+    }
+    if (!plan) return;
+    if (!requireTransactionPin()) return;
+    if (!confirm('Confirm purchase: ' + plan.name + ' - ₦' + plan.price + '?')) return;
+    showResult('loading', '⏳ Processing...');
+    fetch(API + '/api/buy-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: userPhone, plan: planId })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.success) {
+            var profit = data.result?.profit || plan.profit || 0;
+            addTransaction('data', plan.name, plan.price, '📡 ' + plan.network, profit);
+            showToast('✅ ' + plan.name + ' purchased!', 'success');
+            closeModal();
+            loadBalance();
+        } else {
+            showResult('error', '❌ ' + (data.error || 'Purchase failed'));
+        }
+    })
+    .catch(function(err) {
+        showResult('error', '❌ ' + err.message);
+    });
+}
+
+function buyAirtime() {
+    var network = document.getElementById('airtimeNetwork').value;
+    var amount = document.getElementById('airtimeAmount').value.trim();
+    var phone = document.getElementById('airtimePhone').value.trim();
+    if (!amount || amount < 50) { showResult('error', '⚠️ Min ₦50'); return; }
+    if (!phone || phone.length < 10) { showResult('error', '⚠️ Valid phone required'); return; }
+    if (!requireTransactionPin()) return;
+    if (!confirm('Buy ' + network + ' airtime ₦' + amount + ' for ' + phone + '?')) return;
+    showResult('loading', '⏳ Processing...');
+    fetch(API + '/api/buy-airtime', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phone, amount: Number(amount) })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.success) {
+            var profit = data.result?.profit || Math.round(Number(amount) * 0.05);
+            addTransaction('airtime', network + ' Airtime', Number(amount), '📞 ' + phone, profit);
+            showToast('✅ ₦' + amount + ' airtime sent!', 'success');
+            closeModal();
+            loadBalance();
+        } else {
+            showResult('error', '❌ ' + (data.error || 'Purchase failed'));
+        }
+    })
+    .catch(function(err) {
+        showResult('error', '❌ ' + err.message);
+    });
+}
+
+function buyTV() {
+    var serviceID = document.getElementById('tvService').value;
+    var iucNum = document.getElementById('tvIuc').value.trim();
+    var tvInfo = TV_PRICES[serviceID];
+    if (!iucNum || iucNum.length < 4) { showResult('error', '⚠️ Valid Smart Card required'); return; }
+    if (!requireTransactionPin()) return;
+    if (!confirm('Subscribe to ' + tvInfo.name + ' - ₦' + tvInfo.price + '?')) return;
+    showResult('loading', '⏳ Processing...');
+    fetch(API + '/api/buy-tv', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: userPhone, serviceID: serviceID, iucNum: iucNum })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.success) {
+            var profit = data.result?.profit || tvInfo.profit || 0;
+            addTransaction('tv', tvInfo.name, tvInfo.price, '🆔 ' + iucNum, profit);
+            showToast('✅ ' + tvInfo.name + ' subscribed!', 'success');
+            closeModal();
+            loadBalance();
+        } else {
+            showResult('error', '❌ ' + (data.error || 'Subscription failed'));
+        }
+    })
+    .catch(function(err) {
+        showResult('error', '❌ ' + err.message);
+    });
+}
+
+function buyElectricity() {
+    var serviceID = document.getElementById('elecService').value;
+    var meterNum = document.getElementById('elecMeter').value.trim();
+    var meterType = document.getElementById('elecType').value;
+    var amount = document.getElementById('elecAmount').value.trim();
+    var provider = ELECTRICITY_PROVIDERS[serviceID] || 'Unknown';
+    if (!meterNum || meterNum.length < 4) { showResult('error', '⚠️ Valid meter required'); return; }
+    if (!amount || amount < 100) { showResult('error', '⚠️ Min ₦100'); return; }
+    if (!requireTransactionPin()) return;
+    if (!confirm('Pay electricity ₦' + amount + ' for ' + provider + '?')) return;
+    showResult('loading', '⏳ Processing...');
+    fetch(API + '/api/buy-electricity', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: userPhone, serviceID: serviceID, meterNum: meterNum, meterType: Number(meterType), amount: Number(amount) })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.success) {
+            var profit = data.result?.profit || Math.round(Number(amount) * 0.02);
+            addTransaction('electricity', provider + ' Electricity', Number(amount), '🔢 ' + meterNum, profit);
+            showToast('✅ Electricity payment successful!', 'success');
+            closeModal();
+            loadBalance();
+        } else {
+            showResult('error', '❌ ' + (data.error || 'Payment failed'));
+        }
+    })
+    .catch(function(err) {
+        showResult('error', '❌ ' + err.message);
+    });
+}
+
+function buyEducation() {
+    var serviceID = document.getElementById('eduService').value;
+    var quantity = document.getElementById('eduQuantity').value || 1;
+    var eduInfo = EDUCATION_PRICES[serviceID];
+    var totalPrice = eduInfo.price * quantity;
+    if (!requireTransactionPin()) return;
+    if (!confirm('Buy ' + quantity + 'x ' + eduInfo.name + ' pin(s) - ₦' + totalPrice + '?')) return;
+    showResult('loading', '⏳ Processing...');
+    fetch(API + '/api/buy-education', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: userPhone, serviceID: serviceID, quantity: Number(quantity) })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.success) {
+            var profit = data.result?.profit || (eduInfo.profit * quantity);
+            addTransaction('education', eduInfo.name + ' PIN', totalPrice, '📦 ' + quantity + ' pin(s)', profit);
+            showToast('✅ ' + eduInfo.name + ' pin(s) purchased!', 'success');
+            closeModal();
+            loadBalance();
+        } else {
+            showResult('error', '❌ ' + (data.error || 'Purchase failed'));
+        }
+    })
+    .catch(function(err) {
+        showResult('error', '❌ ' + err.message);
+    });
+}
+
+function fundWithPaystack() {
+    var email = document.getElementById('fundEmail').value.trim();
+    var amount = document.getElementById('fundAmount').value.trim();
+    if (!email || !email.includes('@')) {
+        showResult('error', '⚠️ Please enter a valid email address');
+        return;
+    }
+    if (!amount || isNaN(amount) || Number(amount) < 100) {
+        showResult('error', '⚠️ Amount must be at least ₦100');
+        return;
+    }
+    if (!confirm('✅ Confirm wallet funding:\n💰 ₦' + amount + '\n📧 ' + email + '\n\nProceed to Paystack?')) return;
+    showResult('loading', '⏳ Initializing payment with Paystack...');
+    fetch(API + '/api/fund-wallet-paystack', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, phone: userPhone, amount: Number(amount) })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.success) {
+            showResult('success', '✅ Redirecting to Paystack...');
+            window.open(data.authorization_url, '_blank');
+            showToast('✅ Payment initialized! Complete on Paystack.', 'success');
+            setTimeout(function() { closeModal(); setTimeout(function() { loadBalance(); }, 5000); }, 2000);
+        } else {
+            showResult('error', '❌ ' + (data.error || 'Payment initialization failed'));
+        }
+    })
+    .catch(function(err) {
+        showResult('error', '❌ Connection error: ' + err.message);
+    });
+}
+
+function withdrawProfit() {
+    var amount = document.getElementById('withdrawAmount').value.trim();
+    var bank = document.getElementById('withdrawBank').value.trim();
+    var account = document.getElementById('withdrawAccount').value.trim();
+    var name = document.getElementById('withdrawName').value.trim();
+    if (!amount || amount < 100) { showResult('error', '⚠️ Min ₦100'); return; }
+    if (!bank || !account || !name) { showResult('error', '⚠️ All bank details required'); return; }
+    if (!requireTransactionPin()) return;
+    if (!confirm('Withdraw ₦' + amount + ' to ' + bank + '?')) return;
+    showResult('loading', '⏳ Processing...');
+    fetch(API + '/api/withdraw-profit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: userPhone, amount: Number(amount), bankName: bank, accountNumber: account, accountName: name })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.success) {
+            addTransaction('withdrawal', 'Profit Withdrawal', Number(amount), '🏦 ' + bank, 0);
+            showToast('✅ Withdrawal of ₦' + amount + ' submitted!', 'success');
+            closeModal();
+            loadBalance();
+        } else {
+            showResult('error', '❌ ' + (data.error || 'Withdrawal failed'));
+        }
+    })
+    .catch(function(err) {
+        showResult('error', '❌ ' + err.message);
+    });
+}
+
 function setTransactionPin() {
     var pin1 = document.getElementById('transactionPin1').value.trim();
     var pin2 = document.getElementById('transactionPin2').value.trim();
-    
     if (!pin1 || pin1.length !== 4 || !/^\d{4}$/.test(pin1)) {
         showResult('error', '⚠️ Please enter a valid 4-digit PIN (numbers only)');
         return;
     }
-    
     if (pin1 !== pin2) {
         showResult('error', '⚠️ PINs do not match');
         return;
     }
-    
     localStorage.setItem('transactionPin', pin1);
     showResult('success', '✅ Transaction PIN set successfully!');
     showToast('✅ Transaction PIN set!', 'success');
@@ -1224,10 +907,8 @@ function verifyTransactionPin() {
         showResult('error', '⚠️ No PIN set. Please set a transaction PIN first.');
         return;
     }
-    
     var enteredPin = prompt('🔐 Enter your 4-digit transaction PIN:');
     if (!enteredPin) return;
-    
     if (enteredPin === storedPin) {
         showResult('success', '✅ PIN verified!');
         showToast('✅ PIN verified!', 'success');
@@ -1236,99 +917,118 @@ function verifyTransactionPin() {
     }
 }
 
-function requireTransactionPin() {
-    var storedPin = localStorage.getItem('transactionPin');
-    if (!storedPin) return true;
-    
-    var enteredPin = prompt('🔐 Enter your transaction PIN:');
-    if (!enteredPin) return false;
-    
-    if (enteredPin === storedPin) {
-        return true;
-    } else {
-        showToast('❌ Incorrect PIN. Transaction cancelled.', 'error');
-        return false;
-    }
+function submitKYC() {
+    var name = document.getElementById('kycName').value.trim();
+    var email = document.getElementById('kycEmail').value.trim();
+    var dob = document.getElementById('kycDob').value;
+    var bvn = document.getElementById('kycBvn').value.trim();
+    var nin = document.getElementById('kycNin').value.trim();
+    var address = document.getElementById('kycAddress').value.trim();
+    if (!name) { showResult('error', '⚠️ Full name required'); return; }
+    if (!email || !email.includes('@')) { showResult('error', '⚠️ Valid email required'); return; }
+    if (!address) { showResult('error', '⚠️ Address required'); return; }
+    if (bvn && bvn.length !== 11) { showResult('error', '⚠️ BVN must be 11 digits'); return; }
+    if (nin && nin.length !== 11) { showResult('error', '⚠️ NIN must be 11 digits'); return; }
+    showResult('loading', '⏳ Submitting KYC...');
+    fetch(API + '/api/kyc/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: userPhone, fullName: name, email: email, dateOfBirth: dob, bvn: bvn, nin: nin, address: address })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.success) {
+            showToast('✅ KYC submitted! Tier ' + data.tier + ' activated.', 'success');
+            showResult('success', '✅ KYC submitted! You are now ' + data.limits.name + '. Daily limit: ₦' + data.limits.dailyLimit.toLocaleString());
+            setTimeout(function() { loadKYCStatus(); loadBalance(); }, 1000);
+        } else {
+            showResult('error', '❌ ' + (data.error || 'KYC submission failed'));
+        }
+    })
+    .catch(function(err) {
+        showResult('error', '❌ ' + err.message);
+    });
 }
 
-// ============================================================
-// BUY FUNCTIONS
-// ============================================================
-async function buyDataPlan(planId) {
-    var plan = null;
-    for (var i = 0; i < allPlans.length; i++) {
-        if (allPlans[i].id === planId) {
-            plan = allPlans[i];
-            break;
-        }
+function setupFingerprint() {
+    if (!window.PublicKeyCredential) {
+        showToast('⚠️ Fingerprint not supported on this device', 'error');
+        showResult('error', '⚠️ Fingerprint not supported on this device.');
+        return;
     }
-    if (!plan) return;
-    
-    if (!requireTransactionPin()) return;
-    
-    if (!confirm('Confirm purchase: ' + plan.name + ' - ₦' + plan.price + '?')) return;
-    showResult('loading', '⏳ Processing...');
-    try {
-        var res = await fetch(API + '/api/buy-data', {
+    PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+        .then(function(available) {
+            if (!available) {
+                showToast('⚠️ No fingerprint sensor detected.', 'error');
+                showResult('error', '⚠️ No fingerprint sensor detected.');
+                return false;
+            }
+            return true;
+        })
+        .then(function(available) {
+            if (!available) return;
+            showResult('loading', '🔐 Place your finger on the sensor...');
+            var fingerprintId = 'FP_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('fingerprintData', fingerprintId);
+            localStorage.setItem('fingerprintRegistered', 'true');
+            return fetch(API + '/api/fingerprint/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: userPhone, fingerprintData: fingerprintId })
+            });
+        })
+        .then(function(response) {
+            if (!response) return;
+            return response.json();
+        })
+        .then(function(data) {
+            if (data && data.success) {
+                fingerprintRegistered = true;
+                showToast('✅ Fingerprint registered successfully!', 'success');
+                showResult('success', '✅ Fingerprint registered! You can now login with your fingerprint.');
+            } else if (data) {
+                showResult('error', '❌ ' + (data.error || 'Registration failed'));
+            }
+        })
+        .catch(function(err) {
+            showResult('error', '❌ ' + err.message);
+        });
+}
+
+function loginWithFingerprint() {
+    if (!window.PublicKeyCredential) {
+        showToast('⚠️ Fingerprint not supported.', 'error');
+        showResult('error', '⚠️ Fingerprint not supported.');
+        return;
+    }
+    showResult('loading', '🔐 Scanning fingerprint... Please wait...');
+    setTimeout(function() {
+        var storedFingerprint = localStorage.getItem('fingerprintData');
+        if (!storedFingerprint) {
+            showResult('error', '❌ No fingerprint registered. Please register first.');
+            return;
+        }
+        fetch(API + '/api/fingerprint/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone: userPhone, plan: planId })
+            body: JSON.stringify({ fingerprintData: storedFingerprint })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.success) {
+                showToast('✅ Fingerprint login successful!', 'success');
+                showResult('success', '✅ Welcome back, ' + data.user.name + '!');
+                localStorage.setItem('userPhone', data.user.phone);
+                localStorage.setItem('userName', data.user.name);
+                setTimeout(function() { loadBalance(); closeModal(); window.location.reload(); }, 1500);
+            } else {
+                showResult('error', '❌ ' + (data.error || 'Login failed'));
+            }
+        })
+        .catch(function(err) {
+            showResult('error', '❌ Connection error: ' + err.message);
         });
-        var data = await res.json();
-        if (data.success) {
-            var profit = data.result?.profit || plan.profit || 0;
-            addTransaction('data', plan.name, plan.price, '📡 ' + plan.network, profit);
-            showToast('✅ ' + plan.name + ' purchased!', 'success');
-            closeModal();
-            loadBalance();
-        } else {
-            showResult('error', '❌ ' + (data.error || 'Purchase failed'));
-        }
-    } catch (err) {
-        showResult('error', '❌ ' + err.message);
-    }
-}
-
-// ... [Other buy functions would go here - airtime, TV, electricity, education]
-
-// ============================================================
-// LOAD BALANCE - FIXED with safe fallbacks
-// ============================================================
-async function loadBalance() {
-    try {
-        var res = await fetch(API + '/api/profile?phone=' + userPhone);
-        var data = await res.json();
-        if (data.success) {
-            var user = data.user || {};
-            
-            var balance = user.balance || 0;
-            var profitBalance = user.profitBalance || 0;
-            
-            document.getElementById('balanceDisplay').textContent = '₦' + Number(balance).toLocaleString();
-            document.getElementById('profitDisplay').textContent = '₦' + Number(profitBalance).toLocaleString();
-            document.getElementById('phoneBadge').textContent = '📞 ' + (user.phone || 'Loading...');
-            
-            if (user.virtualAccount) {
-                document.getElementById('virtualAccountDisplay').textContent = user.virtualAccount;
-            }
-            document.getElementById('bankNameDisplay').textContent = 'Paystack MFB';
-            
-            if (user.name) {
-                localStorage.setItem('userName', user.name);
-            }
-            
-            localStorage.setItem('userBalance', balance);
-            
-            console.log('💰 Balance loaded:', balance);
-        } else {
-            var savedBalance = localStorage.getItem('userBalance') || 0;
-            document.getElementById('balanceDisplay').textContent = '₦' + Number(savedBalance).toLocaleString();
-        }
-    } catch (err) {
-        console.error('Balance load error:', err);
-        var savedBalance2 = localStorage.getItem('userBalance') || 0;
-        document.getElementById('balanceDisplay').textContent = '₦' + Number(savedBalance2).toLocaleString();
-    }
+    }, 1500);
 }
 
 // ============================================================
@@ -1352,6 +1052,62 @@ function copyAccountNumber() {
 }
 
 // ============================================================
+// LOAD FUNCTIONS
+// ============================================================
+function loadBalance() {
+    fetch(API + '/api/profile?phone=' + userPhone)
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.success) {
+            var user = data.user || {};
+            var balance = user.balance || 0;
+            var profitBalance = user.profitBalance || 0;
+            document.getElementById('balanceDisplay').textContent = '₦' + Number(balance).toLocaleString();
+            document.getElementById('profitDisplay').textContent = '₦' + Number(profitBalance).toLocaleString();
+            document.getElementById('phoneBadge').textContent = '📞 ' + (user.phone || 'Loading...');
+            if (user.virtualAccount) {
+                document.getElementById('virtualAccountDisplay').textContent = user.virtualAccount;
+            }
+            document.getElementById('bankNameDisplay').textContent = 'Paystack MFB';
+            if (user.name) {
+                localStorage.setItem('userName', user.name);
+            }
+            localStorage.setItem('userBalance', balance);
+            console.log('💰 Balance loaded:', balance);
+        } else {
+            var savedBalance = localStorage.getItem('userBalance') || 0;
+            document.getElementById('balanceDisplay').textContent = '₦' + Number(savedBalance).toLocaleString();
+        }
+    })
+    .catch(function(err) {
+        console.error('Balance load error:', err);
+        var savedBalance2 = localStorage.getItem('userBalance') || 0;
+        document.getElementById('balanceDisplay').textContent = '₦' + Number(savedBalance2).toLocaleString();
+    });
+}
+
+function loadKYCStatus() {
+    fetch(API + '/api/kyc/status?phone=' + userPhone)
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.success) {
+            var kyc = data.kyc;
+            document.getElementById('kycTierDisplay').textContent = kyc.tierName + ' (' + kyc.tier + ')';
+            document.getElementById('kycStatusText').textContent = kyc.status;
+            document.getElementById('kycStatusText').className = 'status-badge ' + kyc.status;
+            document.getElementById('kycDailyLimitDisplay').textContent = '₦' + kyc.dailyLimit.toLocaleString();
+            if (kyc.virtualAccount) {
+                document.getElementById('virtualAccountDisplay').textContent = kyc.virtualAccount;
+            }
+            document.getElementById('bankNameDisplay').textContent = 'Paystack MFB';
+        }
+    })
+    .catch(function(err) {
+        console.error('KYC status error:', err);
+    });
+}
+
+// ============================================================
 // MODAL FUNCTIONS
 // ============================================================
 function openModal(type) {
@@ -1368,71 +1124,24 @@ function openModal(type) {
     var fundAccountName = localStorage.getItem('userName') || 'Customer';
     
     var forms = {
-        data: `
-            <p style="color:var(--text-secondary);margin-bottom:12px;">Select a data plan:</p>
-            <div id="modalPlansGrid" style="max-height:300px;overflow-y:auto;"></div>
-        `,
-        support: `
-            <h3 style="color:var(--gold);margin-bottom:12px;">💬 Support Center</h3>
-            
-            <div style="background:rgba(78, 205, 196, 0.05);border:1px solid rgba(78, 205, 196, 0.15);border-radius:12px;padding:16px;margin-bottom:12px;">
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                    <span style="font-size:24px;">🤖</span>
-                    <span style="font-weight:600;color:var(--text-primary);">AI Support Bot</span>
-                    <span style="background:#4ecdc4;color:#0f0f1a;padding:2px 10px;border-radius:40px;font-size:10px;font-weight:700;">LIVE</span>
-                </div>
-                <div id="chatMessages" class="chat-messages">
-                    <div class="chat-message bot">
-                        🤖 Hello! 👋 Welcome to Paysbillz Support. How can I help you today?
-                    </div>
-                    <div style="color:var(--text-muted);font-size:11px;margin-top:4px;margin-bottom:6px;">
-                        💡 Quick questions:
-                    </div>
-                    <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                        <button class="chat-suggestion" onclick="sendChatMessage('How do I buy data?')">📱 Buy Data</button>
-                        <button class="chat-suggestion" onclick="sendChatMessage('How do I fund my wallet?')">💰 Fund Wallet</button>
-                        <button class="chat-suggestion" onclick="sendChatMessage('What is KYC?')">🪪 KYC</button>
-                        <button class="chat-suggestion" onclick="sendChatMessage('How to withdraw profit?')">💸 Withdraw</button>
-                        <button class="chat-suggestion" onclick="sendChatMessage('Help with TV subscription')">📺 TV</button>
-                        <button class="chat-suggestion" onclick="sendChatMessage('Contact support')">📧 Contact</button>
-                    </div>
-                </div>
-                <div style="display:flex;gap:8px;">
-                    <input type="text" id="chatInput" placeholder="Type your question..." style="flex:1;padding:10px 14px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);font-size:13px;outline:none;" onkeypress="if(event.key==='Enter') sendChatMessage();" />
-                    <button onclick="sendChatMessage()" style="background:var(--gold-gradient);border:none;color:#0f0f1a;padding:10px 18px;border-radius:10px;font-weight:600;cursor:pointer;">Send</button>
-                </div>
-            </div>
-            
-            <div class="support-contact-grid">
-                <div class="support-contact-item">
-                    <div class="icon-large">📧</div>
-                    <div class="label">Email Support</div>
-                    <a href="mailto:paysbillzapp@gmail.com" class="value">paysbillzapp@gmail.com</a>
-                    <div class="sub">Response within 24hrs</div>
-                </div>
-                <div class="support-contact-item">
-                    <div class="icon-large">💬</div>
-                    <div class="label">WhatsApp</div>
-                    <a href="https://wa.me/2348145542679" target="_blank" class="value" style="color:#25D366;">08145542679</a>
-                    <div class="sub">Click to chat instantly</div>
-                </div>
-                <div class="support-contact-item full-width">
-                    <div class="icon-large">📞</div>
-                    <div class="label">Call Support</div>
-                    <a href="tel:+2348145542679" class="value" style="font-size:18px;">08145542679</a>
-                    <div class="sub">Available Mon-Fri, 9AM - 6PM</div>
-                </div>
-            </div>
-            
-            <div style="margin-top:12px;padding:12px;background:rgba(255,215,0,0.05);border-radius:8px;border:1px solid rgba(255,215,0,0.1);text-align:center;">
-                <p style="color:var(--text-muted);font-size:12px;">📌 We're here to help! Reach out anytime.</p>
-            </div>
-        `
+        data: '<p style="color:var(--text-secondary);margin-bottom:12px;">Select a data plan:</p><div id="modalPlansGrid" style="max-height:300px;overflow-y:auto;"></div>',
+        airtime: '<label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Network</label><select id="airtimeNetwork"><option value="MTN">MTN</option><option value="Airtel">Airtel</option><option value="GLO">GLO</option><option value="9mobile">9mobile</option></select><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Amount (₦)</label><input type="number" id="airtimeAmount" placeholder="Min ₦50" min="50" /><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Phone Number</label><input type="tel" id="airtimePhone" placeholder="080xxxxxxxx" /><button class="modal-btn" onclick="buyAirtime()">🚀 Purchase</button>',
+        tv: '<label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">TV Package</label><select id="tvService">' + Object.keys(TV_PRICES).map(function(key) { return '<option value="' + key + '">' + TV_PRICES[key].name + ' - ₦' + TV_PRICES[key].price.toLocaleString() + '</option>'; }).join('') + '</select><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Smart Card</label><input type="text" id="tvIuc" placeholder="Enter Smart Card number" /><button class="modal-btn" onclick="buyTV()">📺 Subscribe</button>',
+        electricity: '<label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Provider</label><select id="elecService">' + Object.keys(ELECTRICITY_PROVIDERS).map(function(key) { return '<option value="' + key + '">' + ELECTRICITY_PROVIDERS[key] + '</option>'; }).join('') + '</select><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Meter Number</label><input type="text" id="elecMeter" placeholder="Enter meter number" /><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Meter Type</label><select id="elecType"><option value="1">Prepaid</option><option value="2">Postpaid</option></select><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Amount (₦)</label><input type="number" id="elecAmount" placeholder="Min ₦100" min="100" /><button class="modal-btn" onclick="buyElectricity()">💡 Pay</button>',
+        education: '<label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Exam Type</label><select id="eduService">' + Object.keys(EDUCATION_PRICES).map(function(key) { return '<option value="' + key + '">' + EDUCATION_PRICES[key].name + ' - ₦' + EDUCATION_PRICES[key].price.toLocaleString() + '</option>'; }).join('') + '</select><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Quantity</label><input type="number" id="eduQuantity" value="1" min="1" /><button class="modal-btn" onclick="buyEducation()">📚 Buy</button>',
+        fund: '<h3 style="color:var(--gold);margin-bottom:12px;">💰 Fund Your Wallet</h3><div style="background:rgba(78,205,196,0.08);border:1px solid rgba(78,205,196,0.2);border-radius:12px;padding:12px;margin-bottom:12px;"><p style="color:var(--text-secondary);font-size:13px;margin-bottom:4px;">Pay with Paystack</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;"><span class="paystack-badge">💳 Card</span><span class="paystack-badge">🏦 Bank Transfer</span><span class="paystack-badge">📱 USSD</span><span class="paystack-badge">🔒 Secure</span></div></div><div class="paystack-info"><div class="step"><span class="num">1</span><span>Enter your email address</span></div><div class="step"><span class="num">2</span><span>Enter the amount you want to fund</span></div><div class="step"><span class="num">3</span><span>Click "Pay with Paystack"</span></div><div class="step"><span class="num">4</span><span>Complete payment on Paystack (Card, Transfer, or USSD)</span></div><div class="step"><span class="num">5</span><span>Your wallet is credited instantly!</span></div></div><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Email Address *</label><input type="email" id="fundEmail" placeholder="youremail@example.com" required /><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Amount (₦) *</label><input type="number" id="fundAmount" placeholder="Enter amount (min ₦100)" min="100" required /><button class="modal-btn success" onclick="fundWithPaystack()" style="font-size:18px;">💳 Pay with Paystack</button><p style="color:var(--text-muted);font-size:11px;margin-top:8px;text-align:center;">🔒 Secured by Paystack. Your card details are safe.</p>',
+        withdraw: '<p style="color:var(--text-secondary);margin-bottom:12px;font-size:13px;">Withdraw your profit balance.</p><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Amount (₦)</label><input type="number" id="withdrawAmount" placeholder="Min ₦100" min="100" /><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Bank Name</label><input type="text" id="withdrawBank" placeholder="e.g., GTBank" /><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Account Number</label><input type="text" id="withdrawAccount" placeholder="Enter account number" /><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Account Name</label><input type="text" id="withdrawName" placeholder="Full name" /><button class="modal-btn danger" onclick="withdrawProfit()">💸 Withdraw</button>',
+        kyc: '<p style="color:var(--text-secondary);margin-bottom:12px;font-size:13px;">Complete KYC to increase your limits.</p><div style="background:var(--bg-card);padding:12px;border-radius:12px;margin-bottom:12px;border:1px solid var(--border-color);"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);"><span>Current: <strong id="kycCurrentTier">Loading...</strong></span><span>Daily Limit: <strong id="kycCurrentLimit">₦0</strong></span></div></div><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Full Name *</label><input type="text" id="kycName" placeholder="Enter full name" /><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Email *</label><input type="email" id="kycEmail" placeholder="youremail@example.com" /><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Date of Birth</label><input type="date" id="kycDob" /><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">BVN (11 digits) *</label><input type="password" id="kycBvn" placeholder="Enter 11-digit BVN" maxlength="11" /><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">NIN (11 digits) *</label><input type="password" id="kycNin" placeholder="Enter 11-digit NIN" maxlength="11" /><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Address *</label><input type="text" id="kycAddress" placeholder="Enter residential address" /><button class="modal-btn" onclick="submitKYC()">🪪 Submit KYC</button>',
+        pin: '<h3 style="color:var(--gold);margin-bottom:12px;">🔐 Transaction PIN</h3><div style="background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-radius:12px;padding:16px;margin-bottom:12px;"><p style="color:var(--text-secondary);font-size:13px;">Secure your transactions with a 4-digit PIN</p><p style="color:var(--text-muted);font-size:11px;margin-top:4px;">You\'ll need this PIN to confirm every transaction</p></div><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Set 4-Digit PIN *</label><input type="password" id="transactionPin1" placeholder="Enter 4-digit PIN" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" /><label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Confirm PIN *</label><input type="password" id="transactionPin2" placeholder="Confirm 4-digit PIN" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" /><button class="modal-btn success" onclick="setTransactionPin()">🔐 Set Transaction PIN</button><div style="margin-top:12px;text-align:center;color:var(--text-muted);font-size:12px;">Already have a PIN? <a style="color:var(--gold);cursor:pointer;" onclick="verifyTransactionPin()">Verify PIN</a></div>',
+        fingerprint: '<div style="text-align:center;padding:10px 0;"><div style="font-size:64px;margin-bottom:10px;">🔐</div><h3 style="color:var(--text-primary);margin-bottom:8px;">Fingerprint Login</h3><p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Register your fingerprint for quick and secure login</p><p style="color:var(--text-muted);font-size:12px;margin-bottom:16px;">⚠️ Place your finger on the sensor when prompted</p><button class="fingerprint-btn" onclick="setupFingerprint()"><span class="icon-large">📱</span> Register Fingerprint</button><div style="margin-top:12px;text-align:center;color:var(--text-muted);font-size:12px;">Already registered? <a style="color:var(--gold);cursor:pointer;font-weight:600;" onclick="loginWithFingerprint()">Login with fingerprint</a></div></div>',
+        support: '<h3 style="color:var(--gold);margin-bottom:12px;">💬 Support Center</h3><div style="background:rgba(78,205,196,0.05);border:1px solid rgba(78,205,196,0.15);border-radius:12px;padding:16px;margin-bottom:12px;"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><span style="font-size:24px;">🤖</span><span style="font-weight:600;color:var(--text-primary);">AI Support Bot</span><span style="background:#4ecdc4;color:#0f0f1a;padding:2px 10px;border-radius:40px;font-size:10px;font-weight:700;">LIVE</span></div><div id="chatMessages" class="chat-messages"><div class="chat-message bot">🤖 Hello! 👋 Welcome to Paysbillz Support. How can I help you today?</div><div style="color:var(--text-muted);font-size:11px;margin-top:4px;margin-bottom:6px;">💡 Quick questions:</div><div style="display:flex;flex-wrap:wrap;gap:6px;"><button class="chat-suggestion" onclick="sendChatMessage(\'How do I buy data?\')">📱 Buy Data</button><button class="chat-suggestion" onclick="sendChatMessage(\'How do I fund my wallet?\')">💰 Fund Wallet</button><button class="chat-suggestion" onclick="sendChatMessage(\'What is KYC?\')">🪪 KYC</button><button class="chat-suggestion" onclick="sendChatMessage(\'How to withdraw profit?\')">💸 Withdraw</button><button class="chat-suggestion" onclick="sendChatMessage(\'Help with TV subscription\')">📺 TV</button><button class="chat-suggestion" onclick="sendChatMessage(\'Contact support\')">📧 Contact</button></div></div><div style="display:flex;gap:8px;"><input type="text" id="chatInput" placeholder="Type your question..." style="flex:1;padding:10px 14px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);font-size:13px;outline:none;" onkeypress="if(event.key===\'Enter\') sendChatMessage();" /><button onclick="sendChatMessage()" style="background:var(--gold-gradient);border:none;color:#0f0f1a;padding:10px 18px;border-radius:10px;font-weight:600;cursor:pointer;">Send</button></div></div><div class="support-contact-grid"><div class="support-contact-item"><div class="icon-large">📧</div><div class="label">Email Support</div><a href="mailto:paysbillzapp@gmail.com" class="value">paysbillzapp@gmail.com</a><div class="sub">Response within 24hrs</div></div><div class="support-contact-item"><div class="icon-large">💬</div><div class="label">WhatsApp</div><a href="https://wa.me/2348145542679" target="_blank" class="value" style="color:#25D366;">08145542679</a><div class="sub">Click to chat instantly</div></div><div class="support-contact-item full-width"><div class="icon-large">📞</div><div class="label">Call Support</div><a href="tel:+2348145542679" class="value" style="font-size:18px;">08145542679</a><div class="sub">Available Mon-Fri, 9AM - 6PM</div></div></div><div style="margin-top:12px;padding:12px;background:rgba(255,215,0,0.05);border-radius:8px;border:1px solid rgba(255,215,0,0.1);text-align:center;"><p style="color:var(--text-muted);font-size:12px;">📌 We\'re here to help! Reach out anytime.</p></div>'
     };
     
     var titles = {
-        data: '📱 Buy Data',
-        support: '💬 Support Center'
+        data: '📱 Buy Data', airtime: '📞 Buy Airtime', tv: '📺 TV Subscription',
+        electricity: '💡 Pay Electricity', education: '📚 Buy Exam Pins', fund: '💰 Fund Wallet',
+        withdraw: '💸 Withdraw Profit', kyc: '🪪 KYC Verification', pin: '🔐 Transaction PIN',
+        fingerprint: '🔐 Fingerprint Login', support: '💬 Support Center'
     };
     
     title.textContent = titles[type] || 'Service';
@@ -1441,13 +1150,15 @@ function openModal(type) {
     if (type === 'data') {
         renderModalPlans('all');
     }
+    if (type === 'kyc') {
+        loadKYCStatusForModal();
+    }
 }
 
 function renderModalPlans(filter) {
     var container = document.getElementById('modalPlansGrid');
     if (!container) return;
     var filtered = [];
-    
     if (filter === 'small') {
         for (var i = 0; i < allPlans.length; i++) {
             if (allPlans[i].price <= 100) filtered.push(allPlans[i]);
@@ -1459,12 +1170,10 @@ function renderModalPlans(filter) {
             if (allPlans[j].validity.toLowerCase() === filter) filtered.push(allPlans[j]);
         }
     }
-    
     if (filtered.length === 0) {
         container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px;">No plans found</div>';
         return;
     }
-    
     var html = '';
     for (var k = 0; k < filtered.length; k++) {
         var p = filtered[k];
@@ -1477,6 +1186,20 @@ function renderModalPlans(filter) {
         html += '</div></div>';
     }
     container.innerHTML = html;
+}
+
+function loadKYCStatusForModal() {
+    fetch(API + '/api/kyc/status?phone=' + userPhone)
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.success) {
+            document.getElementById('kycCurrentTier').textContent = data.kyc.tierName;
+            document.getElementById('kycCurrentLimit').textContent = '₦' + data.kyc.dailyLimit.toLocaleString();
+        }
+    })
+    .catch(function(err) {
+        console.error('Error:', err);
+    });
 }
 
 function closeModal() {
@@ -1531,30 +1254,6 @@ function logout() {
     if (confirm('Logout from Paysbillz?')) {
         localStorage.clear();
         window.location.href = '/';
-    }
-}
-
-// ============================================================
-// KYC FUNCTIONS
-// ============================================================
-async function loadKYCStatus() {
-    try {
-        var res = await fetch(API + '/api/kyc/status?phone=' + userPhone);
-        var data = await res.json();
-        if (data.success) {
-            var kyc = data.kyc;
-            document.getElementById('kycTierDisplay').textContent = kyc.tierName + ' (' + kyc.tier + ')';
-            document.getElementById('kycStatusText').textContent = kyc.status;
-            document.getElementById('kycStatusText').className = 'status-badge ' + kyc.status;
-            document.getElementById('kycDailyLimitDisplay').textContent = '₦' + kyc.dailyLimit.toLocaleString();
-            
-            if (kyc.virtualAccount) {
-                document.getElementById('virtualAccountDisplay').textContent = kyc.virtualAccount;
-            }
-            document.getElementById('bankNameDisplay').textContent = 'Paystack MFB';
-        }
-    } catch (err) {
-        console.error('KYC status error:', err);
     }
 }
 
