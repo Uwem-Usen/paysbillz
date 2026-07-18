@@ -3,6 +3,7 @@ const path = require('path');
 const cors = require('cors');
 const crypto = require('crypto');
 const fs = require('fs');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -69,6 +70,117 @@ const users = loadUsers();
 // ADMIN CONFIGURATION
 // ============================================
 const ADMIN_PHONE = '08027449527';
+const ADMIN_EMAIL = 'admin@paysbillz.com';
+
+// ============================================
+// EMAIL CONFIGURATION
+// ============================================
+const emailTransporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    port: process.env.EMAIL_PORT || 587,
+    secure: false,
+    auth: {
+        user: process.env.EMAIL_USER || 'your-email@gmail.com',
+        pass: process.env.EMAIL_PASSWORD || 'your-app-password'
+    }
+});
+
+async function sendEmail(to, subject, html) {
+    try {
+        if (!to || to === 'undefined' || to === 'null') {
+            console.log('⚠️ Invalid email address, skipping...');
+            return false;
+        }
+        const mailOptions = {
+            from: process.env.EMAIL_USER || 'your-email@gmail.com',
+            to: to,
+            subject: subject,
+            html: html
+        };
+        await emailTransporter.sendMail(mailOptions);
+        console.log(`📧 Email sent to ${to}`);
+        return true;
+    } catch (error) {
+        console.error('❌ Email error:', error.message);
+        return false;
+    }
+}
+
+function getEmailTemplate(type, data) {
+    const templates = {
+        registration: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #1a1a2e; color: #ecf3ff; border-radius: 12px;">
+                <h2 style="color: #ffd700; text-align: center;">💰 Welcome to Paysbillz!</h2>
+                <div style="background: #0f0f1a; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                    <p>Hello <strong>${data.name}</strong>,</p>
+                    <p>Thank you for registering on Paysbillz. You can now start buying data, airtime, and paying bills.</p>
+                    <div style="background: rgba(255,215,0,0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #ffd700;">
+                        <p><strong>🏦 Your Virtual Account:</strong> ${data.virtualAccount}</p>
+                        <p><strong>Bank:</strong> Paystack MFB</p>
+                    </div>
+                    <a href="https://paysbillz-api.onrender.com/" style="background: #ffd700; color: #0f0f1a; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin-top: 10px; font-weight: bold;">Go to Dashboard</a>
+                </div>
+                <p style="color: #5a6f8a; text-align: center;">© 2026 Paysbillz • All rights reserved</p>
+            </div>
+        `,
+        transaction: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #1a1a2e; color: #ecf3ff; border-radius: 12px;">
+                <h2 style="color: #ffd700; text-align: center;">💰 Transaction Receipt</h2>
+                <div style="background: #0f0f1a; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                    <p><strong>Type:</strong> ${data.type}</p>
+                    <p><strong>Amount:</strong> <span style="color: #ffd700; font-size: 18px;">₦${data.amount.toLocaleString()}</span></p>
+                    <p><strong>Reference:</strong> ${data.reference}</p>
+                    <p><strong>Date:</strong> ${data.date}</p>
+                    ${data.details ? `<p><strong>Details:</strong> ${data.details}</p>` : ''}
+                    <p><strong>New Balance:</strong> <span style="color: #4ecdc4;">₦${data.balance.toLocaleString()}</span></p>
+                    ${data.profit ? `<p style="color: #ffd93d;"><strong>Profit Earned:</strong> ₦${data.profit}</p>` : ''}
+                </div>
+                <a href="https://paysbillz-api.onrender.com/" style="background: #ffd700; color: #0f0f1a; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">View Dashboard</a>
+                <p style="color: #5a6f8a; text-align: center; margin-top: 15px;">Thank you for using Paysbillz!</p>
+            </div>
+        `,
+        funding: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #1a1a2e; color: #ecf3ff; border-radius: 12px;">
+                <h2 style="color: #ffd700; text-align: center;">💰 Wallet Funded</h2>
+                <div style="background: #0f0f1a; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                    <p><strong>Amount:</strong> <span style="color: #ffd700; font-size: 18px;">₦${data.amount.toLocaleString()}</span></p>
+                    <p><strong>Method:</strong> ${data.method}</p>
+                    <p><strong>Reference:</strong> ${data.reference}</p>
+                    <p><strong>Date:</strong> ${data.date}</p>
+                    <p><strong>New Balance:</strong> <span style="color: #4ecdc4;">₦${data.balance.toLocaleString()}</span></p>
+                </div>
+                <a href="https://paysbillz-api.onrender.com/" style="background: #ffd700; color: #0f0f1a; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">View Dashboard</a>
+                <p style="color: #5a6f8a; text-align: center; margin-top: 15px;">Thank you for using Paysbillz!</p>
+            </div>
+        `,
+        withdrawal: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #1a1a2e; color: #ecf3ff; border-radius: 12px;">
+                <h2 style="color: #ffd700; text-align: center;">💸 Withdrawal Request</h2>
+                <div style="background: #0f0f1a; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                    <p><strong>Amount:</strong> <span style="color: #ffd700; font-size: 18px;">₦${data.amount.toLocaleString()}</span></p>
+                    <p><strong>Bank:</strong> ${data.bank}</p>
+                    <p><strong>Account:</strong> ${data.account}</p>
+                    <p><strong>Status:</strong> <span style="color: #ffd93d;">Pending</span></p>
+                    <p><strong>Date:</strong> ${data.date}</p>
+                </div>
+                <p style="color: #5a6f8a; text-align: center; margin-top: 15px;">Your withdrawal request is being processed.</p>
+            </div>
+        `,
+        admin_notification: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #1a1a2e; color: #ecf3ff; border-radius: 12px;">
+                <h2 style="color: #ffd700; text-align: center;">👑 Admin Notification</h2>
+                <div style="background: #0f0f1a; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                    <p><strong>Event:</strong> ${data.event}</p>
+                    <p><strong>User:</strong> ${data.user}</p>
+                    <p><strong>Amount:</strong> <span style="color: #ffd700;">₦${data.amount.toLocaleString()}</span></p>
+                    ${data.details ? `<p><strong>Details:</strong> ${data.details}</p>` : ''}
+                    <p><strong>Time:</strong> ${data.time}</p>
+                </div>
+            </div>
+        `
+    };
+    return templates[type] || '';
+}
 
 // ============================================
 // KYC TIERS
@@ -149,7 +261,8 @@ function getUser(phone) {
                 dateOfBirth: null
             },
             virtualAccount: generateVirtualAccount(phone),
-            fingerprint: null
+            fingerprint: null,
+            transactionPin: null
         };
         saveUsers();
     }
@@ -192,14 +305,15 @@ if (!users[ADMIN_PHONE]) {
             tier: 'tier3',
             status: 'verified',
             fullName: 'Admin User',
-            email: 'admin@paysbillz.com',
+            email: ADMIN_EMAIL,
             bvn: '12345678901',
             nin: '12345678901',
             address: 'Admin Address',
             dateOfBirth: '1990-01-01'
         },
         virtualAccount: generateVirtualAccount(ADMIN_PHONE),
-        fingerprint: null
+        fingerprint: null,
+        transactionPin: '1234'
     };
     users[ADMIN_PHONE] = admin;
     saveUsers();
@@ -318,6 +432,43 @@ function addAdminProfit(fromPhone, amount, serviceType) {
 }
 
 // ============================================
+// NOTIFICATION FUNCTION
+// ============================================
+async function sendTransactionNotification(user, type, amount, reference, details = '', profit = 0) {
+    const email = user.kyc?.email;
+    if (!email) {
+        console.log('⚠️ No email found for user, skipping notification');
+        return;
+    }
+
+    const date = new Date().toISOString();
+    const emailData = {
+        type: type,
+        amount: amount,
+        reference: reference,
+        date: date,
+        details: details,
+        balance: user.realBalance || 0,
+        profit: profit
+    };
+
+    const subject = `💰 ${type} - Paysbillz`;
+    const html = getEmailTemplate('transaction', emailData);
+    
+    await sendEmail(email, subject, html);
+
+    // Also notify admin
+    const adminData = {
+        event: `New ${type}`,
+        user: user.name || user.phone,
+        amount: amount,
+        details: `${details} | Reference: ${reference}`,
+        time: date
+    };
+    await sendEmail(ADMIN_EMAIL, `👑 Admin: ${type} by ${user.name || user.phone}`, getEmailTemplate('admin_notification', adminData));
+}
+
+// ============================================
 // PURCHASE FUNCTIONS
 // ============================================
 async function purchaseInlomax(phone, plan, amount) {
@@ -333,12 +484,24 @@ async function purchaseInlomax(phone, plan, amount) {
     user.realBalance = (user.realBalance || 0) - actualCost;
     const profit = calculateDataProfit(plan);
     addAdminProfit(phone, profit, 'data');
-    user.transactions.push({
-        type: 'data_purchase', amount: actualCost, plan: plan, provider: 'inlomax',
-        profit: profit, status: 'success', reference: requestId,
-        message: 'Purchase successful', created_at: new Date().toISOString()
-    });
+    
+    const transaction = {
+        type: 'data_purchase', 
+        amount: actualCost, 
+        plan: plan, 
+        provider: 'inlomax',
+        profit: profit, 
+        status: 'success', 
+        reference: requestId,
+        message: 'Purchase successful', 
+        created_at: new Date().toISOString()
+    };
+    user.transactions.push(transaction);
     saveUser(user);
+    
+    // Send notification
+    await sendTransactionNotification(user, 'Data Purchase', actualCost, requestId, `Plan: ${plan}`, profit);
+    
     return { success: true, provider: 'inlomax', data: { status: 'success', reference: requestId }, profit: profit, newBalance: user.realBalance };
 }
 
@@ -355,12 +518,23 @@ async function purchaseAirtimeInlomax(phone, amount) {
     user.realBalance = (user.realBalance || 0) - actualCost;
     const profit = calculateAirtimeProfit(amount);
     addAdminProfit(phone, profit, 'airtime');
-    user.transactions.push({
-        type: 'airtime_purchase', amount: actualCost, phone: phone, provider: 'inlomax',
-        profit: profit, status: 'success', reference: requestId,
-        message: 'Airtime purchase successful', created_at: new Date().toISOString()
-    });
+    
+    const transaction = {
+        type: 'airtime_purchase', 
+        amount: actualCost, 
+        phone: phone, 
+        provider: 'inlomax',
+        profit: profit, 
+        status: 'success', 
+        reference: requestId,
+        message: 'Airtime purchase successful', 
+        created_at: new Date().toISOString()
+    };
+    user.transactions.push(transaction);
     saveUser(user);
+    
+    await sendTransactionNotification(user, 'Airtime Purchase', actualCost, requestId, `Phone: ${phone}`, profit);
+    
     return { success: true, provider: 'inlomax', data: { status: 'success', reference: requestId }, profit: profit, newBalance: user.realBalance };
 }
 
@@ -378,12 +552,24 @@ async function purchaseTVInlomax(phone, serviceID, iucNum) {
     user.realBalance = (user.realBalance || 0) - actualCost;
     const profit = calculateTVProfit(actualCost);
     addAdminProfit(phone, profit, 'tv');
-    user.transactions.push({
-        type: 'tv_subscription', amount: actualCost, serviceID: serviceID, iucNum: iucNum, provider: 'inlomax',
-        profit: profit, status: 'success', reference: requestId,
-        message: 'TV subscription successful', created_at: new Date().toISOString()
-    });
+    
+    const transaction = {
+        type: 'tv_subscription', 
+        amount: actualCost, 
+        serviceID: serviceID, 
+        iucNum: iucNum, 
+        provider: 'inlomax',
+        profit: profit, 
+        status: 'success', 
+        reference: requestId,
+        message: 'TV subscription successful', 
+        created_at: new Date().toISOString()
+    };
+    user.transactions.push(transaction);
     saveUser(user);
+    
+    await sendTransactionNotification(user, 'TV Subscription', actualCost, requestId, `Package: ${serviceID} | Smart Card: ${iucNum}`, profit);
+    
     return { success: true, provider: 'inlomax', data: { status: 'success', reference: requestId }, profit: profit, newBalance: user.realBalance };
 }
 
@@ -400,12 +586,24 @@ async function purchaseElectricityInlomax(phone, serviceID, meterNum, meterType,
     user.realBalance = (user.realBalance || 0) - actualCost;
     const profit = calculateElectricityProfit(actualCost);
     addAdminProfit(phone, profit, 'electricity');
-    user.transactions.push({
-        type: 'electricity_payment', amount: actualCost, serviceID: serviceID, meterNum: meterNum, provider: 'inlomax',
-        profit: profit, status: 'success', reference: requestId,
-        message: 'Electricity payment successful', created_at: new Date().toISOString()
-    });
+    
+    const transaction = {
+        type: 'electricity_payment', 
+        amount: actualCost, 
+        serviceID: serviceID, 
+        meterNum: meterNum, 
+        provider: 'inlomax',
+        profit: profit, 
+        status: 'success', 
+        reference: requestId,
+        message: 'Electricity payment successful', 
+        created_at: new Date().toISOString()
+    };
+    user.transactions.push(transaction);
     saveUser(user);
+    
+    await sendTransactionNotification(user, 'Electricity Payment', actualCost, requestId, `Meter: ${meterNum}`, profit);
+    
     return { success: true, provider: 'inlomax', data: { status: 'success', reference: requestId }, profit: profit, newBalance: user.realBalance };
 }
 
@@ -425,15 +623,68 @@ async function purchaseEducationInlomax(phone, serviceID, quantity) {
     user.realBalance = (user.realBalance || 0) - actualCost;
     const profit = calculateEducationProfit(actualCost);
     addAdminProfit(phone, profit, 'education');
-    user.transactions.push({
-        type: 'education_pin', amount: actualCost, serviceID: serviceID, quantity: qty, provider: 'inlomax',
-        profit: profit, status: 'success', reference: requestId,
-        message: 'Exam pin purchase successful', created_at: new Date().toISOString(),
+    
+    const transaction = {
+        type: 'education_pin', 
+        amount: actualCost, 
+        serviceID: serviceID, 
+        quantity: qty, 
+        provider: 'inlomax',
+        profit: profit, 
+        status: 'success', 
+        reference: requestId,
+        message: 'Exam pin purchase successful', 
+        created_at: new Date().toISOString(),
         pins: ['DEMO-PIN-001', 'DEMO-PIN-002']
-    });
+    };
+    user.transactions.push(transaction);
     saveUser(user);
+    
+    await sendTransactionNotification(user, 'Exam Pin Purchase', actualCost, requestId, `${qty}x ${serviceID}`, profit);
+    
     return { success: true, provider: 'inlomax', data: { status: 'success', reference: requestId, pins: ['DEMO-PIN-001', 'DEMO-PIN-002'] }, profit: profit, newBalance: user.realBalance };
 }
+
+// ============================================
+// TRANSACTION PIN ENDPOINTS
+// ============================================
+app.post('/api/pin/set', (req, res) => {
+    try {
+        const { phone, pin } = req.body;
+        if (!phone || !pin) {
+            return res.status(400).json({ success: false, error: 'Phone and PIN are required' });
+        }
+        if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+            return res.status(400).json({ success: false, error: 'PIN must be 4 digits' });
+        }
+        
+        const user = getUser(phone);
+        user.transactionPin = pin;
+        saveUser(user);
+        
+        res.json({ success: true, message: 'Transaction PIN set successfully' });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.post('/api/pin/verify', (req, res) => {
+    try {
+        const { phone, pin } = req.body;
+        if (!phone || !pin) {
+            return res.status(400).json({ success: false, error: 'Phone and PIN are required' });
+        }
+        
+        const user = getUser(phone);
+        if (user.transactionPin === pin) {
+            res.json({ success: true, message: 'PIN verified' });
+        } else {
+            res.json({ success: false, error: 'Incorrect PIN' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 
 // ============================================
 // KYC ENDPOINTS
@@ -489,6 +740,18 @@ app.post('/api/kyc/submit', (req, res) => {
         }
         
         saveUser(user);
+        
+        // Send KYC confirmation email
+        const emailData = {
+            name: user.name,
+            tier: user.kyc.tier,
+            status: user.kyc.status
+        };
+        const html = getEmailTemplate('registration', { 
+            name: user.name, 
+            virtualAccount: user.virtualAccount 
+        });
+        sendEmail(user.kyc.email, 'KYC Submitted - Paysbillz', html);
         
         res.json({
             success: true,
@@ -575,7 +838,8 @@ app.post('/api/fund-wallet-paystack', async (req, res) => {
                 metadata: { 
                     phone: phone, 
                     purpose: 'wallet_funding',
-                    tier: kyc.tier || 'tier1'
+                    tier: kyc.tier || 'tier1',
+                    userName: user.name || 'Customer'
                 }
             })
         });
@@ -609,20 +873,43 @@ app.post('/payment/webhook', express.raw({ type: 'application/json' }), async (r
             const amount = transaction.amount / 100;
             const phone = transaction.metadata?.phone || ADMIN_PHONE;
             const purpose = transaction.metadata?.purpose || 'wallet_funding';
+            const userName = transaction.metadata?.userName || 'Customer';
 
             const user = getUser(phone);
             if (purpose === 'wallet_funding') {
                 user.realBalance = (user.realBalance || 0) + amount;
-                user.transactions.push({
+                const txn = {
                     type: 'wallet_funding_paystack', 
                     amount: amount, 
                     reference: transaction.reference,
                     status: 'success', 
                     message: `Wallet funded with ₦${amount} via Paystack`,
                     created_at: new Date().toISOString()
-                });
+                };
+                user.transactions.push(txn);
                 saveUser(user);
                 console.log(`✅ Wallet funded: ₦${amount} for ${phone}. New balance: ₦${user.realBalance}`);
+                
+                // Send funding notification email
+                const emailData = {
+                    amount: amount,
+                    method: 'Paystack',
+                    reference: transaction.reference,
+                    date: new Date().toISOString(),
+                    balance: user.realBalance
+                };
+                const html = getEmailTemplate('funding', emailData);
+                await sendEmail(user.kyc?.email || `${phone}@user.com`, '💰 Wallet Funded - Paysbillz', html);
+                
+                // Notify admin
+                const adminData = {
+                    event: `Wallet Funding (Paystack)`,
+                    user: userName || user.name || phone,
+                    amount: amount,
+                    details: `Reference: ${transaction.reference}`,
+                    time: new Date().toISOString()
+                };
+                await sendEmail(ADMIN_EMAIL, `👑 Wallet Funding: ₦${amount} by ${userName || phone}`, getEmailTemplate('admin_notification', adminData));
             }
         }
         res.sendStatus(200);
@@ -672,15 +959,27 @@ app.post('/api/virtual-account/fund', (req, res) => {
         }
 
         foundUser.realBalance = (foundUser.realBalance || 0) + Number(amount);
-        foundUser.transactions.push({
+        const txn = {
             type: 'virtual_account_funding',
             amount: Number(amount),
             status: 'success',
             tier: kyc.tier || 'tier1',
             message: `Wallet funded with ₦${amount} via virtual account ${accountNumber}`,
             created_at: new Date().toISOString()
-        });
+        };
+        foundUser.transactions.push(txn);
         saveUser(foundUser);
+
+        // Send funding notification
+        const emailData = {
+            amount: amount,
+            method: 'Virtual Account Transfer',
+            reference: accountNumber,
+            date: new Date().toISOString(),
+            balance: foundUser.realBalance
+        };
+        const html = getEmailTemplate('funding', emailData);
+        sendEmail(foundUser.kyc?.email || `${foundPhone}@user.com`, '💰 Wallet Funded - Paysbillz', html);
 
         res.json({ 
             success: true, 
@@ -910,12 +1209,38 @@ app.post('/api/withdraw-profit', (req, res) => {
         }
 
         user.profitBalance = (user.profitBalance || 0) - Number(amount);
-        user.transactions.push({
-            type: 'profit_withdrawal', amount: Number(amount), status: 'pending',
-            bankName: bankName || 'Not specified', accountNumber: accountNumber || 'Not specified',
-            accountName: accountName || 'Not specified', created_at: new Date().toISOString()
-        });
+        const txn = {
+            type: 'profit_withdrawal', 
+            amount: Number(amount), 
+            status: 'pending',
+            bankName: bankName || 'Not specified', 
+            accountNumber: accountNumber || 'Not specified',
+            accountName: accountName || 'Not specified', 
+            created_at: new Date().toISOString()
+        };
+        user.transactions.push(txn);
         saveUser(user);
+        
+        // Send withdrawal notification
+        const emailData = {
+            amount: amount,
+            bank: bankName || 'Not specified',
+            account: accountNumber || 'Not specified',
+            date: new Date().toISOString()
+        };
+        const html = getEmailTemplate('withdrawal', emailData);
+        sendEmail(user.kyc?.email || `${phone}@user.com`, '💸 Withdrawal Request - Paysbillz', html);
+        
+        // Notify admin
+        const adminData = {
+            event: `Withdrawal Request`,
+            user: user.name || user.phone,
+            amount: amount,
+            details: `Bank: ${bankName}, Account: ${accountNumber}`,
+            time: new Date().toISOString()
+        };
+        sendEmail(ADMIN_EMAIL, `👑 Withdrawal: ₦${amount} by ${user.name || phone}`, getEmailTemplate('admin_notification', adminData));
+        
         res.json({ success: true, message: `Withdrawal request of ₦${amount} submitted successfully!`, newProfitBalance: user.profitBalance });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -977,14 +1302,15 @@ app.post('/api/fund-wallet', (req, res) => {
         }
 
         user.realBalance = (user.realBalance || 0) + Number(amount);
-        user.transactions.push({
+        const txn = {
             type: 'wallet_funding', 
             amount: Number(amount), 
             status: 'success',
             tier: kyc.tier || 'tier1',
             message: `Wallet funded with ₦${amount} (Tier: ${tierInfo.name})`, 
             created_at: new Date().toISOString()
-        });
+        };
+        user.transactions.push(txn);
         saveUser(user);
         res.json({ success: true, message: `Wallet funded successfully! ₦${amount} added.`, newBalance: user.realBalance, tier: kyc.tier || 'tier1' });
     } catch (error) {
@@ -997,7 +1323,7 @@ app.post('/api/fund-wallet', (req, res) => {
 // ============================================
 app.post('/api/register', (req, res) => {
     try {
-        const { phone, name, password } = req.body;
+        const { phone, name, password, email } = req.body;
         
         if (!phone) {
             return res.status(400).json({ success: false, error: 'Phone number is required' });
@@ -1027,20 +1353,41 @@ app.post('/api/register', (req, res) => {
                 tier: 'tier1',
                 status: 'not_submitted',
                 fullName: name || null,
-                email: null,
+                email: email || null,
                 bvn: null,
                 nin: null,
                 address: null,
                 dateOfBirth: null
             },
             virtualAccount: generateVirtualAccount(phone),
-            fingerprint: null
+            fingerprint: null,
+            transactionPin: null
         };
         
         users[phone] = user;
         saveUsers();
         
         console.log('✅ User registered:', phone);
+        
+        // Send welcome email
+        if (email) {
+            const emailData = {
+                name: user.name,
+                virtualAccount: user.virtualAccount
+            };
+            const html = getEmailTemplate('registration', emailData);
+            sendEmail(email, 'Welcome to Paysbillz!', html);
+        }
+        
+        // Notify admin
+        const adminData = {
+            event: `New User Registration`,
+            user: user.name || user.phone,
+            amount: 0,
+            details: `Phone: ${phone}${email ? `, Email: ${email}` : ''}`,
+            time: new Date().toISOString()
+        };
+        sendEmail(ADMIN_EMAIL, `👑 New User: ${user.name || phone}`, getEmailTemplate('admin_notification', adminData));
         
         res.json({
             success: true,
@@ -1158,6 +1505,8 @@ app.get('/health', (req, res) => {
             virtualAccount: 'active',
             fingerprint: 'active',
             paystack: 'active',
+            emailNotifications: 'active',
+            transactionPin: 'active',
             services: ['data', 'airtime', 'tv', 'electricity', 'education']
         }
     });
@@ -1174,6 +1523,8 @@ app.listen(PORT, () => {
     console.log('✅ Virtual Account system active (Bank: Paystack MFB)');
     console.log('✅ Paystack integration active');
     console.log('✅ Fingerprint login active');
+    console.log('✅ Email notifications active');
+    console.log('✅ Transaction PIN active');
     console.log('✅ All services active');
     console.log('=================================================');
 });
