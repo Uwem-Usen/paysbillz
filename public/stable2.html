@@ -558,8 +558,8 @@
         .toast.success { border-left: 4px solid #4ecdc4; }
         .toast.error { border-left: 4px solid #ff6b6b; }
 
-        /* ===== FUND WALLET INSTRUCTIONS ===== */
-        .fund-instructions {
+        /* ===== PAYSTACK FUNDING ===== */
+        .paystack-info {
             background: rgba(78, 205, 196, 0.05);
             border: 1px solid rgba(78, 205, 196, 0.15);
             border-radius: 12px;
@@ -567,7 +567,7 @@
             margin: 12px 0;
         }
 
-        .fund-instructions .step {
+        .paystack-info .step {
             display: flex;
             align-items: center;
             gap: 12px;
@@ -576,7 +576,7 @@
             font-size: 13px;
         }
 
-        .fund-instructions .step .num {
+        .paystack-info .step .num {
             background: var(--gold-gradient);
             color: #0f0f1a;
             width: 24px;
@@ -590,36 +590,16 @@
             flex-shrink: 0;
         }
 
-        .fund-account-display {
-            background: var(--bg-card);
-            border: 2px dashed var(--gold);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            margin: 12px 0;
+        .paystack-badge {
+            display: inline-block;
+            background: #4ecdc4;
+            color: #0f0f1a;
+            padding: 2px 12px;
+            border-radius: 40px;
+            font-size: 11px;
+            font-weight: 700;
         }
 
-        .fund-account-display .account-number {
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--gold);
-            letter-spacing: 4px;
-        }
-
-        .fund-account-display .bank-name {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--gold);
-            margin-top: 4px;
-        }
-
-        .fund-account-display .account-name {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-top: 2px;
-        }
-
-        /* ===== FINGERPRINT BUTTON ===== */
         .fingerprint-btn {
             background: var(--bg-card);
             border: 2px solid var(--accent);
@@ -690,7 +670,7 @@
             <div class="label">💰 Wallet</div>
             <div class="amount wallet" id="balanceDisplay">₦0.00</div>
         </div>
-        <div class="balance-card">
+        <div class="balance-card" id="profitCard">
             <div class="label">📊 Profit</div>
             <div class="amount profit" id="profitDisplay">₦0.00</div>
         </div>
@@ -780,7 +760,7 @@ let isAdmin = userPhone === ADMIN_PHONE;
 let fingerprintRegistered = false;
 
 // ============================================================
-// DATA PLANS - UPDATED WITH HIGHER PRICES
+// DATA PLANS
 // ============================================================
 const allPlans = [
     // ---- DAILY PLANS (AWOOF) - UPDATED ----
@@ -1119,36 +1099,50 @@ async function buyEducation() {
 }
 
 // ============================================================
-// VIRTUAL ACCOUNT FUNDING
+// REAL PAYSTACK FUNDING - RESTORED
 // ============================================================
-async function fundViaVirtualAccount() {
+async function fundWithPaystack() {
+    const email = document.getElementById('fundEmail').value.trim();
     const amount = document.getElementById('fundAmount').value.trim();
-    const accountNumber = document.getElementById('virtualAccountDisplay').textContent.trim();
     
+    // Validate
+    if (!email || !email.includes('@')) {
+        showResult('error', '⚠️ Please enter a valid email address');
+        return;
+    }
     if (!amount || isNaN(amount) || Number(amount) < 100) {
         showResult('error', '⚠️ Amount must be at least ₦100');
         return;
     }
     
-    if (!confirm(`💰 Confirm funding:\n💳 Account: ${accountNumber}\n💰 Amount: ₦${amount}\n\nTransfer to Paystack MFB and click OK.`)) return;
+    if (!confirm(`✅ Confirm wallet funding:\n💰 ₦${amount}\n📧 ${email}\n\nProceed to Paystack?`)) return;
     
-    showResult('loading', '⏳ Processing your funding...');
+    showResult('loading', '⏳ Initializing payment with Paystack...');
     
     try {
-        const res = await fetch(API + '/api/virtual-account/fund', {
+        const res = await fetch(API + '/api/fund-wallet-paystack', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ accountNumber: accountNumber, amount: Number(amount) })
+            body: JSON.stringify({ 
+                email: email, 
+                phone: userPhone,
+                amount: Number(amount)
+            })
         });
         const data = await res.json();
         
         if (data.success) {
-            addTransaction('virtual_account_funding', 'Wallet Funding', Number(amount), `🏦 ${accountNumber}`, 0);
-            showToast(`✅ ₦${amount} added to your wallet!`, 'success');
-            showResult('success', `✅ ₦${amount} added to wallet! New balance: ₦${data.newBalance.toLocaleString()}`);
-            setTimeout(() => { closeModal(); loadBalance(); }, 2000);
+            showResult('success', '✅ Redirecting to Paystack...');
+            // Open Paystack in new window/tab
+            window.open(data.authorization_url, '_blank');
+            showToast(`✅ Payment initialized! Complete on Paystack.`, 'success');
+            setTimeout(() => { 
+                closeModal(); 
+                // Check for payment status after a delay
+                setTimeout(() => loadBalance(), 5000);
+            }, 2000);
         } else {
-            showResult('error', '❌ ' + (data.error || 'Funding failed'));
+            showResult('error', '❌ ' + (data.error || 'Payment initialization failed'));
         }
     } catch (err) {
         showResult('error', '❌ Connection error: ' + err.message);
@@ -1239,7 +1233,6 @@ async function loadKYCStatus() {
             if (kyc.virtualAccount) {
                 document.getElementById('virtualAccountDisplay').textContent = kyc.virtualAccount;
             }
-            // Set bank name to Paystack MFB
             document.getElementById('bankNameDisplay').textContent = 'Paystack MFB';
         }
     } catch (err) {
@@ -1248,21 +1241,19 @@ async function loadKYCStatus() {
 }
 
 // ============================================================
-// FINGERPRINT LOGIN - FIXED
+// FINGERPRINT LOGIN
 // ============================================================
 function setupFingerprint() {
-    // Check if WebAuthn is supported
     if (!window.PublicKeyCredential) {
-        showToast('⚠️ Fingerprint not supported on this device. Use a mobile device or Chrome browser.', 'error');
+        showToast('⚠️ Fingerprint not supported on this device', 'error');
         showResult('error', '⚠️ Fingerprint not supported on this device.');
         return;
     }
     
-    // Check if device has fingerprint sensor
     PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
         .then(function(available) {
             if (!available) {
-                showToast('⚠️ No fingerprint sensor detected on this device.', 'error');
+                showToast('⚠️ No fingerprint sensor detected.', 'error');
                 showResult('error', '⚠️ No fingerprint sensor detected.');
                 return false;
             }
@@ -1273,14 +1264,11 @@ function setupFingerprint() {
             
             showResult('loading', '🔐 Place your finger on the sensor...');
             
-            // Create a random credential ID for the fingerprint
             const fingerprintId = 'FP_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             
-            // Store fingerprint data locally
             localStorage.setItem('fingerprintData', fingerprintId);
             localStorage.setItem('fingerprintRegistered', 'true');
             
-            // Send to server
             return fetch(API + '/api/fingerprint/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1306,16 +1294,14 @@ function setupFingerprint() {
 }
 
 function loginWithFingerprint() {
-    // Check if WebAuthn is supported
     if (!window.PublicKeyCredential) {
-        showToast('⚠️ Fingerprint not supported on this device.', 'error');
+        showToast('⚠️ Fingerprint not supported.', 'error');
         showResult('error', '⚠️ Fingerprint not supported.');
         return;
     }
     
     showResult('loading', '🔐 Scanning fingerprint... Please wait...');
     
-    // Simulate fingerprint scan with a small delay
     setTimeout(function() {
         const storedFingerprint = localStorage.getItem('fingerprintData');
         if (!storedFingerprint) {
@@ -1323,7 +1309,6 @@ function loginWithFingerprint() {
             return;
         }
         
-        // Check if the fingerprint exists on server
         fetch(API + '/api/fingerprint/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1429,35 +1414,49 @@ function openModal(type) {
         fund: `
             <h3 style="color:var(--gold);margin-bottom:12px;">💰 Fund Your Wallet</h3>
             
-            <div class="fund-account-display">
-                <div style="font-size:11px;color:var(--text-muted);">Account Number</div>
-                <div class="account-number" id="fundAccountDisplay">${fundAccountNumber}</div>
-                <div class="bank-name">Paystack MFB</div>
-                <div class="account-name">${fundAccountName}</div>
+            <div style="background:rgba(78, 205, 196, 0.08);border:1px solid rgba(78, 205, 196, 0.2);border-radius:12px;padding:12px;margin-bottom:12px;">
+                <p style="color:var(--text-secondary);font-size:13px;margin-bottom:4px;">Pay with Paystack</p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+                    <span class="paystack-badge">💳 Card</span>
+                    <span class="paystack-badge">🏦 Bank Transfer</span>
+                    <span class="paystack-badge">📱 USSD</span>
+                    <span class="paystack-badge">🔒 Secure</span>
+                </div>
             </div>
             
-            <div class="fund-instructions">
+            <div class="paystack-info">
                 <div class="step">
                     <span class="num">1</span>
-                    <span>Transfer to Paystack MFB account above</span>
+                    <span>Enter your email address</span>
                 </div>
                 <div class="step">
                     <span class="num">2</span>
-                    <span>Enter the amount you transferred below</span>
+                    <span>Enter the amount you want to fund</span>
                 </div>
                 <div class="step">
                     <span class="num">3</span>
-                    <span>Click "Confirm Funding" to credit your wallet</span>
+                    <span>Click "Pay with Paystack"</span>
+                </div>
+                <div class="step">
+                    <span class="num">4</span>
+                    <span>Complete payment on Paystack (Card, Transfer, or USSD)</span>
+                </div>
+                <div class="step">
+                    <span class="num">5</span>
+                    <span>Your wallet is credited instantly!</span>
                 </div>
             </div>
             
-            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Amount Transferred (₦)</label>
-            <input type="number" id="fundAmount" placeholder="Enter amount" min="100" />
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Email Address *</label>
+            <input type="email" id="fundEmail" placeholder="youremail@example.com" required />
             
-            <button class="modal-btn success" onclick="fundViaVirtualAccount()">✅ Confirm Funding</button>
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Amount (₦) *</label>
+            <input type="number" id="fundAmount" placeholder="Enter amount (min ₦100)" min="100" required />
+            
+            <button class="modal-btn success" onclick="fundWithPaystack()" style="font-size:18px;">💳 Pay with Paystack</button>
             
             <p style="color:var(--text-muted);font-size:11px;margin-top:8px;text-align:center;">
-                💡 Your wallet will be credited instantly after confirmation
+                🔒 Secured by Paystack. Your card details are safe.
             </p>
         `,
         withdraw: `
@@ -1531,13 +1530,6 @@ function openModal(type) {
         renderModalPlans('all');
     }
     
-    if (type === 'fund') {
-        const accountDisplay = document.getElementById('fundAccountDisplay');
-        if (accountDisplay) {
-            accountDisplay.textContent = document.getElementById('virtualAccountDisplay').textContent || 'Loading...';
-        }
-    }
-    
     if (type === 'kyc') {
         loadKYCStatusForModal();
     }
@@ -1604,7 +1596,6 @@ async function loadBalance() {
             if (user.virtualAccount) {
                 document.getElementById('virtualAccountDisplay').textContent = user.virtualAccount;
             }
-            // Set bank name to Paystack MFB
             document.getElementById('bankNameDisplay').textContent = 'Paystack MFB';
             if (user.name) {
                 localStorage.setItem('userName', user.name);
@@ -1660,6 +1651,21 @@ function logout() {
 }
 
 // ============================================================
+// CHECK PAYMENT STATUS ON LOAD
+// ============================================================
+function checkPaymentStatus() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentSuccess = urlParams.get('payment');
+    const reference = urlParams.get('reference');
+    
+    if (paymentSuccess === 'success' && reference) {
+        showToast(`✅ Payment successful! Reference: ${reference}`, 'success');
+        window.history.replaceState({}, document.title, window.location.pathname);
+        setTimeout(() => loadBalance(), 2000);
+    }
+}
+
+// ============================================================
 // INIT
 // ============================================================
 if (!localStorage.getItem('userPhone')) {
@@ -1672,13 +1678,12 @@ loadKYCStatus();
 renderPlans('all');
 renderTransactions();
 updateTxCount();
+checkPaymentStatus();
 
-// Check if fingerprint was previously registered
 if (localStorage.getItem('fingerprintRegistered')) {
     fingerprintRegistered = true;
 }
 
-// Filter tabs
 document.querySelectorAll('.filter-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
         document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
