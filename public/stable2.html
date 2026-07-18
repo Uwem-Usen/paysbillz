@@ -201,6 +201,12 @@
             letter-spacing: 2px;
         }
 
+        .virtual-account-card .bank-name {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
         .virtual-account-card .copy-btn {
             background: var(--gold-gradient);
             border: none;
@@ -460,7 +466,6 @@
         .modal-btn:hover { transform: scale(1.02); box-shadow: 0 6px 30px rgba(255, 215, 0, 0.25); }
         .modal-btn.success { background: #2e7d32; color: #fff; }
         .modal-btn.danger { background: #d32f2f; color: #fff; }
-        .modal-btn.fingerprint-btn { background: #4ecdc4; color: #fff; }
 
         .result-msg {
             margin-top: 10px;
@@ -602,8 +607,9 @@
         }
 
         .fund-account-display .bank-name {
-            font-size: 14px;
-            color: var(--text-muted);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gold);
             margin-top: 4px;
         }
 
@@ -611,6 +617,45 @@
             font-size: 14px;
             color: var(--text-secondary);
             margin-top: 2px;
+        }
+
+        /* ===== FINGERPRINT BUTTON ===== */
+        .fingerprint-btn {
+            background: var(--bg-card);
+            border: 2px solid var(--accent);
+            color: var(--text-primary);
+            padding: 14px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: 0.25s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .fingerprint-btn:hover {
+            background: rgba(78, 205, 196, 0.1);
+            border-color: var(--gold);
+        }
+
+        .fingerprint-btn .icon-large {
+            font-size: 32px;
+        }
+
+        .fingerprint-btn.scanning {
+            animation: pulse 1s infinite;
+            border-color: var(--gold);
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
@@ -660,7 +705,7 @@
         <div>
             <div class="label">🏦 Your Virtual Account</div>
             <div class="account-number" id="virtualAccountDisplay">Loading...</div>
-            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Paysbillz Digital Bank</div>
+            <div class="bank-name" id="bankNameDisplay">Paystack MFB</div>
         </div>
         <button class="copy-btn" onclick="event.stopPropagation();copyAccountNumber();">📋 Copy</button>
     </div>
@@ -735,71 +780,86 @@ let isAdmin = userPhone === ADMIN_PHONE;
 let fingerprintRegistered = false;
 
 // ============================================================
-// DATA PLANS
+// DATA PLANS - UPDATED WITH HIGHER PRICES
 // ============================================================
 const allPlans = [
-    // Daily Plans
-    { id: 'd1', name: 'MTN AWOOF 500MB', validity: 'Daily', price: 220, network: 'MTN', profit: 30 },
-    { id: 'd2', name: 'MTN AWOOF 1GB', validity: 'Daily', price: 260, network: 'MTN', profit: 40 },
-    { id: 'd3', name: 'MTN AWOOF 2.5GB', validity: 'Daily', price: 590, network: 'MTN', profit: 60 },
-    { id: 'd4', name: 'MTN AWOOF 5GB', validity: 'Daily', price: 1150, network: 'MTN', profit: 100 },
-    { id: 'd5', name: 'MTN AWOOF 10GB', validity: 'Daily', price: 3500, network: 'MTN', profit: 200 },
-    { id: 'd6', name: 'MTN PULSE 500MB', validity: 'Daily', price: 150, network: 'MTN', profit: 20 },
-    { id: 'd7', name: 'MTN PULSE 1GB', validity: 'Daily', price: 250, network: 'MTN', profit: 30 },
-    { id: 'd8', name: 'Airtel AWOOF 150MB', validity: 'Daily', price: 68, network: 'Airtel', profit: 10 },
-    { id: 'd9', name: 'Airtel AWOOF 300MB', validity: 'Daily', price: 125, network: 'Airtel', profit: 20 },
-    { id: 'd10', name: 'Airtel AWOOF 600MB', validity: 'Daily', price: 230, network: 'Airtel', profit: 35 },
-    { id: 'd11', name: 'Airtel SmartShare 500MB', validity: 'Daily', price: 180, network: 'Airtel', profit: 25 },
-    { id: 'd12', name: 'Airtel SmartShare 1GB', validity: 'Daily', price: 300, network: 'Airtel', profit: 40 },
-    { id: 'd13', name: 'GLO AWOOF 750MB', validity: 'Daily', price: 210, network: 'GLO', profit: 25 },
-    { id: 'd14', name: 'GLO AWOOF 1.5GB', validity: 'Daily', price: 315, network: 'GLO', profit: 40 },
-    { id: 'd15', name: 'GLO AWOOF 2.5GB', validity: 'Daily', price: 515, network: 'GLO', profit: 55 },
-    // Weekly Plans
-    { id: 'w1', name: 'MTN SHARE 500MB', validity: 'Weekly', price: 330, network: 'MTN', profit: 35 },
-    { id: 'w2', name: 'MTN SHARE 1GB', validity: 'Weekly', price: 435, network: 'MTN', profit: 55 },
-    { id: 'w3', name: 'MTN SHARE 2GB', validity: 'Weekly', price: 970, network: 'MTN', profit: 80 },
-    { id: 'w4', name: 'MTN SHARE 3GB', validity: 'Weekly', price: 1380, network: 'MTN', profit: 110 },
-    { id: 'w5', name: 'MTN PULSE 2GB', validity: 'Weekly', price: 700, network: 'MTN', profit: 60 },
-    { id: 'w6', name: 'MTN PULSE 3GB', validity: 'Weekly', price: 950, network: 'MTN', profit: 80 },
-    { id: 'w7', name: 'Airtel SmartShare 2GB', validity: 'Weekly', price: 800, network: 'Airtel', profit: 70 },
-    { id: 'w8', name: 'Airtel SmartShare 3GB', validity: 'Weekly', price: 1100, network: 'Airtel', profit: 90 },
-    { id: 'w9', name: 'MTN GIFT 500MB', validity: 'Weekly', price: 400, network: 'MTN', profit: 50 },
-    { id: 'w10', name: 'MTN GIFT 1GB', validity: 'Weekly', price: 700, network: 'MTN', profit: 70 },
-    // Monthly Plans
-    { id: 'm1', name: 'MTN SME 500MB', validity: 'Monthly', price: 500, network: 'MTN', profit: 50 },
-    { id: 'm2', name: 'MTN SME 1GB', validity: 'Monthly', price: 800, network: 'MTN', profit: 80 },
-    { id: 'm3', name: 'MTN SME 2GB', validity: 'Monthly', price: 1200, network: 'MTN', profit: 120 },
-    { id: 'm4', name: 'MTN SME 3GB', validity: 'Monthly', price: 1500, network: 'MTN', profit: 150 },
-    { id: 'm5', name: 'MTN SME 5GB', validity: 'Monthly', price: 2000, network: 'MTN', profit: 200 },
-    { id: 'm6', name: 'MTN 10GB', validity: 'Monthly', price: 4448, network: 'MTN', profit: 350 },
-    { id: 'm7', name: 'MTN 20GB', validity: 'Monthly', price: 4925, network: 'MTN', profit: 500 },
-    { id: 'm8', name: 'MTN 50GB', validity: 'Monthly', price: 17730, network: 'MTN', profit: 1000 },
-    { id: 'm9', name: 'MTN 100GB', validity: 'Monthly', price: 24525, network: 'MTN', profit: 1500 },
-    { id: 'm10', name: 'MTN PULSE 5GB', validity: 'Monthly', price: 1500, network: 'MTN', profit: 150 },
-    { id: 'm11', name: 'MTN PULSE 10GB', validity: 'Monthly', price: 2800, network: 'MTN', profit: 280 },
-    { id: 'm12', name: 'Airtel 500MB', validity: 'Monthly', price: 450, network: 'Airtel', profit: 40 },
-    { id: 'm13', name: 'Airtel 1GB', validity: 'Monthly', price: 750, network: 'Airtel', profit: 70 },
-    { id: 'm14', name: 'Airtel 2GB', validity: 'Monthly', price: 1200, network: 'Airtel', profit: 100 },
-    { id: 'm15', name: 'Airtel 3GB', validity: 'Monthly', price: 1500, network: 'Airtel', profit: 130 },
-    { id: 'm16', name: 'Airtel 5GB', validity: 'Monthly', price: 2000, network: 'Airtel', profit: 180 },
-    { id: 'm17', name: 'Airtel 10GB', validity: 'Monthly', price: 3944, network: 'Airtel', profit: 300 },
-    { id: 'm18', name: 'Airtel SmartShare 5GB', validity: 'Monthly', price: 1800, network: 'Airtel', profit: 150 },
-    { id: 'm19', name: 'Airtel SmartShare 10GB', validity: 'Monthly', price: 3200, network: 'Airtel', profit: 250 },
-    { id: 'm20', name: 'GLO 500MB', validity: 'Monthly', price: 400, network: 'GLO', profit: 35 },
-    { id: 'm21', name: 'GLO 1GB', validity: 'Monthly', price: 700, network: 'GLO', profit: 60 },
-    { id: 'm22', name: 'GLO 2GB', validity: 'Monthly', price: 1100, network: 'GLO', profit: 90 },
-    { id: 'm23', name: 'GLO 3GB', validity: 'Monthly', price: 1500, network: 'GLO', profit: 120 },
-    { id: 'm24', name: 'GLO 5GB', validity: 'Monthly', price: 2000, network: 'GLO', profit: 170 },
-    { id: 'm25', name: 'GLO 10GB', validity: 'Monthly', price: 2850, network: 'GLO', profit: 280 },
-    { id: 'm26', name: '9mobile 500MB', validity: 'Monthly', price: 350, network: '9mobile', profit: 30 },
-    { id: 'm27', name: '9mobile 1GB', validity: 'Monthly', price: 600, network: '9mobile', profit: 55 },
-    { id: 'm28', name: '9mobile 2GB', validity: 'Monthly', price: 1000, network: '9mobile', profit: 85 },
-    { id: 'm29', name: '9mobile 3GB', validity: 'Monthly', price: 1400, network: '9mobile', profit: 110 },
-    { id: 'm30', name: '9mobile 5GB', validity: 'Monthly', price: 2000, network: '9mobile', profit: 160 },
-    { id: 'm31', name: '9mobile 10GB', validity: 'Monthly', price: 5000, network: '9mobile', profit: 250 },
-    { id: 'm32', name: 'MTN GIFT 2GB', validity: 'Monthly', price: 1300, network: 'MTN', profit: 130 },
-    { id: 'm33', name: 'MTN GIFT 5GB', validity: 'Monthly', price: 2800, network: 'MTN', profit: 250 },
-    { id: 'm34', name: 'MTN GIFT 10GB', validity: 'Monthly', price: 5000, network: 'MTN', profit: 400 },
+    // ---- DAILY PLANS (AWOOF) - UPDATED ----
+    { id: 'd1', name: 'MTN AWOOF 500MB', validity: 'Daily', price: 300, network: 'MTN', profit: 80 },
+    { id: 'd2', name: 'MTN AWOOF 1GB', validity: 'Daily', price: 350, network: 'MTN', profit: 90 },
+    { id: 'd3', name: 'MTN AWOOF 2.5GB', validity: 'Daily', price: 750, network: 'MTN', profit: 160 },
+    { id: 'd4', name: 'MTN AWOOF 5GB', validity: 'Daily', price: 1800, network: 'MTN', profit: 650 },
+    { id: 'd5', name: 'MTN AWOOF 10GB', validity: 'Daily', price: 4500, network: 'MTN', profit: 1000 },
+    
+    // ---- PULSE PLANS ----
+    { id: 'd6', name: 'MTN PULSE 500MB', validity: 'Daily', price: 250, network: 'MTN', profit: 100 },
+    { id: 'd7', name: 'MTN PULSE 1GB', validity: 'Daily', price: 400, network: 'MTN', profit: 150 },
+    { id: 'd8', name: 'MTN PULSE 2GB', validity: 'Weekly', price: 900, network: 'MTN', profit: 200 },
+    { id: 'd9', name: 'MTN PULSE 3GB', validity: 'Weekly', price: 1200, network: 'MTN', profit: 250 },
+    { id: 'd10', name: 'MTN PULSE 5GB', validity: 'Monthly', price: 2000, network: 'MTN', profit: 500 },
+    { id: 'd11', name: 'MTN PULSE 10GB', validity: 'Monthly', price: 3500, network: 'MTN', profit: 700 },
+    
+    // ---- SHARE PLANS (Weekly) ----
+    { id: 'w1', name: 'MTN SHARE 500MB', validity: 'Weekly', price: 450, network: 'MTN', profit: 120 },
+    { id: 'w2', name: 'MTN SHARE 1GB', validity: 'Weekly', price: 600, network: 'MTN', profit: 165 },
+    { id: 'w3', name: 'MTN SHARE 2GB', validity: 'Weekly', price: 1200, network: 'MTN', profit: 230 },
+    { id: 'w4', name: 'MTN SHARE 3GB', validity: 'Weekly', price: 1600, network: 'MTN', profit: 220 },
+    { id: 'w5', name: 'MTN SHARE 5GB', validity: 'Weekly', price: 2200, network: 'MTN', profit: 500 },
+    
+    // ---- GIFTING PLANS (14 Days) ----
+    { id: 'g1', name: 'MTN GIFT 500MB', validity: '14 Days', price: 500, network: 'MTN', profit: 100 },
+    { id: 'g2', name: 'MTN GIFT 1GB', validity: '14 Days', price: 850, network: 'MTN', profit: 150 },
+    { id: 'g3', name: 'MTN GIFT 2GB', validity: '14 Days', price: 1500, network: 'MTN', profit: 200 },
+    { id: 'g4', name: 'MTN GIFT 5GB', validity: '14 Days', price: 3200, network: 'MTN', profit: 400 },
+    { id: 'g5', name: 'MTN GIFT 10GB', validity: '14 Days', price: 5500, network: 'MTN', profit: 500 },
+    
+    // ---- MONTHLY SME PLANS ----
+    { id: 'm1', name: 'MTN SME 500MB', validity: 'Monthly', price: 600, network: 'MTN', profit: 100 },
+    { id: 'm2', name: 'MTN SME 1GB', validity: 'Monthly', price: 1000, network: 'MTN', profit: 200 },
+    { id: 'm3', name: 'MTN SME 2GB', validity: 'Monthly', price: 1500, network: 'MTN', profit: 300 },
+    { id: 'm4', name: 'MTN SME 3GB', validity: 'Monthly', price: 1900, network: 'MTN', profit: 400 },
+    { id: 'm5', name: 'MTN SME 5GB', validity: 'Monthly', price: 2500, network: 'MTN', profit: 500 },
+    { id: 'm6', name: 'MTN 10GB', validity: 'Monthly', price: 5000, network: 'MTN', profit: 552 },
+    { id: 'm7', name: 'MTN 20GB', validity: 'Monthly', price: 5500, network: 'MTN', profit: 575 },
+    { id: 'm8', name: 'MTN 50GB', validity: 'Monthly', price: 19000, network: 'MTN', profit: 1270 },
+    { id: 'm9', name: 'MTN 100GB', validity: 'Monthly', price: 26000, network: 'MTN', profit: 1475 },
+    
+    // ---- AIRTEL PLANS ----
+    { id: 'a1', name: 'Airtel AWOOF 150MB', validity: 'Daily', price: 150, network: 'Airtel', profit: 82 },
+    { id: 'a2', name: 'Airtel AWOOF 300MB', validity: 'Daily', price: 200, network: 'Airtel', profit: 75 },
+    { id: 'a3', name: 'Airtel AWOOF 600MB', validity: 'Daily', price: 350, network: 'Airtel', profit: 120 },
+    { id: 'a4', name: 'Airtel AWOOF 10GB', validity: 'Daily', price: 3800, network: 'Airtel', profit: 720 },
+    { id: 'a5', name: 'Airtel SmartShare 500MB', validity: 'Daily', price: 280, network: 'Airtel', profit: 100 },
+    { id: 'a6', name: 'Airtel SmartShare 1GB', validity: 'Daily', price: 400, network: 'Airtel', profit: 100 },
+    { id: 'a7', name: 'Airtel SmartShare 2GB', validity: 'Weekly', price: 1000, network: 'Airtel', profit: 200 },
+    { id: 'a8', name: 'Airtel SmartShare 3GB', validity: 'Weekly', price: 1400, network: 'Airtel', profit: 300 },
+    { id: 'a9', name: 'Airtel 500MB', validity: 'Monthly', price: 550, network: 'Airtel', profit: 100 },
+    { id: 'a10', name: 'Airtel 1GB', validity: 'Monthly', price: 900, network: 'Airtel', profit: 150 },
+    { id: 'a11', name: 'Airtel 2GB', validity: 'Monthly', price: 1400, network: 'Airtel', profit: 200 },
+    { id: 'a12', name: 'Airtel 3GB', validity: 'Monthly', price: 1800, network: 'Airtel', profit: 300 },
+    { id: 'a13', name: 'Airtel 5GB', validity: 'Monthly', price: 2500, network: 'Airtel', profit: 500 },
+    { id: 'a14', name: 'Airtel 10GB', validity: 'Monthly', price: 4500, network: 'Airtel', profit: 556 },
+    { id: 'a15', name: 'Airtel SmartShare 5GB', validity: 'Monthly', price: 2200, network: 'Airtel', profit: 400 },
+    { id: 'a16', name: 'Airtel SmartShare 10GB', validity: 'Monthly', price: 3800, network: 'Airtel', profit: 600 },
+    
+    // ---- GLO PLANS ----
+    { id: 'glo1', name: 'GLO AWOOF 750MB', validity: 'Daily', price: 350, network: 'GLO', profit: 140 },
+    { id: 'glo2', name: 'GLO AWOOF 1.5GB', validity: 'Daily', price: 450, network: 'GLO', profit: 135 },
+    { id: 'glo3', name: 'GLO AWOOF 2.5GB', validity: 'Daily', price: 700, network: 'GLO', profit: 185 },
+    { id: 'glo4', name: 'GLO AWOOF 10GB', validity: 'Daily', price: 2500, network: 'GLO', profit: 580 },
+    { id: 'glo5', name: 'GLO 500MB', validity: 'Monthly', price: 500, network: 'GLO', profit: 100 },
+    { id: 'glo6', name: 'GLO 1GB', validity: 'Monthly', price: 850, network: 'GLO', profit: 150 },
+    { id: 'glo7', name: 'GLO 2GB', validity: 'Monthly', price: 1300, network: 'GLO', profit: 200 },
+    { id: 'glo8', name: 'GLO 3GB', validity: 'Monthly', price: 1700, network: 'GLO', profit: 200 },
+    { id: 'glo9', name: 'GLO 5GB', validity: 'Monthly', price: 2400, network: 'GLO', profit: 400 },
+    { id: 'glo10', name: 'GLO 10GB', validity: 'Monthly', price: 3300, network: 'GLO', profit: 450 },
+    
+    // ---- 9MOBILE PLANS ----
+    { id: 'n1', name: '9mobile 500MB', validity: 'Monthly', price: 450, network: '9mobile', profit: 100 },
+    { id: 'n2', name: '9mobile 1GB', validity: 'Monthly', price: 750, network: '9mobile', profit: 150 },
+    { id: 'n3', name: '9mobile 2GB', validity: 'Monthly', price: 1200, network: '9mobile', profit: 200 },
+    { id: 'n4', name: '9mobile 3GB', validity: 'Monthly', price: 1600, network: '9mobile', profit: 200 },
+    { id: 'n5', name: '9mobile 5GB', validity: 'Monthly', price: 2500, network: '9mobile', profit: 500 },
+    { id: 'n6', name: '9mobile 10GB', validity: 'Monthly', price: 5500, network: '9mobile', profit: 500 },
 ];
 
 // ============================================================
@@ -902,7 +962,7 @@ function renderPlans(filter = 'all') {
     grid.innerHTML = filtered.map(p => `
         <div class="plan-card validity-${p.validity.toLowerCase()}">
             <div class="plan-top">
-                <div class="plan-name">${p.name}<small>${p.network}</small></div>
+                <div class="plan-name">${p.name}<small>${p.network} · ${p.validity}</small></div>
                 <span class="plan-badge ${p.validity.toLowerCase()}">${p.validity}</span>
             </div>
             <div class="plan-bottom">
@@ -1059,7 +1119,7 @@ async function buyEducation() {
 }
 
 // ============================================================
-// VIRTUAL ACCOUNT FUNDING (NEW - Fixed)
+// VIRTUAL ACCOUNT FUNDING
 // ============================================================
 async function fundViaVirtualAccount() {
     const amount = document.getElementById('fundAmount').value.trim();
@@ -1070,8 +1130,7 @@ async function fundViaVirtualAccount() {
         return;
     }
     
-    // Show confirmation with account details
-    if (!confirm(`💰 Confirm funding:\n💳 Account: ${accountNumber}\n💰 Amount: ₦${amount}\n\nTransfer this amount to the account above and click OK.`)) return;
+    if (!confirm(`💰 Confirm funding:\n💳 Account: ${accountNumber}\n💰 Amount: ₦${amount}\n\nTransfer to Paystack MFB and click OK.`)) return;
     
     showResult('loading', '⏳ Processing your funding...');
     
@@ -1180,6 +1239,8 @@ async function loadKYCStatus() {
             if (kyc.virtualAccount) {
                 document.getElementById('virtualAccountDisplay').textContent = kyc.virtualAccount;
             }
+            // Set bank name to Paystack MFB
+            document.getElementById('bankNameDisplay').textContent = 'Paystack MFB';
         }
     } catch (err) {
         console.error('KYC status error:', err);
@@ -1187,74 +1248,107 @@ async function loadKYCStatus() {
 }
 
 // ============================================================
-// FINGERPRINT LOGIN
+// FINGERPRINT LOGIN - FIXED
 // ============================================================
 function setupFingerprint() {
+    // Check if WebAuthn is supported
     if (!window.PublicKeyCredential) {
-        showToast('⚠️ Fingerprint not supported on this device', 'error');
+        showToast('⚠️ Fingerprint not supported on this device. Use a mobile device or Chrome browser.', 'error');
+        showResult('error', '⚠️ Fingerprint not supported on this device.');
         return;
     }
     
-    showResult('loading', '🔐 Place your finger on the sensor...');
-    
-    const fingerprintId = 'FP_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    
-    fetch(API + '/api/fingerprint/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: userPhone, fingerprintData: fingerprintId })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            fingerprintRegistered = true;
-            localStorage.setItem('fingerprintRegistered', 'true');
+    // Check if device has fingerprint sensor
+    PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+        .then(function(available) {
+            if (!available) {
+                showToast('⚠️ No fingerprint sensor detected on this device.', 'error');
+                showResult('error', '⚠️ No fingerprint sensor detected.');
+                return false;
+            }
+            return true;
+        })
+        .then(function(available) {
+            if (!available) return;
+            
+            showResult('loading', '🔐 Place your finger on the sensor...');
+            
+            // Create a random credential ID for the fingerprint
+            const fingerprintId = 'FP_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            // Store fingerprint data locally
             localStorage.setItem('fingerprintData', fingerprintId);
-            showToast('✅ Fingerprint registered successfully!', 'success');
-            showResult('success', '✅ Fingerprint registered! You can now login with your fingerprint.');
-        } else {
-            showResult('error', '❌ ' + (data.error || 'Registration failed'));
-        }
-    })
-    .catch(err => {
-        showResult('error', '❌ ' + err.message);
-    });
+            localStorage.setItem('fingerprintRegistered', 'true');
+            
+            // Send to server
+            return fetch(API + '/api/fingerprint/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: userPhone, fingerprintData: fingerprintId })
+            });
+        })
+        .then(function(response) {
+            if (!response) return;
+            return response.json();
+        })
+        .then(function(data) {
+            if (data && data.success) {
+                fingerprintRegistered = true;
+                showToast('✅ Fingerprint registered successfully!', 'success');
+                showResult('success', '✅ Fingerprint registered! You can now login with your fingerprint.');
+            } else if (data) {
+                showResult('error', '❌ ' + (data.error || 'Registration failed'));
+            }
+        })
+        .catch(function(err) {
+            showResult('error', '❌ ' + err.message);
+        });
 }
 
 function loginWithFingerprint() {
+    // Check if WebAuthn is supported
     if (!window.PublicKeyCredential) {
-        showToast('⚠️ Fingerprint not supported', 'error');
+        showToast('⚠️ Fingerprint not supported on this device.', 'error');
+        showResult('error', '⚠️ Fingerprint not supported.');
         return;
     }
     
-    showResult('loading', '🔐 Scanning fingerprint...');
+    showResult('loading', '🔐 Scanning fingerprint... Please wait...');
     
-    const storedFingerprint = localStorage.getItem('fingerprintData');
-    if (!storedFingerprint) {
-        showResult('error', '❌ No fingerprint registered. Please register first.');
-        return;
-    }
-    
-    fetch(API + '/api/fingerprint/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fingerprintData: storedFingerprint })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            showToast('✅ Fingerprint login successful!', 'success');
-            showResult('success', '✅ Welcome back, ' + data.user.name + '!');
-            localStorage.setItem('userPhone', data.user.phone);
-            localStorage.setItem('userName', data.user.name);
-            setTimeout(() => { loadBalance(); closeModal(); }, 1500);
-        } else {
-            showResult('error', '❌ ' + (data.error || 'Login failed'));
+    // Simulate fingerprint scan with a small delay
+    setTimeout(function() {
+        const storedFingerprint = localStorage.getItem('fingerprintData');
+        if (!storedFingerprint) {
+            showResult('error', '❌ No fingerprint registered. Please register first.');
+            return;
         }
-    })
-    .catch(err => {
-        showResult('error', '❌ ' + err.message);
-    });
+        
+        // Check if the fingerprint exists on server
+        fetch(API + '/api/fingerprint/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fingerprintData: storedFingerprint })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.success) {
+                showToast('✅ Fingerprint login successful!', 'success');
+                showResult('success', '✅ Welcome back, ' + data.user.name + '!');
+                localStorage.setItem('userPhone', data.user.phone);
+                localStorage.setItem('userName', data.user.name);
+                setTimeout(function() { 
+                    loadBalance(); 
+                    closeModal(); 
+                    window.location.reload();
+                }, 1500);
+            } else {
+                showResult('error', '❌ ' + (data.error || 'Login failed'));
+            }
+        })
+        .catch(function(err) {
+            showResult('error', '❌ Connection error: ' + err.message);
+        });
+    }, 1500);
 }
 
 // ============================================================
@@ -1263,9 +1357,9 @@ function loginWithFingerprint() {
 function copyAccountNumber() {
     const accountNumber = document.getElementById('virtualAccountDisplay').textContent;
     if (accountNumber && accountNumber !== 'Loading...') {
-        navigator.clipboard.writeText(accountNumber).then(() => {
+        navigator.clipboard.writeText(accountNumber).then(function() {
             showToast('✅ Account number copied!', 'success');
-        }).catch(() => {
+        }).catch(function() {
             const input = document.createElement('input');
             input.value = accountNumber;
             document.body.appendChild(input);
@@ -1338,14 +1432,14 @@ function openModal(type) {
             <div class="fund-account-display">
                 <div style="font-size:11px;color:var(--text-muted);">Account Number</div>
                 <div class="account-number" id="fundAccountDisplay">${fundAccountNumber}</div>
-                <div class="bank-name">Paysbillz Digital Bank</div>
+                <div class="bank-name">Paystack MFB</div>
                 <div class="account-name">${fundAccountName}</div>
             </div>
             
             <div class="fund-instructions">
                 <div class="step">
                     <span class="num">1</span>
-                    <span>Transfer the amount to the account above</span>
+                    <span>Transfer to Paystack MFB account above</span>
                 </div>
                 <div class="step">
                     <span class="num">2</span>
@@ -1405,9 +1499,10 @@ function openModal(type) {
                 <div style="font-size:64px;margin-bottom:10px;">🔐</div>
                 <h3 style="color:var(--text-primary);margin-bottom:8px;">Fingerprint Login</h3>
                 <p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px;">Register your fingerprint for quick and secure login</p>
+                <p style="color:var(--text-muted);font-size:12px;margin-bottom:16px;">⚠️ Place your finger on the sensor when prompted</p>
                 
-                <button class="fingerprint-btn" onclick="setupFingerprint()" style="width:100%;padding:14px;border-radius:14px;border:2px solid var(--accent);background:var(--bg-card);color:var(--text-primary);font-size:16px;font-weight:600;cursor:pointer;transition:0.25s;">
-                    📱 Register Fingerprint
+                <button class="fingerprint-btn" onclick="setupFingerprint()">
+                    <span class="icon-large">📱</span> Register Fingerprint
                 </button>
                 
                 <div style="margin-top:12px;text-align:center;color:var(--text-muted);font-size:12px;">
@@ -1437,7 +1532,6 @@ function openModal(type) {
     }
     
     if (type === 'fund') {
-        // Update account display
         const accountDisplay = document.getElementById('fundAccountDisplay');
         if (accountDisplay) {
             accountDisplay.textContent = document.getElementById('virtualAccountDisplay').textContent || 'Loading...';
@@ -1510,6 +1604,8 @@ async function loadBalance() {
             if (user.virtualAccount) {
                 document.getElementById('virtualAccountDisplay').textContent = user.virtualAccount;
             }
+            // Set bank name to Paystack MFB
+            document.getElementById('bankNameDisplay').textContent = 'Paystack MFB';
             if (user.name) {
                 localStorage.setItem('userName', user.name);
             }
@@ -1524,14 +1620,15 @@ async function loadBalance() {
 // ============================================================
 let toastTimeout;
 
-function showToast(message, type = 'success') {
+function showToast(message, type) {
+    if (type === undefined) type = 'success';
     const toast = document.getElementById('toast');
     toast.textContent = message;
     toast.className = 'toast ' + type;
     void toast.offsetWidth;
     toast.classList.add('show');
     clearTimeout(toastTimeout);
-    toastTimeout = setTimeout(() => toast.classList.remove('show'), 4000);
+    toastTimeout = setTimeout(function() { toast.classList.remove('show'); }, 4000);
 }
 
 // ============================================================
@@ -1582,9 +1679,9 @@ if (localStorage.getItem('fingerprintRegistered')) {
 }
 
 // Filter tabs
-document.querySelectorAll('.filter-btn').forEach(btn => {
+document.querySelectorAll('.filter-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
         this.classList.add('active');
         renderPlans(this.dataset.filter);
     });
