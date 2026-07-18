@@ -289,6 +289,7 @@
         .service-btn.primary:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(255, 215, 0, 0.25); }
         .service-btn.fingerprint { background: rgba(78, 205, 196, 0.15); border-color: rgba(78, 205, 196, 0.2); }
         .service-btn.kyc-btn { background: rgba(255, 215, 0, 0.08); border-color: rgba(255, 215, 0, 0.15); }
+        .service-btn.pin-btn { background: rgba(255, 215, 0, 0.1); border-color: rgba(255, 215, 0, 0.2); }
 
         /* ===== FILTER TABS ===== */
         .filter-tabs {
@@ -707,6 +708,7 @@
         <button class="service-btn primary" onclick="openModal('fund')"><span class="icon">💳</span><span class="name">Fund Wallet</span></button>
         <button class="service-btn" onclick="openModal('withdraw')"><span class="icon">💸</span><span class="name">Withdraw</span></button>
         <button class="service-btn kyc-btn" onclick="openModal('kyc')"><span class="icon">🪪</span><span class="name">KYC</span></button>
+        <button class="service-btn pin-btn" onclick="openModal('pin')"><span class="icon">🔐</span><span class="name">Transaction PIN</span></button>
         <button class="service-btn fingerprint" onclick="openModal('fingerprint')" style="grid-column: span 2;"><span class="icon">🔐</span><span class="name">Fingerprint Login</span></button>
     </div>
 
@@ -716,6 +718,7 @@
         <button class="filter-btn" data-filter="daily">📆 Daily</button>
         <button class="filter-btn" data-filter="weekly">📅 Weekly</button>
         <button class="filter-btn" data-filter="monthly">📊 Monthly</button>
+        <button class="filter-btn" data-filter="small">🪙 Small</button>
     </div>
 
     <div class="plans-grid" id="plansGrid"></div>
@@ -760,10 +763,21 @@ let isAdmin = userPhone === ADMIN_PHONE;
 let fingerprintRegistered = false;
 
 // ============================================================
-// DATA PLANS
+// DATA PLANS - WITH SMALL PLANS ADDED
 // ============================================================
 const allPlans = [
-    // ---- DAILY PLANS (AWOOF) - UPDATED ----
+    // ---- SMALL PLANS (Under ₦100) - NEW ----
+    { id: 's1', name: 'MTN 50MB (1 Day)', validity: 'Daily', price: 50, network: 'MTN', profit: 15 },
+    { id: 's2', name: 'MTN 100MB (1 Day)', validity: 'Daily', price: 80, network: 'MTN', profit: 20 },
+    { id: 's3', name: 'MTN 150MB (2 Days)', validity: 'Daily', price: 100, network: 'MTN', profit: 25 },
+    { id: 's4', name: 'MTN 200MB (3 Days)', validity: 'Daily', price: 150, network: 'MTN', profit: 30 },
+    { id: 's5', name: 'Airtel 50MB (1 Day)', validity: 'Daily', price: 50, network: 'Airtel', profit: 15 },
+    { id: 's6', name: 'Airtel 100MB (1 Day)', validity: 'Daily', price: 80, network: 'Airtel', profit: 20 },
+    { id: 's7', name: 'GLO 50MB (1 Day)', validity: 'Daily', price: 50, network: 'GLO', profit: 15 },
+    { id: 's8', name: 'GLO 100MB (1 Day)', validity: 'Daily', price: 80, network: 'GLO', profit: 20 },
+    { id: 's9', name: '9mobile 50MB (1 Day)', validity: 'Daily', price: 55, network: '9mobile', profit: 15 },
+    
+    // ---- DAILY PLANS (AWOOF) ----
     { id: 'd1', name: 'MTN AWOOF 500MB', validity: 'Daily', price: 300, network: 'MTN', profit: 80 },
     { id: 'd2', name: 'MTN AWOOF 1GB', validity: 'Daily', price: 350, network: 'MTN', profit: 90 },
     { id: 'd3', name: 'MTN AWOOF 2.5GB', validity: 'Daily', price: 750, network: 'MTN', profit: 160 },
@@ -878,6 +892,66 @@ const ELECTRICITY_PROVIDERS = {
 };
 
 // ============================================================
+// TRANSACTION PIN FUNCTIONS
+// ============================================================
+function setTransactionPin() {
+    const pin1 = document.getElementById('transactionPin1').value.trim();
+    const pin2 = document.getElementById('transactionPin2').value.trim();
+    
+    if (!pin1 || pin1.length !== 4 || !/^\d{4}$/.test(pin1)) {
+        showResult('error', '⚠️ Please enter a valid 4-digit PIN (numbers only)');
+        return;
+    }
+    
+    if (pin1 !== pin2) {
+        showResult('error', '⚠️ PINs do not match');
+        return;
+    }
+    
+    // Save PIN to localStorage (in production, this would be on the server)
+    localStorage.setItem('transactionPin', pin1);
+    showResult('success', '✅ Transaction PIN set successfully!');
+    showToast('✅ Transaction PIN set!', 'success');
+    setTimeout(() => closeModal(), 1500);
+}
+
+function verifyTransactionPin() {
+    const storedPin = localStorage.getItem('transactionPin');
+    if (!storedPin) {
+        showResult('error', '⚠️ No PIN set. Please set a transaction PIN first.');
+        return;
+    }
+    
+    const enteredPin = prompt('🔐 Enter your 4-digit transaction PIN:');
+    if (!enteredPin) return;
+    
+    if (enteredPin === storedPin) {
+        showResult('success', '✅ PIN verified!');
+        showToast('✅ PIN verified!', 'success');
+    } else {
+        showResult('error', '❌ Incorrect PIN. Please try again.');
+    }
+}
+
+function requireTransactionPin() {
+    const storedPin = localStorage.getItem('transactionPin');
+    if (!storedPin) {
+        // No PIN set, allow transaction
+        return true;
+    }
+    
+    const enteredPin = prompt('🔐 Enter your transaction PIN:');
+    if (!enteredPin) return false;
+    
+    if (enteredPin === storedPin) {
+        return true;
+    } else {
+        showToast('❌ Incorrect PIN. Transaction cancelled.', 'error');
+        return false;
+    }
+}
+
+// ============================================================
 // TRANSACTIONS
 // ============================================================
 function getTransactions() {
@@ -934,11 +1008,21 @@ function updateTxCount() {
 // ============================================================
 function renderPlans(filter = 'all') {
     const grid = document.getElementById('plansGrid');
-    let filtered = filter === 'all' ? allPlans : allPlans.filter(p => p.validity.toLowerCase() === filter);
+    let filtered;
+    
+    if (filter === 'small') {
+        filtered = allPlans.filter(p => p.price <= 100);
+    } else if (filter === 'all') {
+        filtered = allPlans;
+    } else {
+        filtered = allPlans.filter(p => p.validity.toLowerCase() === filter);
+    }
+    
     if (filtered.length === 0) {
         grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;">No ${filter} plans available.</div>`;
         return;
     }
+    
     grid.innerHTML = filtered.map(p => `
         <div class="plan-card validity-${p.validity.toLowerCase()}">
             <div class="plan-top">
@@ -954,11 +1038,15 @@ function renderPlans(filter = 'all') {
 }
 
 // ============================================================
-// BUY FUNCTIONS
+// BUY FUNCTIONS - WITH PIN VERIFICATION
 // ============================================================
 async function buyDataPlan(planId) {
     const plan = allPlans.find(p => p.id === planId);
     if (!plan) return;
+    
+    // Check PIN if set
+    if (!requireTransactionPin()) return;
+    
     if (!confirm(`Confirm purchase: ${plan.name} - ₦${plan.price}?`)) return;
     showResult('loading', '⏳ Processing...');
     try {
@@ -988,6 +1076,10 @@ async function buyAirtime() {
     const phone = document.getElementById('airtimePhone').value.trim();
     if (!amount || amount < 50) { showResult('error', '⚠️ Min ₦50'); return; }
     if (!phone || phone.length < 10) { showResult('error', '⚠️ Valid phone required'); return; }
+    
+    // Check PIN if set
+    if (!requireTransactionPin()) return;
+    
     if (!confirm(`Buy ${network} airtime ₦${amount} for ${phone}?`)) return;
     showResult('loading', '⏳ Processing...');
     try {
@@ -1016,6 +1108,10 @@ async function buyTV() {
     const iucNum = document.getElementById('tvIuc').value.trim();
     const tvInfo = TV_PRICES[serviceID];
     if (!iucNum || iucNum.length < 4) { showResult('error', '⚠️ Valid Smart Card required'); return; }
+    
+    // Check PIN if set
+    if (!requireTransactionPin()) return;
+    
     if (!confirm(`Subscribe to ${tvInfo.name} - ₦${tvInfo.price}?`)) return;
     showResult('loading', '⏳ Processing...');
     try {
@@ -1047,6 +1143,10 @@ async function buyElectricity() {
     const provider = ELECTRICITY_PROVIDERS[serviceID] || 'Unknown';
     if (!meterNum || meterNum.length < 4) { showResult('error', '⚠️ Valid meter required'); return; }
     if (!amount || amount < 100) { showResult('error', '⚠️ Min ₦100'); return; }
+    
+    // Check PIN if set
+    if (!requireTransactionPin()) return;
+    
     if (!confirm(`Pay electricity ₦${amount} for ${provider}?`)) return;
     showResult('loading', '⏳ Processing...');
     try {
@@ -1075,6 +1175,10 @@ async function buyEducation() {
     const quantity = document.getElementById('eduQuantity').value || 1;
     const eduInfo = EDUCATION_PRICES[serviceID];
     const totalPrice = eduInfo.price * quantity;
+    
+    // Check PIN if set
+    if (!requireTransactionPin()) return;
+    
     if (!confirm(`Buy ${quantity}x ${eduInfo.name} pin(s) - ₦${totalPrice}?`)) return;
     showResult('loading', '⏳ Processing...');
     try {
@@ -1133,12 +1237,10 @@ async function fundWithPaystack() {
         
         if (data.success) {
             showResult('success', '✅ Redirecting to Paystack...');
-            // Open Paystack in new window/tab
             window.open(data.authorization_url, '_blank');
             showToast(`✅ Payment initialized! Complete on Paystack.`, 'success');
             setTimeout(() => { 
                 closeModal(); 
-                // Check for payment status after a delay
                 setTimeout(() => loadBalance(), 5000);
             }, 2000);
         } else {
@@ -1160,6 +1262,10 @@ async function withdrawProfit() {
     
     if (!amount || amount < 100) { showResult('error', '⚠️ Min ₦100'); return; }
     if (!bank || !account || !name) { showResult('error', '⚠️ All bank details required'); return; }
+    
+    // Check PIN if set
+    if (!requireTransactionPin()) return;
+    
     if (!confirm(`Withdraw ₦${amount} to ${bank}?`)) return;
     showResult('loading', '⏳ Processing...');
     try {
@@ -1493,6 +1599,26 @@ function openModal(type) {
             <input type="text" id="kycAddress" placeholder="Enter residential address" />
             <button class="modal-btn" onclick="submitKYC()">🪪 Submit KYC</button>
         `,
+        pin: `
+            <h3 style="color:var(--gold);margin-bottom:12px;">🔐 Transaction PIN</h3>
+            
+            <div style="background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-radius:12px;padding:16px;margin-bottom:12px;">
+                <p style="color:var(--text-secondary);font-size:13px;">Secure your transactions with a 4-digit PIN</p>
+                <p style="color:var(--text-muted);font-size:11px;margin-top:4px;">You'll need this PIN to confirm every transaction</p>
+            </div>
+            
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Set 4-Digit PIN *</label>
+            <input type="password" id="transactionPin1" placeholder="Enter 4-digit PIN" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" />
+            
+            <label style="color:var(--text-secondary);font-size:13px;display:block;margin-top:8px;">Confirm PIN *</label>
+            <input type="password" id="transactionPin2" placeholder="Confirm 4-digit PIN" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" />
+            
+            <button class="modal-btn success" onclick="setTransactionPin()">🔐 Set Transaction PIN</button>
+            
+            <div style="margin-top:12px;text-align:center;color:var(--text-muted);font-size:12px;">
+                Already have a PIN? <a style="color:var(--gold);cursor:pointer;" onclick="verifyTransactionPin()">Verify PIN</a>
+            </div>
+        `,
         fingerprint: `
             <div style="text-align:center;padding:10px 0;">
                 <div style="font-size:64px;margin-bottom:10px;">🔐</div>
@@ -1520,6 +1646,7 @@ function openModal(type) {
         fund: '💰 Fund Wallet',
         withdraw: '💸 Withdraw Profit',
         kyc: '🪪 KYC Verification',
+        pin: '🔐 Transaction PIN',
         fingerprint: '🔐 Fingerprint Login'
     };
     
@@ -1538,11 +1665,21 @@ function openModal(type) {
 function renderModalPlans(filter = 'all') {
     const container = document.getElementById('modalPlansGrid');
     if (!container) return;
-    let filtered = filter === 'all' ? allPlans : allPlans.filter(p => p.validity.toLowerCase() === filter);
+    let filtered;
+    
+    if (filter === 'small') {
+        filtered = allPlans.filter(p => p.price <= 100);
+    } else if (filter === 'all') {
+        filtered = allPlans;
+    } else {
+        filtered = allPlans.filter(p => p.validity.toLowerCase() === filter);
+    }
+    
     if (filtered.length === 0) {
         container.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:20px;">No plans found</div>`;
         return;
     }
+    
     container.innerHTML = filtered.map(p => `
         <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg-card);border-radius:12px;margin-bottom:6px;border:1px solid var(--border-color);">
             <div>
@@ -1582,7 +1719,7 @@ function showResult(type, message) {
 }
 
 // ============================================================
-// LOAD BALANCE
+// LOAD BALANCE - FIXED
 // ============================================================
 async function loadBalance() {
     try {
@@ -1600,6 +1737,11 @@ async function loadBalance() {
             if (user.name) {
                 localStorage.setItem('userName', user.name);
             }
+            
+            // Store balance in localStorage for quick access
+            localStorage.setItem('userBalance', user.balance || 0);
+            
+            console.log('💰 Balance loaded:', user.balance);
         }
     } catch (err) {
         console.error('Balance load error:', err);
