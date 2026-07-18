@@ -26,6 +26,7 @@
             --weekly-color: #ffd93d;
             --monthly-color: #6bcb77;
             --accent: #4ecdc4;
+            --support-color: #25D366;
         }
 
         [data-theme="light"] {
@@ -290,6 +291,7 @@
         .service-btn.fingerprint { background: rgba(78, 205, 196, 0.15); border-color: rgba(78, 205, 196, 0.2); }
         .service-btn.kyc-btn { background: rgba(255, 215, 0, 0.08); border-color: rgba(255, 215, 0, 0.15); }
         .service-btn.pin-btn { background: rgba(255, 215, 0, 0.1); border-color: rgba(255, 215, 0, 0.2); }
+        .service-btn.support-btn { background: rgba(78, 205, 196, 0.15); border-color: rgba(78, 205, 196, 0.3); }
 
         /* ===== FILTER TABS ===== */
         .filter-tabs {
@@ -467,6 +469,8 @@
         .modal-btn:hover { transform: scale(1.02); box-shadow: 0 6px 30px rgba(255, 215, 0, 0.25); }
         .modal-btn.success { background: #2e7d32; color: #fff; }
         .modal-btn.danger { background: #d32f2f; color: #fff; }
+        .modal-btn.support { background: #25D366; color: #fff; }
+        .modal-btn.support:hover { background: #1da851; }
 
         .result-msg {
             margin-top: 10px;
@@ -638,6 +642,109 @@
             50% { transform: scale(1.02); }
             100% { transform: scale(1); }
         }
+
+        /* ===== SUPPORT CHAT ===== */
+        .chat-messages {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 12px;
+            height: 160px;
+            overflow-y: auto;
+            margin-bottom: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .chat-message {
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            max-width: 90%;
+        }
+
+        .chat-message.bot {
+            background: rgba(78, 205, 196, 0.1);
+            color: var(--text-primary);
+            border-left: 3px solid var(--accent);
+        }
+
+        .chat-message.user {
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--text-primary);
+            border-left: 3px solid var(--gold);
+            margin-left: auto;
+        }
+
+        .chat-suggestion {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .chat-suggestion:hover {
+            background: rgba(78, 205, 196, 0.1);
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        .support-contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .support-contact-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+            transition: 0.25s;
+        }
+
+        .support-contact-item:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--gold);
+        }
+
+        .support-contact-item .icon-large {
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+
+        .support-contact-item .label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+
+        .support-contact-item .value {
+            color: var(--gold);
+            font-size: 12px;
+            text-decoration: none;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .support-contact-item .value:hover {
+            text-decoration: underline;
+        }
+
+        .support-contact-item .sub {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .support-contact-item.full-width {
+            grid-column: span 2;
+        }
     </style>
 </head>
 <body>
@@ -709,7 +816,8 @@
         <button class="service-btn" onclick="openModal('withdraw')"><span class="icon">💸</span><span class="name">Withdraw</span></button>
         <button class="service-btn kyc-btn" onclick="openModal('kyc')"><span class="icon">🪪</span><span class="name">KYC</span></button>
         <button class="service-btn pin-btn" onclick="openModal('pin')"><span class="icon">🔐</span><span class="name">Transaction PIN</span></button>
-        <button class="service-btn fingerprint" onclick="openModal('fingerprint')" style="grid-column: span 2;"><span class="icon">🔐</span><span class="name">Fingerprint Login</span></button>
+        <button class="service-btn fingerprint" onclick="openModal('fingerprint')"><span class="icon">🔐</span><span class="name">Fingerprint</span></button>
+        <button class="service-btn support-btn" onclick="openModal('support')" style="grid-column: span 2;"><span class="icon">💬</span><span class="name">Support</span></button>
     </div>
 
     <!-- ===== DATA PLANS ===== -->
@@ -761,6 +869,96 @@ const ADMIN_PHONE = '08027449527';
 let userPhone = localStorage.getItem('userPhone') || '08027449527';
 let isAdmin = userPhone === ADMIN_PHONE;
 let fingerprintRegistered = false;
+
+// ============================================================
+// SUPPORT CHATBOT - AI Responses
+// ============================================================
+const botResponses = {
+    'hello': 'Hello! 👋 Welcome to Paysbillz! How can I help you today?',
+    'hi': 'Hi there! 👋 What can I assist you with?',
+    'help': 'I can help you with: 💰 Wallet, 📱 Data, 📞 Airtime, 📺 TV, 💡 Electricity, 📚 Exam Pins, 🪪 KYC, and more!',
+    'data': '📱 To buy data: Click the "Data" button, select your plan, confirm, and you\'re done!',
+    'airtime': '📞 To buy airtime: Click "Airtime", select network, enter amount and phone number, then confirm.',
+    'fund': '💰 To fund your wallet: Click "Fund Wallet", enter your email and amount, then pay with Paystack.',
+    'kyc': '🪪 KYC (Know Your Customer) helps us verify your identity. Complete it to increase your transaction limits!',
+    'withdraw': '💸 To withdraw profits: Click "Withdraw", enter your bank details and amount, then submit.',
+    'tv': '📺 To subscribe to TV: Click "TV", select your package, enter your Smart Card number, and confirm.',
+    'electricity': '💡 To pay electricity: Click "Electricity", select your provider, enter meter number and amount.',
+    'education': '📚 To buy exam pins: Click "Exam Pins", select your exam type, quantity, and confirm.',
+    'pin': '🔐 Set a transaction PIN for extra security. Click "Transaction PIN" to set yours!',
+    'fingerprint': '🔐 Register your fingerprint for quick login. Click "Fingerprint" to set it up.',
+    'support': '📧 For support, email paysbillzapp@gmail.com or WhatsApp 08145542679. We\'re here to help!',
+    'thanks': 'You\'re welcome! 😊 Is there anything else I can help with?',
+    'thank you': 'You\'re welcome! 😊 Happy to help!',
+    'bye': 'Goodbye! 👋 Come back anytime you need help!',
+    'default': 'I\'m not sure I understand that. Try asking about: Data, Airtime, Fund Wallet, KYC, Withdraw, TV, Electricity, or Exam Pins.'
+};
+
+function getBotResponse(message) {
+    const lower = message.toLowerCase().trim();
+    
+    // Check for keywords
+    if (lower.includes('data') && !lower.includes('how')) return botResponses.data;
+    if (lower.includes('airtime') && !lower.includes('how')) return botResponses.airtime;
+    if (lower.includes('fund') || lower.includes('wallet')) return botResponses.fund;
+    if (lower.includes('kyc') || lower.includes('verify')) return botResponses.kyc;
+    if (lower.includes('withdraw') || lower.includes('profit')) return botResponses.withdraw;
+    if (lower.includes('tv') || lower.includes('dstv') || lower.includes('gotv')) return botResponses.tv;
+    if (lower.includes('electricity') || lower.includes('light')) return botResponses.electricity;
+    if (lower.includes('exam') || lower.includes('pin') || lower.includes('waec') || lower.includes('neco')) return botResponses.education;
+    if (lower.includes('transaction pin') || lower.includes('set pin')) return botResponses.pin;
+    if (lower.includes('fingerprint') || lower.includes('finger print')) return botResponses.fingerprint;
+    if (lower.includes('support') || lower.includes('contact') || lower.includes('help')) return botResponses.support;
+    if (lower.includes('hi') || lower.includes('hello') || lower.includes('hey')) return botResponses.hi;
+    if (lower.includes('bye') || lower.includes('goodbye')) return botResponses.bye;
+    if (lower.includes('thank')) return botResponses.thanks;
+    if (lower.includes('help')) return botResponses.help;
+    
+    // Check for specific question patterns
+    if (lower.includes('how do i') || lower.includes('how can i') || lower.includes('how to')) {
+        if (lower.includes('fund') || lower.includes('wallet')) return botResponses.fund;
+        if (lower.includes('data')) return botResponses.data;
+        if (lower.includes('airtime')) return botResponses.airtime;
+        if (lower.includes('withdraw')) return botResponses.withdraw;
+        if (lower.includes('kyc')) return botResponses.kyc;
+        return '📖 Check our quick guide: Click the service button you need help with, and follow the steps!';
+    }
+    
+    return botResponses.default;
+}
+
+function sendChatMessage(message) {
+    const input = document.getElementById('chatInput');
+    const msg = message || input.value.trim();
+    
+    if (!msg) return;
+    
+    const chatContainer = document.getElementById('chatMessages');
+    
+    // Add user message
+    const userMsg = document.createElement('div');
+    userMsg.className = 'chat-message user';
+    userMsg.textContent = '👤 ' + msg;
+    chatContainer.appendChild(userMsg);
+    
+    // Clear input
+    if (input) input.value = '';
+    
+    // Get bot response
+    const response = getBotResponse(msg);
+    
+    // Add bot response with delay
+    setTimeout(function() {
+        const botMsg = document.createElement('div');
+        botMsg.className = 'chat-message bot';
+        botMsg.textContent = '🤖 ' + response;
+        chatContainer.appendChild(botMsg);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }, 500);
+    
+    // Scroll to bottom
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
 
 // ============================================================
 // DATA PLANS - WITH SMALL PLANS ADDED
@@ -908,7 +1106,6 @@ function setTransactionPin() {
         return;
     }
     
-    // Save PIN to localStorage (in production, this would be on the server)
     localStorage.setItem('transactionPin', pin1);
     showResult('success', '✅ Transaction PIN set successfully!');
     showToast('✅ Transaction PIN set!', 'success');
@@ -935,10 +1132,7 @@ function verifyTransactionPin() {
 
 function requireTransactionPin() {
     const storedPin = localStorage.getItem('transactionPin');
-    if (!storedPin) {
-        // No PIN set, allow transaction
-        return true;
-    }
+    if (!storedPin) return true;
     
     const enteredPin = prompt('🔐 Enter your transaction PIN:');
     if (!enteredPin) return false;
@@ -1044,7 +1238,6 @@ async function buyDataPlan(planId) {
     const plan = allPlans.find(p => p.id === planId);
     if (!plan) return;
     
-    // Check PIN if set
     if (!requireTransactionPin()) return;
     
     if (!confirm(`Confirm purchase: ${plan.name} - ₦${plan.price}?`)) return;
@@ -1077,7 +1270,6 @@ async function buyAirtime() {
     if (!amount || amount < 50) { showResult('error', '⚠️ Min ₦50'); return; }
     if (!phone || phone.length < 10) { showResult('error', '⚠️ Valid phone required'); return; }
     
-    // Check PIN if set
     if (!requireTransactionPin()) return;
     
     if (!confirm(`Buy ${network} airtime ₦${amount} for ${phone}?`)) return;
@@ -1109,7 +1301,6 @@ async function buyTV() {
     const tvInfo = TV_PRICES[serviceID];
     if (!iucNum || iucNum.length < 4) { showResult('error', '⚠️ Valid Smart Card required'); return; }
     
-    // Check PIN if set
     if (!requireTransactionPin()) return;
     
     if (!confirm(`Subscribe to ${tvInfo.name} - ₦${tvInfo.price}?`)) return;
@@ -1144,7 +1335,6 @@ async function buyElectricity() {
     if (!meterNum || meterNum.length < 4) { showResult('error', '⚠️ Valid meter required'); return; }
     if (!amount || amount < 100) { showResult('error', '⚠️ Min ₦100'); return; }
     
-    // Check PIN if set
     if (!requireTransactionPin()) return;
     
     if (!confirm(`Pay electricity ₦${amount} for ${provider}?`)) return;
@@ -1176,7 +1366,6 @@ async function buyEducation() {
     const eduInfo = EDUCATION_PRICES[serviceID];
     const totalPrice = eduInfo.price * quantity;
     
-    // Check PIN if set
     if (!requireTransactionPin()) return;
     
     if (!confirm(`Buy ${quantity}x ${eduInfo.name} pin(s) - ₦${totalPrice}?`)) return;
@@ -1203,13 +1392,12 @@ async function buyEducation() {
 }
 
 // ============================================================
-// REAL PAYSTACK FUNDING - RESTORED
+// REAL PAYSTACK FUNDING
 // ============================================================
 async function fundWithPaystack() {
     const email = document.getElementById('fundEmail').value.trim();
     const amount = document.getElementById('fundAmount').value.trim();
     
-    // Validate
     if (!email || !email.includes('@')) {
         showResult('error', '⚠️ Please enter a valid email address');
         return;
@@ -1263,7 +1451,6 @@ async function withdrawProfit() {
     if (!amount || amount < 100) { showResult('error', '⚠️ Min ₦100'); return; }
     if (!bank || !account || !name) { showResult('error', '⚠️ All bank details required'); return; }
     
-    // Check PIN if set
     if (!requireTransactionPin()) return;
     
     if (!confirm(`Withdraw ₦${amount} to ${bank}?`)) return;
@@ -1634,6 +1821,64 @@ function openModal(type) {
                     Already registered? <a style="color:var(--gold);cursor:pointer;font-weight:600;" onclick="loginWithFingerprint()">Login with fingerprint</a>
                 </div>
             </div>
+        `,
+        support: `
+            <h3 style="color:var(--gold);margin-bottom:12px;">💬 Support Center</h3>
+            
+            <!-- AI Chatbot -->
+            <div style="background:rgba(78, 205, 196, 0.05);border:1px solid rgba(78, 205, 196, 0.15);border-radius:12px;padding:16px;margin-bottom:12px;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                    <span style="font-size:24px;">🤖</span>
+                    <span style="font-weight:600;color:var(--text-primary);">AI Support Bot</span>
+                    <span style="background:#4ecdc4;color:#0f0f1a;padding:2px 10px;border-radius:40px;font-size:10px;font-weight:700;">LIVE</span>
+                </div>
+                <div id="chatMessages" class="chat-messages">
+                    <div class="chat-message bot">
+                        🤖 Hello! 👋 Welcome to Paysbillz Support. How can I help you today?
+                    </div>
+                    <div style="color:var(--text-muted);font-size:11px;margin-top:4px;margin-bottom:6px;">
+                        💡 Quick questions:
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                        <button class="chat-suggestion" onclick="sendChatMessage('How do I buy data?')">📱 Buy Data</button>
+                        <button class="chat-suggestion" onclick="sendChatMessage('How do I fund my wallet?')">💰 Fund Wallet</button>
+                        <button class="chat-suggestion" onclick="sendChatMessage('What is KYC?')">🪪 KYC</button>
+                        <button class="chat-suggestion" onclick="sendChatMessage('How to withdraw profit?')">💸 Withdraw</button>
+                        <button class="chat-suggestion" onclick="sendChatMessage('Help with TV subscription')">📺 TV</button>
+                        <button class="chat-suggestion" onclick="sendChatMessage('Contact support')">📧 Contact</button>
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <input type="text" id="chatInput" placeholder="Type your question..." style="flex:1;padding:10px 14px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);font-size:13px;outline:none;" onkeypress="if(event.key==='Enter') sendChatMessage();" />
+                    <button onclick="sendChatMessage()" style="background:var(--gold-gradient);border:none;color:#0f0f1a;padding:10px 18px;border-radius:10px;font-weight:600;cursor:pointer;">Send</button>
+                </div>
+            </div>
+            
+            <!-- Contact Options -->
+            <div class="support-contact-grid">
+                <div class="support-contact-item">
+                    <div class="icon-large">📧</div>
+                    <div class="label">Email Support</div>
+                    <a href="mailto:paysbillzapp@gmail.com" class="value">paysbillzapp@gmail.com</a>
+                    <div class="sub">Response within 24hrs</div>
+                </div>
+                <div class="support-contact-item">
+                    <div class="icon-large">💬</div>
+                    <div class="label">WhatsApp</div>
+                    <a href="https://wa.me/2348145542679" target="_blank" class="value" style="color:#25D366;">08145542679</a>
+                    <div class="sub">Click to chat instantly</div>
+                </div>
+                <div class="support-contact-item full-width">
+                    <div class="icon-large">📞</div>
+                    <div class="label">Call Support</div>
+                    <a href="tel:+2348145542679" class="value" style="font-size:18px;">08145542679</a>
+                    <div class="sub">Available Mon-Fri, 9AM - 6PM</div>
+                </div>
+            </div>
+            
+            <div style="margin-top:12px;padding:12px;background:rgba(255,215,0,0.05);border-radius:8px;border:1px solid rgba(255,215,0,0.1);text-align:center;">
+                <p style="color:var(--text-muted);font-size:12px;">📌 We're here to help! Reach out anytime.</p>
+            </div>
         `
     };
     
@@ -1647,7 +1892,8 @@ function openModal(type) {
         withdraw: '💸 Withdraw Profit',
         kyc: '🪪 KYC Verification',
         pin: '🔐 Transaction PIN',
-        fingerprint: '🔐 Fingerprint Login'
+        fingerprint: '🔐 Fingerprint Login',
+        support: '💬 Support Center'
     };
     
     title.textContent = titles[type] || 'Service';
@@ -1738,7 +1984,6 @@ async function loadBalance() {
                 localStorage.setItem('userName', user.name);
             }
             
-            // Store balance in localStorage for quick access
             localStorage.setItem('userBalance', user.balance || 0);
             
             console.log('💰 Balance loaded:', user.balance);
