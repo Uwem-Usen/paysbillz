@@ -118,7 +118,7 @@ function getEmailTemplate(type, data) {
                         <p><strong>🏦 Your Virtual Account:</strong> ${data.virtualAccount}</p>
                         <p><strong>Bank:</strong> Paystack MFB</p>
                     </div>
-                    <a href="https://paysbillz-api.onrender.com/" style="background: #ffd700; color: #0f0f1a; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin-top: 10px; font-weight: bold;">Go to Dashboard</a>
+                    <a href="https://paysbillz.com/" style="background: #ffd700; color: #0f0f1a; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin-top: 10px; font-weight: bold;">Go to Dashboard</a>
                 </div>
                 <p style="color: #5a6f8a; text-align: center;">© 2026 Paysbillz • All rights reserved</p>
             </div>
@@ -135,7 +135,7 @@ function getEmailTemplate(type, data) {
                     <p><strong>New Balance:</strong> <span style="color: #4ecdc4;">₦${data.balance.toLocaleString()}</span></p>
                     ${data.profit ? `<p style="color: #ffd93d;"><strong>Profit Earned:</strong> ₦${data.profit}</p>` : ''}
                 </div>
-                <a href="https://paysbillz-api.onrender.com/" style="background: #ffd700; color: #0f0f1a; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">View Dashboard</a>
+                <a href="https://paysbillz.com/" style="background: #ffd700; color: #0f0f1a; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">View Dashboard</a>
                 <p style="color: #5a6f8a; text-align: center; margin-top: 15px;">Thank you for using Paysbillz!</p>
             </div>
         `,
@@ -149,7 +149,7 @@ function getEmailTemplate(type, data) {
                     <p><strong>Date:</strong> ${data.date}</p>
                     <p><strong>New Balance:</strong> <span style="color: #4ecdc4;">₦${data.balance.toLocaleString()}</span></p>
                 </div>
-                <a href="https://paysbillz-api.onrender.com/" style="background: #ffd700; color: #0f0f1a; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">View Dashboard</a>
+                <a href="https://paysbillz.com/" style="background: #ffd700; color: #0f0f1a; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">View Dashboard</a>
                 <p style="color: #5a6f8a; text-align: center; margin-top: 15px;">Thank you for using Paysbillz!</p>
             </div>
         `,
@@ -216,7 +216,7 @@ const KYC_TIERS = {
 };
 
 // ============================================
-// VIRTUAL ACCOUNT GENERATION - FIXED (10 digits)
+// VIRTUAL ACCOUNT GENERATION
 // ============================================
 function generateVirtualAccount(phone) {
     const cleanPhone = phone.replace(/\D/g, '');
@@ -325,7 +325,7 @@ if (!users[ADMIN_PHONE]) {
 // ============================================
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 const PAYSTACK_PUBLIC_KEY = process.env.PAYSTACK_PUBLIC_KEY;
-const PAYSTACK_CALLBACK_URL = process.env.PAYSTACK_CALLBACK_URL || 'https://paysbillz-api.onrender.com/payment/callback';
+const PAYSTACK_CALLBACK_URL = process.env.PAYSTACK_CALLBACK_URL || 'https://paysbillz.com/payment/callback';
 
 // ============================================
 // CONFIGURATION
@@ -358,16 +358,28 @@ const config = {
 // ============================================
 const PROFITS = {
     data: {
+        // MTN
         'MTN_SME_500MB': 50, 'MTN_SME_1GB': 80, 'MTN_SME_2GB': 120, 'MTN_SME_3GB': 150, 'MTN_SME_5GB': 200,
         'MTN_AWOOF_500MB': 30, 'MTN_AWOOF_1GB': 40, 'MTN_AWOOF_2.5GB': 60, 'MTN_AWOOF_5GB': 100, 'MTN_AWOOF_10GB': 200,
         'MTN_SHARE_500MB': 35, 'MTN_SHARE_1GB': 55, 'MTN_SHARE_2GB': 80, 'MTN_SHARE_3GB': 110, 'MTN_SHARE_5GB': 150,
         'MTN_10GB': 350, 'MTN_20GB': 500, 'MTN_50GB': 1000, 'MTN_100GB': 1500,
+        'MTN_PULSE_500MB': 40, 'MTN_PULSE_1GB': 60, 'MTN_PULSE_2GB': 90, 'MTN_PULSE_3GB': 120, 'MTN_PULSE_5GB': 180, 'MTN_PULSE_10GB': 300,
+        'MTN_GIFT_500MB': 45, 'MTN_GIFT_1GB': 70, 'MTN_GIFT_2GB': 100, 'MTN_GIFT_5GB': 180, 'MTN_GIFT_10GB': 350,
+        // Airtel
         'AIRTEL_500MB': 40, 'AIRTEL_1GB': 70, 'AIRTEL_2GB': 100, 'AIRTEL_3GB': 130, 'AIRTEL_5GB': 180, 'AIRTEL_10GB': 300,
         'AIRTEL_AWOOF_150MB': 20, 'AIRTEL_AWOOF_300MB': 25, 'AIRTEL_AWOOF_600MB': 35, 'AIRTEL_AWOOF_10GB': 200,
         'AIRTEL_BINGE_1.5GB': 60, 'AIRTEL_BINGE_2GB': 80, 'AIRTEL_BINGE_3GB': 100,
+        'AIRTEL_SMARTSHARE_500MB': 35, 'AIRTEL_SMARTSHARE_1GB': 55, 'AIRTEL_SMARTSHARE_2GB': 80, 'AIRTEL_SMARTSHARE_3GB': 110,
+        // GLO
         'GLO_500MB': 35, 'GLO_1GB': 60, 'GLO_2GB': 90, 'GLO_3GB': 120, 'GLO_5GB': 170, 'GLO_10GB': 280,
         'GLO_AWOOF_750MB': 25, 'GLO_AWOOF_1.5GB': 40, 'GLO_AWOOF_2.5GB': 55, 'GLO_AWOOF_10GB': 200,
+        // 9mobile
         '9MOBILE_500MB': 30, '9MOBILE_1GB': 55, '9MOBILE_2GB': 85, '9MOBILE_3GB': 110, '9MOBILE_5GB': 160, '9MOBILE_10GB': 250,
+        // Small Plans
+        'MTN_50MB': 15, 'MTN_100MB': 20, 'MTN_150MB': 25, 'MTN_200MB': 30,
+        'AIRTEL_50MB': 15, 'AIRTEL_100MB': 20,
+        'GLO_50MB': 15, 'GLO_100MB': 20,
+        '9MOBILE_50MB': 15,
     },
     airtime: 0.05,
     tv: 0.03,
@@ -376,33 +388,79 @@ const PROFITS = {
 };
 
 // ============================================
-// SERVICE ID MAPPINGS
+// COMPLETE TV PRICES WITH STARTIMES
 // ============================================
-const SERVICE_IDS = {
-    'MTN_SME_500MB': '229', 'MTN_SME_1GB': '240', 'MTN_SME_2GB': '99', 'MTN_SME_3GB': '100', 'MTN_SME_5GB': '101',
-    'MTN_AWOOF_500MB': '271', 'MTN_AWOOF_1GB': '269', 'MTN_AWOOF_2.5GB': '270', 'MTN_AWOOF_5GB': '277', 'MTN_AWOOF_10GB': '600',
-    'MTN_SHARE_500MB': '97', 'MTN_SHARE_1GB': '240', 'MTN_SHARE_2GB': '99', 'MTN_SHARE_3GB': '100', 'MTN_SHARE_5GB': '101',
-    'MTN_10GB': '226', 'MTN_20GB': '255', 'MTN_50GB': '238', 'MTN_100GB': '235',
-    'AIRTEL_500MB': '309', 'AIRTEL_1GB': '331', 'AIRTEL_2GB': '300', 'AIRTEL_3GB': '301', 'AIRTEL_5GB': '302', 'AIRTEL_10GB': '304',
-    'AIRTEL_AWOOF_150MB': '104', 'AIRTEL_AWOOF_300MB': '105', 'AIRTEL_AWOOF_600MB': '111', 'AIRTEL_AWOOF_10GB': '109',
-    'AIRTEL_BINGE_1.5GB': '352', 'AIRTEL_BINGE_2GB': '353', 'AIRTEL_BINGE_3GB': '354',
-    'GLO_500MB': '35', 'GLO_1GB': '36', 'GLO_2GB': '37', 'GLO_3GB': '38', 'GLO_5GB': '39', 'GLO_10GB': '40',
-    'GLO_AWOOF_750MB': '113', 'GLO_AWOOF_1.5GB': '114', 'GLO_AWOOF_2.5GB': '115', 'GLO_AWOOF_10GB': '116',
-    '9MOBILE_500MB': '68', '9MOBILE_1GB': '69', '9MOBILE_2GB': '71', '9MOBILE_3GB': '72', '9MOBILE_5GB': '75', '9MOBILE_10GB': '76',
-    'DSTV_PADI': '90', 'DSTV_YANGA': '91', 'DSTV_CONFAM': '92', 'DSTV_COMPACT': '93', 'DSTV_COMPACT_PLUS': '105', 'DSTV_PREMIUM': '106',
-    'GOTV_SMALLIE': '94', 'GOTV_JOLLI': '96', 'GOTV_JINJA': '97', 'GOTV_MAX': '95', 'GOTV_SUPA': '112',
-    'ELECTRICITY_IKEDC': '1', 'ELECTRICITY_EKEDC': '2', 'ELECTRICITY_KEDCO': '3', 'ELECTRICITY_PHED': '4', 'ELECTRICITY_JED': '5',
-    'ELECTRICITY_IBEDC': '6', 'ELECTRICITY_KAEDCO': '7', 'ELECTRICITY_AEDC': '8', 'ELECTRICITY_EEDC': '9', 'ELECTRICITY_BEDC': '10',
-    'EDUCATION_WAEC': '1', 'EDUCATION_NECO': '2', 'EDUCATION_NABTEB': '3',
-};
-
 const TV_PRICES = {
-    '90': 4400, '91': 6000, '92': 11000, '93': 19000, '105': 30000, '106': 44500,
-    '94': 1900, '96': 5800, '97': 3900, '95': 8500, '112': 9000
+    // DSTV
+    '90': { name: 'DSTV Padi', price: 4400, profit: 132, channels: 30 },
+    '91': { name: 'DSTV Yanga', price: 6000, profit: 180, channels: 45 },
+    '92': { name: 'DSTV Confam', price: 11000, profit: 330, channels: 70 },
+    '93': { name: 'DSTV Compact', price: 19000, profit: 570, channels: 100 },
+    '105': { name: 'DSTV Compact Plus', price: 30000, profit: 900, channels: 140 },
+    '106': { name: 'DSTV Premium', price: 44500, profit: 1335, channels: 200 },
+    '107': { name: 'DSTV Premium Plus', price: 49500, profit: 1485, channels: 220 },
+    '108': { name: 'DSTV Access', price: 2800, profit: 84, channels: 25 },
+    '109': { name: 'DSTV Family', price: 3700, profit: 111, channels: 35 },
+    // GOTV
+    '94': { name: 'GOTV Smallie', price: 1900, profit: 57, channels: 15 },
+    '96': { name: 'GOTV Jolli', price: 5800, profit: 174, channels: 40 },
+    '97': { name: 'GOTV Jinja', price: 3900, profit: 117, channels: 25 },
+    '95': { name: 'GOTV Max', price: 8500, profit: 255, channels: 60 },
+    '112': { name: 'GOTV Supa', price: 9000, profit: 270, channels: 65 },
+    '113': { name: 'GOTV Plus', price: 4500, profit: 135, channels: 30 },
+    '114': { name: 'GOTV Lite', price: 1200, profit: 36, channels: 10 },
+    // StarTimes
+    'st1': { name: 'StarTimes Basic', price: 1500, profit: 45, channels: 20 },
+    'st2': { name: 'StarTimes Classic', price: 2500, profit: 75, channels: 35 },
+    'st3': { name: 'StarTimes Smart', price: 3500, profit: 105, channels: 50 },
+    'st4': { name: 'StarTimes Super', price: 4800, profit: 144, channels: 70 },
+    'st5': { name: 'StarTimes Premium', price: 6500, profit: 195, channels: 90 },
+    'st6': { name: 'StarTimes Nova', price: 1800, profit: 54, channels: 25 },
+    'st7': { name: 'StarTimes Ultimate', price: 8500, profit: 255, channels: 110 },
+    'st8': { name: 'StarTimes Lite', price: 900, profit: 27, channels: 12 },
 };
 
 const EDUCATION_PRICES = {
     '1': 5250, '2': 2250, '3': 900
+};
+
+// ============================================
+// SERVICE ID MAPPINGS FOR DATA PLANS
+// ============================================
+const SERVICE_IDS = {
+    // MTN
+    'MTN_SME_500MB': '229', 'MTN_SME_1GB': '240', 'MTN_SME_2GB': '99', 'MTN_SME_3GB': '100', 'MTN_SME_5GB': '101',
+    'MTN_AWOOF_500MB': '271', 'MTN_AWOOF_1GB': '269', 'MTN_AWOOF_2.5GB': '270', 'MTN_AWOOF_5GB': '277', 'MTN_AWOOF_10GB': '600',
+    'MTN_SHARE_500MB': '97', 'MTN_SHARE_1GB': '240', 'MTN_SHARE_2GB': '99', 'MTN_SHARE_3GB': '100', 'MTN_SHARE_5GB': '101',
+    'MTN_10GB': '226', 'MTN_20GB': '255', 'MTN_50GB': '238', 'MTN_100GB': '235',
+    'MTN_PULSE_500MB': '272', 'MTN_PULSE_1GB': '273', 'MTN_PULSE_2GB': '274', 'MTN_PULSE_3GB': '275', 'MTN_PULSE_5GB': '276', 'MTN_PULSE_10GB': '601',
+    'MTN_GIFT_500MB': '280', 'MTN_GIFT_1GB': '281', 'MTN_GIFT_2GB': '282', 'MTN_GIFT_5GB': '283', 'MTN_GIFT_10GB': '284',
+    // Airtel
+    'AIRTEL_500MB': '309', 'AIRTEL_1GB': '331', 'AIRTEL_2GB': '300', 'AIRTEL_3GB': '301', 'AIRTEL_5GB': '302', 'AIRTEL_10GB': '304',
+    'AIRTEL_AWOOF_150MB': '104', 'AIRTEL_AWOOF_300MB': '105', 'AIRTEL_AWOOF_600MB': '111', 'AIRTEL_AWOOF_10GB': '109',
+    'AIRTEL_BINGE_1.5GB': '352', 'AIRTEL_BINGE_2GB': '353', 'AIRTEL_BINGE_3GB': '354',
+    'AIRTEL_SMARTSHARE_500MB': '310', 'AIRTEL_SMARTSHARE_1GB': '311', 'AIRTEL_SMARTSHARE_2GB': '312', 'AIRTEL_SMARTSHARE_3GB': '313',
+    // GLO
+    'GLO_500MB': '35', 'GLO_1GB': '36', 'GLO_2GB': '37', 'GLO_3GB': '38', 'GLO_5GB': '39', 'GLO_10GB': '40',
+    'GLO_AWOOF_750MB': '113', 'GLO_AWOOF_1.5GB': '114', 'GLO_AWOOF_2.5GB': '115', 'GLO_AWOOF_10GB': '116',
+    // 9mobile
+    '9MOBILE_500MB': '68', '9MOBILE_1GB': '69', '9MOBILE_2GB': '71', '9MOBILE_3GB': '72', '9MOBILE_5GB': '75', '9MOBILE_10GB': '76',
+    // Small Plans
+    'MTN_50MB': '500', 'MTN_100MB': '501', 'MTN_150MB': '502', 'MTN_200MB': '503',
+    'AIRTEL_50MB': '700', 'AIRTEL_100MB': '701',
+    'GLO_50MB': '800', 'GLO_100MB': '801',
+    '9MOBILE_50MB': '900',
+    // TV
+    'DSTV_PADI': '90', 'DSTV_YANGA': '91', 'DSTV_CONFAM': '92', 'DSTV_COMPACT': '93', 'DSTV_COMPACT_PLUS': '105', 'DSTV_PREMIUM': '106',
+    'DSTV_PREMIUM_PLUS': '107', 'DSTV_ACCESS': '108', 'DSTV_FAMILY': '109',
+    'GOTV_SMALLIE': '94', 'GOTV_JOLLI': '96', 'GOTV_JINJA': '97', 'GOTV_MAX': '95', 'GOTV_SUPA': '112', 'GOTV_PLUS': '113', 'GOTV_LITE': '114',
+    'STARTIMES_BASIC': 'st1', 'STARTIMES_CLASSIC': 'st2', 'STARTIMES_SMART': 'st3', 'STARTIMES_SUPER': 'st4',
+    'STARTIMES_PREMIUM': 'st5', 'STARTIMES_NOVA': 'st6', 'STARTIMES_ULTIMATE': 'st7', 'STARTIMES_LITE': 'st8',
+    // Electricity
+    'ELECTRICITY_IKEDC': '1', 'ELECTRICITY_EKEDC': '2', 'ELECTRICITY_KEDCO': '3', 'ELECTRICITY_PHED': '4', 'ELECTRICITY_JED': '5',
+    'ELECTRICITY_IBEDC': '6', 'ELECTRICITY_KAEDCO': '7', 'ELECTRICITY_AEDC': '8', 'ELECTRICITY_EEDC': '9', 'ELECTRICITY_BEDC': '10',
+    // Education
+    'EDUCATION_WAEC': '1', 'EDUCATION_NECO': '2', 'EDUCATION_NABTEB': '3',
 };
 
 function calculateDataProfit(plan) { return PROFITS.data[plan] || 50; }
@@ -499,7 +557,6 @@ async function purchaseInlomax(phone, plan, amount) {
     user.transactions.push(transaction);
     saveUser(user);
     
-    // Send notification
     await sendTransactionNotification(user, 'Data Purchase', actualCost, requestId, `Plan: ${plan}`, profit);
     
     return { success: true, provider: 'inlomax', data: { status: 'success', reference: requestId }, profit: profit, newBalance: user.realBalance };
@@ -540,8 +597,9 @@ async function purchaseAirtimeInlomax(phone, amount) {
 
 async function purchaseTVInlomax(phone, serviceID, iucNum) {
     const user = getUser(phone);
-    const actualCost = TV_PRICES[serviceID];
-    if (!actualCost) throw new Error('Unknown TV package');
+    const tvInfo = TV_PRICES[serviceID];
+    if (!tvInfo) throw new Error('Unknown TV package');
+    const actualCost = tvInfo.price;
 
     if ((user.realBalance || 0) < actualCost) {
         throw new Error(`Insufficient wallet balance. You have ₦${(user.realBalance || 0).toFixed(2)}, need ₦${actualCost.toFixed(2)}`);
@@ -563,12 +621,13 @@ async function purchaseTVInlomax(phone, serviceID, iucNum) {
         status: 'success', 
         reference: requestId,
         message: 'TV subscription successful', 
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        channels: tvInfo.channels || 0
     };
     user.transactions.push(transaction);
     saveUser(user);
     
-    await sendTransactionNotification(user, 'TV Subscription', actualCost, requestId, `Package: ${serviceID} | Smart Card: ${iucNum}`, profit);
+    await sendTransactionNotification(user, 'TV Subscription', actualCost, requestId, `${tvInfo.name} | Smart Card: ${iucNum} | ${tvInfo.channels}+ Channels`, profit);
     
     return { success: true, provider: 'inlomax', data: { status: 'success', reference: requestId }, profit: profit, newBalance: user.realBalance };
 }
@@ -1484,7 +1543,7 @@ app.get('/api/admin/stats', (req, res) => {
 });
 
 // ============================================
-// ROUTES - FIXED: Added ALL routes
+// ROUTES
 // ============================================
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/stable2.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'stable2.html')));
@@ -1507,6 +1566,7 @@ app.get('/health', (req, res) => {
             paystack: 'active',
             emailNotifications: 'active',
             transactionPin: 'active',
+            tvComplete: 'active',
             services: ['data', 'airtime', 'tv', 'electricity', 'education']
         }
     });
@@ -1525,6 +1585,7 @@ app.listen(PORT, () => {
     console.log('✅ Fingerprint login active');
     console.log('✅ Email notifications active');
     console.log('✅ Transaction PIN active');
+    console.log('✅ Complete TV packages (DSTV, GOTV, StarTimes)');
     console.log('✅ All services active');
     console.log('=================================================');
 });
